@@ -1,0 +1,9 @@
+SRC_FILE= main.cpp
+
+CLASSES= 
+
+INTERFACES= 
+
+TEMPLATES= 
+
+HEADERS= 
