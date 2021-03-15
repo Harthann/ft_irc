@@ -6,7 +6,7 @@
 #    By: nieyraud <nieyraud@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/10 16:28:15 by nieyraud          #+#    #+#              #
-#    Updated: 2021/03/09 09:16:41 by nieyraud         ###   ########.fr        #
+#    Updated: 2021/03/15 13:59:20 by nieyraud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ orange=\033[33m
 #		SOURCES		#
 #####################
 
-NAME = a.out
+NAME = ircserv
 
 include files.mk
 
