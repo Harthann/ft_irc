@@ -1,9 +1,11 @@
 SRC_FILE= main.cpp
 
-CLASSES= 
+CLASSES= Socket \
+
 
 INTERFACES= 
 
 TEMPLATES= 
 
-HEADERS= 
+HEADERS= ft_irc.hpp \
+
