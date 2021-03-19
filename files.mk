@@ -1,6 +1,7 @@
 SRC_FILE= main.cpp
 
-CLASSES= Socket \
+CLASSES= Server \
+Socket \
 
 
 INTERFACES= 

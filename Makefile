@@ -6,7 +6,7 @@
 #    By: nieyraud <nieyraud@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/10 16:28:15 by nieyraud          #+#    #+#              #
-#    Updated: 2021/03/15 13:59:20 by nieyraud         ###   ########.fr        #
+#    Updated: 2021/03/19 11:33:09 by nieyraud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,9 +45,9 @@ INCLUDE	=	$(addprefix $(TEMPLATE_DIR), $(TEMPLATES)) $(addprefix $(CLASSES_DIR),
 #		DIRCTORIES PATH		#
 #############################
 
-PATH = ${shell find srcs -type d}
+SRC_PATH = ${shell find srcs -type d}
 OBJ_PATH = objs
-vpath %.cpp $(foreach dir, $(PATH), $(dir))
+vpath %.cpp $(foreach dir, $(SRC_PATH), $(dir))
 
 #################################
 #		FILES	VARIABLE		#
