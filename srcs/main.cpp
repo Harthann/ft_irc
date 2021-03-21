@@ -12,23 +12,27 @@ void	server_loop(int port)
 {
 	try
 	{
-		Socket	master(port);
-		Server	server(master);
-		Socket	curr_client;
+		// Socket	master(port);
+		Server	server(port);
+		Socket	*curr_client;
 		std::string datas;
 
 		while (1) {
 			server.update();
 			curr_client = server.Select();
-			if (curr_client == master)
-				server.add(master.Accept());
+			if (server.IsMaster(curr_client))
+				server.add(curr_client->Accept());
 			else {
-				datas = curr_client.Receive();
-				std::cout << datas << std::endl;
+				datas = curr_client->Receive();
 				if (!datas.length())
 					server.remove(curr_client);
 				else if (!datas.compare("exit\n"))
+				{
+					std::cout << "Leaving server loop" << std::endl;
 					break ;
+				}
+				else
+					std::cout << "Received : " << datas << std::endl;
 			}
 		}
 	}

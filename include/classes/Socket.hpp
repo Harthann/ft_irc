@@ -23,7 +23,7 @@ class Socket
 		const int &		getSocket() const;
 		bool			Bind();
 		bool			Listen();
-		Socket			Accept();
+		Socket			*Accept();
 		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
 		std::string		Receive();
 

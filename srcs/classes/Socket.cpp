@@ -38,6 +38,7 @@ Socket	&Socket::operator=(Socket const &x)
 
 Socket::~Socket()
 {
+	close(socketfd);
 }
 
 const int	&Socket::getSocket() const {
@@ -68,7 +69,7 @@ bool	Socket::Listen() {
 	return (static_cast<bool>(ret));
 }
 
-Socket	Socket::Accept()
+Socket	*Socket::Accept()
 {
 	int					new_fd;
 	struct sockaddr_in	tmp_addr_info;
@@ -80,7 +81,7 @@ Socket	Socket::Accept()
 		throw Socket::InvalidAccept();
 	std::cout << "New clients detected : " << inet_ntoa(tmp_addr_info.sin_addr);
 	std::cout << " port : " << ntohs(tmp_addr_info.sin_port) << std::endl;
-	return (Socket(new_fd, tmp_addr_info, tmp_addr_len));
+	return (new Socket(new_fd, tmp_addr_info, tmp_addr_len));
 }
 
 void	Socket::Send(std::string message)
