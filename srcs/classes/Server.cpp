@@ -59,15 +59,11 @@ Socket *Server::Select()
 void	Server::add(Socket *x)
 {
 	std::string datas;
-	std::string send_back("001 RPL_WELCOME Welcome to the chatn\n");
+	std::string send_back("001 RPL_WELCOME Welcome to the chat\"\r\n");
 
 	users.push_back(x);
 	if (x->getSocket() > max_fd)
 		max_fd = x->getSocket();
-	// x->Send();
-	datas = x->Receive();
-	datas = x->Receive();
-	send_back.append("nieyraud!nieyraud@127.0.0.1\r\n");
 	x->Send(send_back.c_str());
 	std::cout << datas << std::endl;
 	FD_SET(x->getSocket(), &this->readfds);
