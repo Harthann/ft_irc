@@ -7,17 +7,47 @@
 #include <vector>
 #include <sys/time.h>
 #include "Server.hpp"
+#include "Commands.hpp"
+
+void	not_implemented(std::string &, Socket *client, Server& server)
+{
+	std::cout << "This command isn't implemented yet" << std::endl;
+	// client->Send("NOTICE es Commands not allowed\r\n");
+}
+
+void	pong_response(std::string &, Socket *client, Server &server)
+{
+	client->Send("PONG " + server.IP() + "\r\n");
+	std::cout << "PONG RESPONS SEND" << std::endl;
+}
+
+void	exit_server(std::string &, Socket *client, Server &server)
+{
+	server.Stop();
+}
+
+
+void	command_dispatcher(std::string &datas, Socket *client, Server &server)
+{
+	static Commands cmd;
+	int				offset;
+	std::stringstream ss(datas);
+	std::string			buff;
+
+	ss >> buff;
+	cmd[buff](datas, client, server);
+	std::cout << datas << std::endl;
+}
 
 void	server_loop(int port)
 {
 	try
 	{
-		// Socket	master(port);
 		Server	server(port);
 		Socket	*curr_client;
 		std::string datas;
 
-		while (1) {
+		while (server.IsRunning()) {
 			server.update();
 			curr_client = server.Select();
 			if (server.IsMaster(curr_client))
@@ -26,13 +56,8 @@ void	server_loop(int port)
 				datas = curr_client->Receive();
 				if (!datas.length())
 					server.remove(curr_client);
-				else if (!datas.compare("exit\n"))
-				{
-					std::cout << "Leaving server loop" << std::endl;
-					break ;
-				}
 				else
-					std::cout << "Received : " << datas << std::endl;
+					command_dispatcher(datas, curr_client, server);
 			}
 		}
 	}
@@ -52,7 +77,6 @@ int main(int ac, char **av)
 		server_loop(port);
 	}
 	catch (std::exception &e) {
-		// std::cout << e.what() << std::endl;
 		return (1);
 	}
 	return (0);

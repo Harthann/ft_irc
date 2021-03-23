@@ -3,6 +3,7 @@
 Server::Server(int const &master_port)
 : users()
 {
+	this->state = 1;
 	this->master = new Socket(master_port);
 	this->master->Listen();
 	std::cout << "Constructing Server :\n";
@@ -59,7 +60,7 @@ Socket *Server::Select()
 void	Server::add(Socket *x)
 {
 	std::string datas;
-	std::string send_back("001 RPL_WELCOME Welcome to the chat\"\r\n");
+	std::string send_back("001 RPL_WELCOME  Welcome to the chat <user42>!<user42>@localhost\r\n");
 
 	users.push_back(x);
 	if (x->getSocket() > max_fd)
@@ -115,4 +116,19 @@ void	Server::update()
 		if (users[i]->getSocket() > max_fd)
 			max_fd = users[i]->getSocket();
 	}
+}
+
+std::string		Server::IP() const
+{
+	return (this->master->IP());
+}
+
+void		Server::Stop()
+{
+	this->state = 0;
+}
+
+bool		Server::IsRunning() const
+{
+	return this->state;
 }

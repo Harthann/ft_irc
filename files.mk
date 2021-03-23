@@ -1,6 +1,8 @@
 SRC_FILE= main.cpp
 
-CLASSES= Server \
+CLASSES= User \
+Commands \
+Server \
 Socket \
 
 
@@ -8,5 +10,6 @@ INTERFACES=
 
 TEMPLATES= 
 
-HEADERS= ft_irc.hpp \
+HEADERS= tokens.hpp \
+ft_irc.hpp \
 

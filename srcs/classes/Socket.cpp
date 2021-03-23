@@ -104,8 +104,10 @@ std::string Socket::Receive()
 	buffer[readed] = '\0';
 	return (buffer);
 }
-// std::string	&Socket::Read() {
-// 	std::string ret;
 
-	
+std::string		Socket::IP() const
+{
+	return (inet_ntoa(this->addr_info.sin_addr));
+}
+
 // }
