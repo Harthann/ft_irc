@@ -26,7 +26,7 @@ class Server
 		Socket					*master;
 		fd_set					readfds;
 		int						max_fd;
-		bool				state;
+		bool					state;
 
 };
 

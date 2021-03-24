@@ -15,7 +15,7 @@
 class Socket
 {
 	public:
-		Socket(int port = 0);
+		Socket(int port = 0, std::string IP = "127.0.0.1");
 		Socket(Socket const &);
 		Socket &operator=(Socket const&);
 		~Socket();

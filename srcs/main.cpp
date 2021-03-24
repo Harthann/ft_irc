@@ -9,7 +9,10 @@
 #include "Server.hpp"
 #include "Commands.hpp"
 
-void	not_implemented(std::string &, Socket *client, Server& server)
+#include <limits.h>
+#include <float.h>
+
+void	not_implemented(std::string &, Socket *socket, Server&)
 {
 	std::cout << "This command isn't implemented yet" << std::endl;
 	// client->Send("NOTICE es Commands not allowed\r\n");
@@ -30,7 +33,7 @@ void	exit_server(std::string &, Socket *client, Server &server)
 void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 {
 	static Commands cmd;
-	int				offset;
+	// int				offset;
 	std::stringstream ss(datas);
 	std::string			buff;
 
@@ -39,13 +42,13 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 	std::cout << datas << std::endl;
 }
 
-void	server_loop(int port)
+void	server_loop(int port, std::string password, struct sockaddr_in	host_info)
 {
 	try
 	{
-		Server	server(port);
-		Socket	*curr_client;
-		std::string datas;
+		Server		server(port);
+		Socket		*curr_client;
+		std::string	datas;
 
 		while (server.IsRunning()) {
 			server.update();
@@ -69,14 +72,16 @@ void	server_loop(int port)
 
 int main(int ac, char **av)
 {
-	int port;
-	std::string str(av[1]);
+	int					port;
+	std::string 		pass;
+	struct sockaddr_in	host;
 
-	std::istringstream(str) >> port;
 	try {
-		server_loop(port);
+		host = parse_info(ac, av, port, pass);
+		server_loop(port, pass, host);
 	}
 	catch (std::exception &e) {
+		std::cout << e.what() << std::endl;
 		return (1);
 	}
 	return (0);

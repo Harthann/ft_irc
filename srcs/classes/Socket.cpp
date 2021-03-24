@@ -1,12 +1,12 @@
 #include "Socket.hpp"
 
-Socket::Socket(int port)
+Socket::Socket(int port, std::string IP)
 {
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	addr_info.sin_family = AF_INET;
 	addr_info.sin_port = htons(port);
-	addr_info.sin_addr.s_addr = inet_addr("127.0.0.1");
+	addr_info.sin_addr.s_addr = inet_addr(IP.c_str());
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 	this->addr_len = sizeof(this->addr_info);

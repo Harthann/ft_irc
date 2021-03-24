@@ -1,7 +1,7 @@
-SRC_FILE= main.cpp
+SRC_FILE= server_info.cpp \
+main.cpp
 
-CLASSES= User \
-Commands \
+CLASSES= Commands \
 Server \
 Socket \
 
