@@ -1,12 +1,27 @@
 #include "Socket.hpp"
 
-Socket::Socket(int port, std::string IP)
+Socket::Socket(int port, std::string , std::string IP)
 {
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	addr_info.sin_family = AF_INET;
 	addr_info.sin_port = htons(port);
 	addr_info.sin_addr.s_addr = inet_addr(IP.c_str());
+  	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+  	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+	this->addr_len = sizeof(this->addr_info);
+	if (this->Bind())
+		throw Socket::InvalidBind();
+}
+
+Socket::Socket(host_info &host)
+{
+	const int opt = 1;
+	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	addr_info = host.host;
+	// addr_info.sin_family = AF_INET;
+	// addr_info.sin_port = htons(host.host.sin_port);
+	// addr_info.sin_addr.s_addr = inet_addr(IP.c_str());
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 	this->addr_len = sizeof(this->addr_info);

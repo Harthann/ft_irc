@@ -1,18 +1,33 @@
 #ifndef FT_IRC_HPP
 #define FT_IRC_HPP
 
+//	Socket headers
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/select.h>
+//	Net header
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+
 #include <sys/time.h>
+// IO header
 #include <iostream>
 #include <unistd.h>
-#include <errno.h>
+
+// Other
 #include <string.h>
 #include <exception>
+
+// STL header
+#include <vector>
+
+//	Illegal header
+#include <errno.h>
+
+#ifndef nullptr
+# define nullptr 0
+#endif
 
 struct WrongArgumentNumber : public std::exception
 {
@@ -28,7 +43,13 @@ struct WrongHostFormat : public std::exception
 	};
 };
 
-struct sockaddr_in	parse_info(int ac, char **av, int &port, std::string &pass);
+struct host_info
+{
+	struct sockaddr_in	host;
+	std::string			pass;
+};
+
+host_info	parse_info(int ac, char **av, int &port, std::string &pass);
 
 
 #endif

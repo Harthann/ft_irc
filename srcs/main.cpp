@@ -29,9 +29,15 @@ void	exit_server(std::string &, Socket *client, Server &server)
 	server.Stop();
 }
 
-
 void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 {
+	if (server.IsProxy()) {
+		if (server.IsHost(client))
+			server[0]->Send(datas.c_str());
+		else
+			server[-1]->Send(datas.c_str());
+
+	}
 	static Commands cmd;
 	// int				offset;
 	std::stringstream ss(datas);
@@ -42,11 +48,11 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 	std::cout << datas << std::endl;
 }
 
-void	server_loop(int port, std::string password, struct sockaddr_in	host_info)
+void	server_loop(int port, std::string password, host_info	host)
 {
 	try
 	{
-		Server		server(port);
+		Server		server(port, password, host);
 		Socket		*curr_client;
 		std::string	datas;
 
@@ -74,7 +80,7 @@ int main(int ac, char **av)
 {
 	int					port;
 	std::string 		pass;
-	struct sockaddr_in	host;
+	host_info			host;
 
 	try {
 		host = parse_info(ac, av, port, pass);

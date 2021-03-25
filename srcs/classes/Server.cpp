@@ -1,16 +1,25 @@
 #include "Server.hpp"
 
-Server::Server(int const &master_port)
-: users()
+	// if (host.host.sin_zero[0] == 'h')
+	// 	proxy = true;
+	// else
+	// 	proxy = false;
+Server::Server(int const &master_port, std::string &pass, host_info &host)
+: users(), state(1), proxy(host.host.sin_zero[0] == 'h'), host(nullptr)
 {
-	this->state = 1;
 	this->master = new Socket(master_port);
 	this->master->Listen();
-	std::cout << "Constructing Server :\n";
+	std::cout << "Constructing Server on port : " << master_port << "\n";
 	std::cout << "Master socket on fd : " << this->master->getSocket() << std::endl;
+	if (host.host.sin_zero[0] == 'h')
+		this->host = new Socket(host);
 	this->max_fd = this->master->getSocket();
 	FD_ZERO(&this->readfds);
-	FD_SET(this->max_fd, &this->readfds);
+	FD_SET(this->master->getSocket(), &this->readfds);
+	if (this->host) {
+		FD_SET(this->host->getSocket(), &this->readfds);
+		this->max_fd = std::max(this->master->getSocket(), this->host->getSocket());
+	}
 }
 
 Server::Server(Server const &x)
@@ -53,6 +62,8 @@ Socket *Server::Select()
 			return this->users[i];
 		}
 	}
+	if (FD_ISSET(this->host->getSocket(), &this->readfds))
+		return (this->host);
 	std::cout << "Activity detected on master socket : " << master->getSocket() << "\n";
 	return master;
 }
@@ -99,6 +110,8 @@ void	Server::update()
 	FD_ZERO(&this->readfds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 	max_fd = this->master->getSocket();
+	FD_SET(this->host->getSocket(), &this->readfds);
+	max_fd = std::max(max_fd, this->host->getSocket());
 
 	for (std::vector<Socket*>::iterator it = users.begin(); it != users.end(); ++it) {
 		if ((*it)->getSocket() > 0)
@@ -131,4 +144,14 @@ void		Server::Stop()
 bool		Server::IsRunning() const
 {
 	return this->state;
+}
+
+bool		Server::IsProxy() const
+{
+	return this->proxy;
+}
+
+bool		Server::IsHost(Socket *x) const
+{
+	return x == this->host;
 }
