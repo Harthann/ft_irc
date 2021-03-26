@@ -12,7 +12,7 @@
 #include <limits.h>
 #include <float.h>
 
-void	not_implemented(std::string &, Socket *socket, Server&)
+void	not_implemented(std::string &, Socket *, Server&)
 {
 	std::cout << "This command isn't implemented yet" << std::endl;
 	// client->Send("NOTICE es Commands not allowed\r\n");
@@ -24,22 +24,14 @@ void	pong_response(std::string &, Socket *client, Server &server)
 	std::cout << "PONG RESPONS SEND" << std::endl;
 }
 
-void	exit_server(std::string &, Socket *client, Server &server)
+void	exit_server(std::string &, Socket *, Server &server)
 {
 	server.Stop();
 }
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 {
-	if (server.IsProxy()) {
-		if (server.IsHost(client))
-			server[0]->Send(datas.c_str());
-		else
-			server[-1]->Send(datas.c_str());
-
-	}
 	static Commands cmd;
-	// int				offset;
 	std::stringstream ss(datas);
 	std::string			buff;
 
@@ -48,17 +40,20 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 	std::cout << datas << std::endl;
 }
 
-void	server_loop(int port, std::string password, host_info	host)
+void	server_loop(int port, std::string password, host_info &host)
 {
 	try
 	{
-		Server		server(port, password, host);
+		Server		server(port, password);
 		Socket		*curr_client;
 		std::string	datas;
 
+		if (host.host.sin_zero[0] == 'h')
+			server.setHost(host);
 		while (server.IsRunning()) {
 			server.update();
 			curr_client = server.Select();
+			std::cout << "Right after select " << curr_client <<  std::endl;
 			if (server.IsMaster(curr_client))
 				server.add(curr_client->Accept());
 			else {

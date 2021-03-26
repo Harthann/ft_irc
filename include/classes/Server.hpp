@@ -6,11 +6,12 @@
 #include <vector>
 #include <sys/time.h>
 
+//  irc.rizon.no
+
 class Server
 {
 	public:
 		Server(int const &, std::string = "");
-		Server(int const &, std::string &, host_info&);
 		Server(Server const &);
 		Server &operator=(Server const&);
 		~Server();
@@ -19,10 +20,12 @@ class Server
 		void	add(Socket*);				// add a client to the list
 		void	remove(Socket*);			// Remove a client on the list
 		void	update();					// Update fd_set of all client still connected
+		void	setHost(host_info &);
+		void	Stop();
+
 		std::string	IP() const;
 		bool	IsMaster(Socket*);
 		bool	IsHost(Socket *) const;
-		void	Stop();
 		bool	IsRunning() const;
 		bool	IsProxy() const;
 
@@ -36,8 +39,11 @@ class Server
 		std::vector<Socket*>	users;
 		Socket					*master;
 		Socket					*host;
+		std::string				server_password;
+		
 		fd_set					readfds;
 		int						max_fd;
+		
 		bool					state;
 		bool					proxy;
 };

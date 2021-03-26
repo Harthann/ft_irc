@@ -21,8 +21,8 @@ static	void	fill_host(std::string &param, struct sockaddr_in &addr, std::string 
 	}
 	std::cout << "ip : " << ip << std::endl;
 	std::cout << "port : " << port << std::endl;
-	std::cout << "pass : " << host_pass << std::endl;
 	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_family = AF_INET;
 	hints.ai_protocol = IPPROTO_TCP;
 	ret = getaddrinfo(ip.c_str(), port.c_str(), &hints, &list);
 	if (ret)
@@ -32,13 +32,6 @@ static	void	fill_host(std::string &param, struct sockaddr_in &addr, std::string 
 	}
 	else
 	{
-		auto tmp = list;
-		std::cout << "Success" << std::endl;
-		while (tmp) {
-			std::cout << inet_ntoa(reinterpret_cast<struct sockaddr_in*>(tmp->ai_addr)->sin_addr) << std::endl;
-			tmp = tmp->ai_next;
-		}
-		std::cout << "Reinterpwet cast done" << std::endl;
 		addr = *reinterpret_cast<struct sockaddr_in*>(list->ai_addr);
 		addr.sin_zero[0] = 'h';
 		freeaddrinfo(list);

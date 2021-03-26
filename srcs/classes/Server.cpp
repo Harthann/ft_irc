@@ -1,25 +1,17 @@
 #include "Server.hpp"
 
-	// if (host.host.sin_zero[0] == 'h')
-	// 	proxy = true;
-	// else
-	// 	proxy = false;
-Server::Server(int const &master_port, std::string &pass, host_info &host)
-: users(), state(1), proxy(host.host.sin_zero[0] == 'h'), host(nullptr)
+Server::Server(int const &master_port, std::string pass)
+: users(), host(nullptr), server_password(pass), state(1), proxy(0)
 {
-	this->master = new Socket(master_port);
-	this->master->Listen();
 	std::cout << "Constructing Server on port : " << master_port << "\n";
-	std::cout << "Master socket on fd : " << this->master->getSocket() << std::endl;
-	if (host.host.sin_zero[0] == 'h')
-		this->host = new Socket(host);
+	this->master = new Socket(master_port);
+	std::cout << "Master socket created with fd : " << this->master->getSocket() << std::endl;
+	this->master->Listen();
+	std::cout << "Master now listening" << std::endl;
 	this->max_fd = this->master->getSocket();
 	FD_ZERO(&this->readfds);
 	FD_SET(this->master->getSocket(), &this->readfds);
-	if (this->host) {
-		FD_SET(this->host->getSocket(), &this->readfds);
-		this->max_fd = std::max(this->master->getSocket(), this->host->getSocket());
-	}
+
 }
 
 Server::Server(Server const &x)
@@ -44,9 +36,18 @@ Server::~Server()
 	delete master;
 }
 
-bool	Server::IsMaster(Socket*x)
+void	Server::setHost(host_info &host)
 {
-	return (x == master);
+	try {
+		this->host = new Socket(host);
+		std::cout << "Host socket adress is : " << this->host << std::endl;
+		this->proxy = 1;
+		this->host->Connect();
+	} catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+		throw e;
+	}
 }
 
 Socket *Server::Select()
@@ -62,7 +63,7 @@ Socket *Server::Select()
 			return this->users[i];
 		}
 	}
-	if (FD_ISSET(this->host->getSocket(), &this->readfds))
+	if (this->host && FD_ISSET(this->host->getSocket(), &this->readfds))
 		return (this->host);
 	std::cout << "Activity detected on master socket : " << master->getSocket() << "\n";
 	return master;
@@ -71,7 +72,7 @@ Socket *Server::Select()
 void	Server::add(Socket *x)
 {
 	std::string datas;
-	std::string send_back("001 RPL_WELCOME  Welcome to the chat <user42>!<user42>@localhost\r\n");
+	std::string send_back("001 RPL_WELCOME Welcome to the chat <user42>!<user42>@localhost\r\n");
 
 	users.push_back(x);
 	if (x->getSocket() > max_fd)
@@ -110,9 +111,10 @@ void	Server::update()
 	FD_ZERO(&this->readfds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 	max_fd = this->master->getSocket();
-	FD_SET(this->host->getSocket(), &this->readfds);
-	max_fd = std::max(max_fd, this->host->getSocket());
-
+	if (this->host) {
+		FD_SET(this->host->getSocket(), &this->readfds);
+		max_fd = std::max(max_fd, this->host->getSocket());
+	}
 	for (std::vector<Socket*>::iterator it = users.begin(); it != users.end(); ++it) {
 		if ((*it)->getSocket() > 0)
 			FD_SET((*it)->getSocket(), &this->readfds);
@@ -122,12 +124,6 @@ void	Server::update()
 		}
 		if ((*it)->getSocket() > max_fd)
 			max_fd = (*it)->getSocket();
-	}
-	for (size_t i = 0; i < users.size(); ++i) {
-		if (users[i]->getSocket() > 0)
-			FD_SET(users[i]->getSocket(), &this->readfds);
-		if (users[i]->getSocket() > max_fd)
-			max_fd = users[i]->getSocket();
 	}
 }
 
@@ -139,6 +135,11 @@ std::string		Server::IP() const
 void		Server::Stop()
 {
 	this->state = 0;
+}
+
+bool	Server::IsMaster(Socket*x)
+{
+	return (x == master);
 }
 
 bool		Server::IsRunning() const

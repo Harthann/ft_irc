@@ -24,6 +24,7 @@ class Socket
 
 		const int &		getSocket() const;
 		bool			Bind();
+		bool			Connect();
 		bool			Listen();
 		std::string		IP() const;
 		Socket			*Accept();
@@ -39,6 +40,12 @@ class Socket
 		struct InvalidBind : public std::exception {
 			char const *what() const throw() {
 				return ("Error binding new socket");
+			}
+		};
+
+		struct SocketFailed : public std::exception {
+			char const *what() const throw() {
+				return ("Error creating new socket");
 			}
 		};
 

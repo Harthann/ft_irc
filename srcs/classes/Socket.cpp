@@ -4,6 +4,8 @@ Socket::Socket(int port, std::string , std::string IP)
 {
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (!this->socketfd)
+		throw SocketFailed();
 	addr_info.sin_family = AF_INET;
 	addr_info.sin_port = htons(port);
 	addr_info.sin_addr.s_addr = inet_addr(IP.c_str());
@@ -19,14 +21,13 @@ Socket::Socket(host_info &host)
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	addr_info = host.host;
-	// addr_info.sin_family = AF_INET;
-	// addr_info.sin_port = htons(host.host.sin_port);
-	// addr_info.sin_addr.s_addr = inet_addr(IP.c_str());
+	std::cout << "Addrsss : " << inet_ntoa(addr_info.sin_addr) << std::endl;
+	std::cout << "Port : " << ntohs(addr_info.sin_port) << std::endl;
+	if (!this->socketfd)
+		throw SocketFailed();
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 	this->addr_len = sizeof(this->addr_info);
-	if (this->Bind())
-		throw Socket::InvalidBind();
 }
 
 Socket::Socket(int fd, struct sockaddr_in addr, int addr_l)
@@ -72,6 +73,22 @@ bool	Socket::Bind()
 		std::cout << "Something went wrong at binding phase for socket : " << this->socketfd;
 		std::cout << strerror(error) << std::endl;
 	}
+	return (static_cast<bool>(ret));
+}
+
+bool	Socket::Connect()
+{
+	int		ret;
+	int		error;
+
+	errno = 0;
+	ret = connect(this->socketfd, reinterpret_cast<struct sockaddr*>(&this->addr_info), addr_len);
+	error = errno;
+	if (ret) {
+		std::cout << "Something went wrong at binding phase for socket : " << this->socketfd;
+		std::cout << strerror(error) << std::endl;
+	}
+	std::cout << this->Receive() << std::endl;
 	return (static_cast<bool>(ret));
 }
 
