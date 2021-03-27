@@ -7,6 +7,8 @@
 #include <vector>
 #include <sys/time.h>
 #include "Server.hpp"
+#include "User.hpp"
+#include "Registration.cpp"
 
 void	server_loop(int port)
 {
@@ -16,6 +18,7 @@ void	server_loop(int port)
 		Server	server(port);
 		Socket	*curr_client;
 		std::string datas;
+		std::vector<User> temp_users;
 
 		while (1) {
 			server.update();
@@ -32,7 +35,10 @@ void	server_loop(int port)
 					break ;
 				}
 				else
+				{
+					add_user(curr_client, temp_users, datas);
 					std::cout << "Received : " << datas << std::endl;
+				}
 			}
 		}
 	}
