@@ -40,6 +40,12 @@ void	server_loop(int port)
 					std::cout << "Received : " << datas << std::endl;
 				}
 			}
+			for(unsigned long i = 0; i < temp_users.size(); i++)
+			{
+				std::cout << "  ########### USER " << i << " ############\n" << std::endl;
+				temp_users[i].displayinfo();
+				std::cout << "\n";
+			}
 		}
 	}
 	catch (std::exception &e) {

@@ -3,6 +3,7 @@
 
 #include "Socket.hpp"
 #include <string.h>
+#include <vector>
 
 
 class User
@@ -13,14 +14,16 @@ class User
 		~User();
 		Socket *	getSocket() const;
 		int			getStatus() const;
+		void		displayinfo();
+		void		setDatas(std::string datas);
 	protected:
 	private:
 		std::string	nickname;
 		void		setNICK(char *str);
 		void		setPASS(char *str);
-		void		setUSER(char *str);
+		void		setUSER(std::string datas);
 		std::string	user;
-		int			mode;
+		std::string	mode;
 		int status;
 		std::string	realname;
 		std::string	password;
