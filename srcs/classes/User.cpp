@@ -13,8 +13,22 @@ User::User(Socket *client, std::string datas)
 	str = (char *)datas.c_str();
 	if(!strncmp(str, "PASS", 4))
 		this->setPASS(str + 4);
-	else if(!strncmp(str, "NICK", 4))
+	while(str && strncmp(str, "NICK", 4))
+	{
+		if(strlen(str) == 4)
+			break;
+		str++;
+	}
+	if(!strncmp(str, "NICK", 4))
 		this->setNICK(str + 4);
+	while(str && strncmp(str, "USER", 4))
+	{
+		if(strlen(str) == 4)
+			break;
+		str++;
+	}
+	if(!strncmp(str, "USER", 4))
+		this->setUSER(str);
 }
 
 void	User::setPASS(char *str)
@@ -34,9 +48,9 @@ void	User::setNICK(char *str)
 	nickname.assign(str, i);
 }
 
-void	User::setUSER(std::string datas)
+void	User::setUSER(char *datas)
 {
-	char *str = (char *)datas.c_str();
+	char *str = datas;
 	char *res;
 	int i = 0;
 	std::vector<char *> temp;
@@ -55,6 +69,7 @@ void	User::setUSER(std::string datas)
 	while(res[i] >= 32)
 		i++;
 	realname.assign(res + 1, i - 1);
+	this->status = 1;
 }
 
 Socket * User::getSocket() const
@@ -72,12 +87,16 @@ void	User::setDatas(std::string datas)
 	char *str;
 
 	str = (char *)datas.c_str();
-	if(!strncmp(str, "PASS", 4))
-		this->setPASS(str + 4);
-	else if(!strncmp(str, "NICK", 4))
+	if(!strncmp(str, "NICK", 4))
 		this->setNICK(str + 4);
-	else if(!strncmp(str, "USER", 4))
-		this->setUSER(datas);
+	while(str && strncmp(str, "USER", 4))
+	{
+		if(strlen(str) == 4)
+			break;
+		str++;
+	}
+	if(!strncmp(str, "USER", 4))
+		this->setUSER(str);
 
 }
 

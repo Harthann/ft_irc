@@ -21,7 +21,7 @@ class User
 		std::string	nickname;
 		void		setNICK(char *str);
 		void		setPASS(char *str);
-		void		setUSER(std::string datas);
+		void		setUSER(char *datas);
 		std::string	user;
 		std::string	mode;
 		int status;
