@@ -44,7 +44,7 @@ void	server_loop(int port)
 			{
 				std::cout << "  ########### USER " << i << " ############\n" << std::endl;
 				temp_users[i].displayinfo();
-				std::cout << "\n";
+//				std::cout << "\n";
 			}
 		}
 	}

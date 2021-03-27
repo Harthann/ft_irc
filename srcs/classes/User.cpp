@@ -19,20 +19,26 @@ User::User(Socket *client, std::string datas)
 
 void	User::setPASS(char *str)
 {
-	std::string temp(str);
-	password = temp;
+	int i = 0;
+
+	while(str[i] >= 32)
+		i++;
+	password.assign(str, i);
 }
 
 void	User::setNICK(char *str)
 {
-	std::string temp(str);
-	nickname = temp;
+	int i = 0;
+	while(str[i] >= 32)
+		i++;
+	nickname.assign(str, i);
 }
 
 void	User::setUSER(std::string datas)
 {
 	char *str = (char *)datas.c_str();
 	char *res;
+	int i = 0;
 	std::vector<char *> temp;
 	char s[2] = " ";
 
@@ -45,7 +51,10 @@ void	User::setUSER(std::string datas)
 	}
 	this->user = temp[1];
 	this->mode = temp[2];
-	this->realname = temp[4];
+	res = temp[4];
+	while(res[i] >= 32)
+		i++;
+	realname.assign(res + 1, i - 1);
 }
 
 Socket * User::getSocket() const
@@ -75,11 +84,11 @@ void	User::setDatas(std::string datas)
 void	User::displayinfo()
 {
 	std::cout << "nickname : " << nickname << std::endl;
+	std::cout << "password : " << password << std::endl;
 	std::cout << "user : " << user << std::endl;
 	std::cout << "mode : " << mode << std::endl;
 	std::cout << "status : " << status << std::endl;
 	std::cout << "realname : " << realname << std::endl;
-	std::cout << "password : " << password << std::endl;
 }
 
 User::~User()
