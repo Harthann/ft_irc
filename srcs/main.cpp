@@ -19,6 +19,7 @@ void	server_loop(int port)
 		Socket	*curr_client;
 		std::string datas;
 		std::vector<User> temp_users;
+		int ret = 0;
 
 		while (1) {
 			server.update();
@@ -36,14 +37,20 @@ void	server_loop(int port)
 				}
 				else
 				{
-					add_user(curr_client, temp_users, datas);
 					std::cout << "Received : " << datas << std::endl;
+					ret = already_register(curr_client, server);
+					if(!ret)
+					{
+						add_user(curr_client, temp_users, datas);
+						update_server_user(temp_users, server);
+					}
+					ret = 0;
 				}
 			}
-			for(unsigned long i = 0; i < temp_users.size(); i++)
+			for(unsigned long i = 0; i < server.getClients().size(); i++)
 			{
 				std::cout << "  ########### USER " << i << " ############\n" << std::endl;
-				temp_users[i].displayinfo();
+				server.getClients()[i].displayinfo();
 //				std::cout << "\n";
 			}
 		}

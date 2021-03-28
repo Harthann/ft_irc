@@ -116,3 +116,8 @@ void	Server::update()
 			max_fd = users[i]->getSocket();
 	}
 }
+
+std::vector<User>	& Server::getClients()
+{
+	return this->clients;
+}

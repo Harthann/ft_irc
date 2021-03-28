@@ -2,6 +2,7 @@
 #define SERVER_HPP
 
 #include "Socket.hpp"
+#include "User.hpp"
 #include <vector>
 #include <sys/time.h>
 
@@ -18,8 +19,10 @@ class Server
 		void	remove(Socket*);			// Remove a client on the list
 		void	update();					// Update fd_set of all client still connected
 		bool	IsMaster(Socket*);
+		std::vector<User>	& getClients();
 	protected:
 		std::vector<Socket*>	users;
+		std::vector<User>		clients;
 		Socket					*master;
 		fd_set					readfds;
 		int						max_fd;
