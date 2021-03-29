@@ -5,6 +5,7 @@
 #include "ft_irc.hpp"
 #include <vector>
 #include <sys/time.h>
+#include "server_except.hpp"
 
 //  irc.rizon.no
 
@@ -32,8 +33,11 @@ class Server
 		Socket *operator[](int i) {
 			if (i == -1)
 				return (host);
-			return users[i];
+			if (!users.empty())
+				return users[i];
+			return nullptr;
 		};
+
 
 	protected:
 		std::vector<Socket*>	users;

@@ -35,10 +35,22 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 	std::stringstream ss(datas);
 	std::string			buff;
 
+	if (!server.IsHost(client))
+		server[-1]->Send(datas);
+	else if (server[0])
+		server[0]->Send(datas);
+
 	ss >> buff;
 	cmd[buff](datas, client, server);
-	std::cout << datas << std::endl;
+	std::cout << datas <<  std::endl;
 }
+
+#!/usr/bin/expect -f
+spawn ssh -p2522 user42@localhost -t zsh
+expect "assword:"
+send "user42\r"
+interact
+
 
 void	server_loop(int port, std::string password, host_info &host)
 {
@@ -65,8 +77,7 @@ void	server_loop(int port, std::string password, host_info &host)
 			}
 		}
 	}
-	catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
+	catch (se::ServerException &e) {
 		throw e;
 	}
 }
@@ -81,7 +92,7 @@ int main(int ac, char **av)
 		host = parse_info(ac, av, port, pass);
 		server_loop(port, pass, host);
 	}
-	catch (std::exception &e) {
+	catch (se::ServerException &e) {
 		std::cout << e.what() << std::endl;
 		return (1);
 	}

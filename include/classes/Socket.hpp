@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <string.h>
 #include "ft_irc.hpp"
+#include "server_except.hpp"
 
 class Socket
 {
@@ -23,6 +24,7 @@ class Socket
 		~Socket();
 
 		const int &		getSocket() const;
+		sockaddr_in		getInfo() const;
 		bool			Bind();
 		bool			Connect();
 		bool			Listen();
@@ -31,29 +33,7 @@ class Socket
 		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
 		std::string		Receive();
 
-		struct InvalidAccept : public std::exception {
-			char const *what() const throw() {
-				return ("Error accepting new connection");
-			}
-		};
-
-		struct InvalidBind : public std::exception {
-			char const *what() const throw() {
-				return ("Error binding new socket");
-			}
-		};
-
-		struct SocketFailed : public std::exception {
-			char const *what() const throw() {
-				return ("Error creating new socket");
-			}
-		};
-
-		struct SelectionError : public std::exception {
-			char const *what() const throw() {
-				return ("Error selecting incoming request");
-			}
-		};
+		
 
 		bool	operator==(Socket const& x) {
 			return (x.socketfd == this->socketfd);

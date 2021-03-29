@@ -5,7 +5,7 @@ Socket::Socket(int port, std::string , std::string IP)
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (!this->socketfd)
-		throw SocketFailed();
+		throw se::SocketFailed();
 	addr_info.sin_family = AF_INET;
 	addr_info.sin_port = htons(port);
 	addr_info.sin_addr.s_addr = inet_addr(IP.c_str());
@@ -13,7 +13,7 @@ Socket::Socket(int port, std::string , std::string IP)
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 	this->addr_len = sizeof(this->addr_info);
 	if (this->Bind())
-		throw Socket::InvalidBind();
+		throw se::InvalidBind();
 }
 
 Socket::Socket(host_info &host)
@@ -24,7 +24,7 @@ Socket::Socket(host_info &host)
 	std::cout << "Addrsss : " << inet_ntoa(addr_info.sin_addr) << std::endl;
 	std::cout << "Port : " << ntohs(addr_info.sin_port) << std::endl;
 	if (!this->socketfd)
-		throw SocketFailed();
+		throw se::SocketFailed();
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 	this->addr_len = sizeof(this->addr_info);
@@ -70,7 +70,7 @@ bool	Socket::Bind()
 	ret = bind(this->socketfd, reinterpret_cast<struct sockaddr*>(&this->addr_info), addr_len);
 	error = errno;
 	if (ret) {
-		std::cout << "Something went wrong at binding phase for socket : " << this->socketfd;
+		std::cout << "Something went wrong at binding phase for socket : " << this->socketfd << std::endl;
 		std::cout << strerror(error) << std::endl;
 	}
 	return (static_cast<bool>(ret));
@@ -85,10 +85,11 @@ bool	Socket::Connect()
 	ret = connect(this->socketfd, reinterpret_cast<struct sockaddr*>(&this->addr_info), addr_len);
 	error = errno;
 	if (ret) {
-		std::cout << "Something went wrong at binding phase for socket : " << this->socketfd;
+		std::cout << "Something went wrong at connection phase for socket : " << this->socketfd << std::endl;
 		std::cout << strerror(error) << std::endl;
 	}
-	std::cout << this->Receive() << std::endl;
+	this->Send();
+	// std::cout << this->Receive() << std::endl;
 	return (static_cast<bool>(ret));
 }
 
@@ -110,7 +111,7 @@ Socket	*Socket::Accept()
 	new_fd = accept(this->socketfd, reinterpret_cast<struct sockaddr*>(&tmp_addr_info),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
 	if (new_fd < 0)
-		throw Socket::InvalidAccept();
+		throw se::InvalidAccept();
 	std::cout << "New clients detected : " << inet_ntoa(tmp_addr_info.sin_addr);
 	std::cout << " port : " << ntohs(tmp_addr_info.sin_port) << std::endl;
 	return (new Socket(new_fd, tmp_addr_info, tmp_addr_len));
@@ -140,6 +141,15 @@ std::string Socket::Receive()
 std::string		Socket::IP() const
 {
 	return (inet_ntoa(this->addr_info.sin_addr));
+}
+
+sockaddr_in	Socket::getInfo() const {
+	// host_info info;
+
+	// info.host = this->addr_info;
+	// info.pass = "";
+	// return (info);
+	return this->addr_info;
 }
 
 // }

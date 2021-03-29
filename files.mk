@@ -8,8 +8,11 @@ Socket \
 
 INTERFACES= 
 
+
 TEMPLATES= 
+
 
 HEADERS= tokens.hpp \
 ft_irc.hpp \
+server_except.hpp \
 

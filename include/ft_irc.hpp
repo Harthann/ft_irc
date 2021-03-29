@@ -29,6 +29,7 @@
 # define nullptr 0
 #endif
 
+
 struct WrongArgumentNumber : public std::exception
 {
 	const char	*what() const throw() {
@@ -48,6 +49,7 @@ struct host_info
 	struct sockaddr_in	host;
 	std::string			pass;
 };
+
 
 host_info	parse_info(int ac, char **av, int &port, std::string &pass);
 

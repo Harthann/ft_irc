@@ -12,6 +12,7 @@ Server::Server(int const &master_port, std::string pass)
 	FD_ZERO(&this->readfds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 
+	std::cout << "Master pointer adress : " <<  this->master << std::endl;
 }
 
 Server::Server(Server const &x)
@@ -42,7 +43,10 @@ void	Server::setHost(host_info &host)
 		this->host = new Socket(host);
 		std::cout << "Host socket adress is : " << this->host << std::endl;
 		this->proxy = 1;
-		this->host->Connect();
+		if (this->host->Connect())
+			throw se::ConnectionFailed(this->host->getInfo());
+		// this->host->Send("SERV server");
+		// this->host->Send("SERVER chat.freenode.net :ftirc.test.42 Experimental server");
 	} catch (std::exception &e)
 	{
 		std::cout << e.what() << std::endl;
@@ -56,7 +60,7 @@ Socket *Server::Select()
 
 	activity = select(this->max_fd + 1, &this->readfds, NULL, NULL, NULL);
 	if (activity < 0)
-		throw Socket::SelectionError();
+		throw se::SelectFailed();
 	for (size_t i = 0; i < users.size(); ++i) {
 		if (FD_ISSET(this->users[i]->getSocket(), &this->readfds)) {
 			std::cout << "Activity detected on client socket : " << users[i]->getSocket() << "\n";
@@ -72,7 +76,7 @@ Socket *Server::Select()
 void	Server::add(Socket *x)
 {
 	std::string datas;
-	std::string send_back("001 RPL_WELCOME Welcome to the chat <user42>!<user42>@localhost\r\n");
+	std::string send_back("001 RPL_WELCOME \"Welcome to the chat <user42>!<user42>@localhost\"\r\n");
 
 	users.push_back(x);
 	if (x->getSocket() > max_fd)
@@ -87,6 +91,8 @@ void	Server::remove(Socket *x)
 	struct sockaddr_in	tmp_addr_info;
 	int					tmp_addr_len;
 
+	if (x == this->host)
+		throw se::LostConnection(this->host->getInfo());
 	getpeername(x->getSocket(), reinterpret_cast<struct sockaddr*>(&tmp_addr_info),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
 	std::cout << "User left : " << inet_ntoa(tmp_addr_info.sin_addr);
