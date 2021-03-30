@@ -88,7 +88,7 @@ bool	Socket::Connect()
 		std::cout << "Something went wrong at connection phase for socket : " << this->socketfd << std::endl;
 		std::cout << strerror(error) << std::endl;
 	}
-	this->Send();
+	// this->Send();
 	// std::cout << this->Receive() << std::endl;
 	return (static_cast<bool>(ret));
 }
@@ -130,12 +130,19 @@ void	Socket::Send(std::string message)
 
 std::string Socket::Receive()
 {
-	char	buffer[1024];
-	int		readed;
+	std::string	ret;
+	char		buffer[513];
+	int			readed;
 
-	readed = read(this->socketfd, buffer, 1023);
-	buffer[readed] = '\0';
-	return (buffer);
+	do {
+		readed = read(this->socketfd, buffer, 512);
+		if (readed > 0)
+			buffer[readed] = '\0';
+		else
+			return ("");
+		ret += buffer;
+	} while (readed && *(ret.end() - 1) != '\n' && *(ret.end() - 2) != '\r');
+	return (ret);
 }
 
 std::string		Socket::IP() const
@@ -144,12 +151,11 @@ std::string		Socket::IP() const
 }
 
 sockaddr_in	Socket::getInfo() const {
-	// host_info info;
-
-	// info.host = this->addr_info;
-	// info.pass = "";
-	// return (info);
 	return this->addr_info;
 }
+
+/*
+/join channelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelooochannelllllllkllkkkchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchan
+*/
 
 // }

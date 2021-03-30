@@ -8,6 +8,7 @@
 #include "server_except.hpp"
 
 //  irc.rizon.no
+//	chat.freeenode.net
 
 class Server
 {
@@ -38,16 +39,16 @@ class Server
 			return nullptr;
 		};
 
-
 	protected:
-		std::vector<Socket*>	users;
 		Socket					*master;
+		std::vector<Socket*>	users;
 		Socket					*host;
-		std::string				server_password;
+		std::vector<Socket*>	servers;
 		
 		fd_set					readfds;
 		int						max_fd;
 		
+		std::string				server_password;
 		bool					state;
 		bool					proxy;
 };

@@ -45,8 +45,7 @@ void	Server::setHost(host_info &host)
 		this->proxy = 1;
 		if (this->host->Connect())
 			throw se::ConnectionFailed(this->host->getInfo());
-		// this->host->Send("SERV server");
-		// this->host->Send("SERVER chat.freenode.net :ftirc.test.42 Experimental server");
+		// this->host->Send("SERVER chat.freenode.net 1 :ftirc.test.42 Experimental server\r\n");
 	} catch (std::exception &e)
 	{
 		std::cout << e.what() << std::endl;
@@ -66,6 +65,7 @@ Socket *Server::Select()
 			std::cout << "Activity detected on client socket : " << users[i]->getSocket() << "\n";
 			return this->users[i];
 		}
+
 	}
 	if (this->host && FD_ISSET(this->host->getSocket(), &this->readfds))
 		return (this->host);
@@ -76,13 +76,10 @@ Socket *Server::Select()
 void	Server::add(Socket *x)
 {
 	std::string datas;
-	std::string send_back("001 RPL_WELCOME \"Welcome to the chat <user42>!<user42>@localhost\"\r\n");
 
 	users.push_back(x);
 	if (x->getSocket() > max_fd)
 		max_fd = x->getSocket();
-	x->Send(send_back.c_str());
-	std::cout << datas << std::endl;
 	FD_SET(x->getSocket(), &this->readfds);
 }
 

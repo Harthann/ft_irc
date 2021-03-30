@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include "Server.hpp"
 #include "Commands.hpp"
+#include <fstream>
 
 #include <limits.h>
 #include <float.h>
@@ -29,31 +30,32 @@ void	exit_server(std::string &, Socket *, Server &server)
 	server.Stop();
 }
 
-void	command_dispatcher(std::string &datas, Socket *client, Server &server)
+void	redirect_datas(std::string &datas, Socket *client, Server &server)
+{
+	if (server.IsHost(client) && server[0]) {
+		server[0]->Send(datas);
+	} else
+		server[-1]->Send(datas);
+}
+
+void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::fstream& log_output)
 {
 	static Commands cmd;
 	std::stringstream ss(datas);
 	std::string			buff;
 
-	if (!server.IsHost(client))
-		server[-1]->Send(datas);
-	else if (server[0])
-		server[0]->Send(datas);
-
+	if (server.IsProxy())
+		redirect_datas(datas, client, server);
 	ss >> buff;
 	cmd[buff](datas, client, server);
-	std::cout << datas <<  std::endl;
+	std::cout << "{" << datas << "}" << std::endl;
+	log_output << datas;
 }
-
-#!/usr/bin/expect -f
-spawn ssh -p2522 user42@localhost -t zsh
-expect "assword:"
-send "user42\r"
-interact
-
 
 void	server_loop(int port, std::string password, host_info &host)
 {
+	std::fstream log_output;
+	log_output.open("log_output", std::ios::out);
 	try
 	{
 		Server		server(port, password);
@@ -65,7 +67,6 @@ void	server_loop(int port, std::string password, host_info &host)
 		while (server.IsRunning()) {
 			server.update();
 			curr_client = server.Select();
-			std::cout << "Right after select " << curr_client <<  std::endl;
 			if (server.IsMaster(curr_client))
 				server.add(curr_client->Accept());
 			else {
@@ -73,7 +74,7 @@ void	server_loop(int port, std::string password, host_info &host)
 				if (!datas.length())
 					server.remove(curr_client);
 				else
-					command_dispatcher(datas, curr_client, server);
+					command_dispatcher(datas, curr_client, server, log_output);
 			}
 		}
 	}

@@ -40,6 +40,11 @@ namespace se {
 		InvalidBind(struct sockaddr_in info) : ServerException(info, "Couldn't bind socket to port") {};
 	};
 
+	struct ReadFailed : public se::ServerException {
+		ReadFailed() : ServerException("Error reading socket of :") {};
+		ReadFailed(struct sockaddr_in info) : ServerException(info, "Error reading socket of :") {};
+	};
+	
 	struct SocketFailed : public se::ServerException {
 		SocketFailed() : ServerException("Socket creation failed") {};
 	};

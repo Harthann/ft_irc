@@ -1,0 +1,89 @@
+:tepper.freenode.net NOTICE * :*** Looking up your hostname...
+:tepper.freenode.net NOTICE * :*** Checking Ident
+:tepper.freenode.net NOTICE * :*** Couldn't look up your hostname
+NICK user42
+USER user42 0 * :user42
+:tepper.freenode.net NOTICE * :*** No Ident response
+:tepper.freenode.net 451 * :You have not registered
+:tepper.freenode.net 001 user42 :Welcome to the freenode Internet Relay Chat Network user42
+:tepper.freenode.net 002 user42 :Your host is tepper.freenode.net[192.186.157.43/6667], running version ircd-seven-1.1.9
+:tepper.freenode.net 003 user42 :This server was created Sun Jul 12 2020 at 20:43:15 UTC
+:tepper.freenode.net 004 user42 tepper.freenode.net ircd-seven-1.1.9 DOQRSZaghilopsuwz CFILMPQSbcefgijklmnopqrstuvz bkloveqjfI
+:tepper.freenode.net 005 user42 CHANTYPES=# EXCEPTS INVEX CHANMODES=eIbq,k,flj,CFLMPQScgimnprstuz CHANLIMIT=#:120 PREFIX=(ov)@+ MAXLIST=bqeI:100 MODES=4 NETWORK=freenode STATUSMSG=@+ CALLERID=g CASEMAPPING=rfc1459 :are supported by this server
+:tepper.freenode.net 005 user42 CHARSET=ascii NICKLEN=16 CHANNELLEN=50 TOPICLEN=390 DEAF=D FNC TARGMAX=NAMES:1,LIST:1,KICK:1,WHOIS:1,PRIVMSG:4,NOTICE:4,ACCEPT:,MONITOR: EXTBAN=$,ajrxz CLIENTVER=3.0 ETRACE KNOCK WHOX :are supported by this server
+:tepper.freenode.net 005 user42 CPRIVMSG CNOTICE SAFELIST ELIST=CTU MONITOR=100 :are supported by this server
+:tepper.freenode.net 251 user42 :There are 92 users and 82354 invisible on 33 servers
+:tepper.freenode.net 252 user42 30 :IRC Operators online
+:tepper.freenode.net 253 user42 43 :unknown connection(s)
+:tepper.freenode.net 254 user42 46709 :channels formed
+:tepper.freenode.net 255 user42 :I have 3456 clients and 1 servers
+:tepper.freenode.net 265 user42 3456 3579 :Current local users 3456, max 3579
+:tepper.freenode.net 266 user42 82446 83476 :Current global users 82446, max 83476
+:tepper.freenode.net 250 user42 :Highest connection count: 3580 (3579 clients) (36387 connections received)
+:tepper.freenode.net 375 user42 :- tepper.freenode.net Message of the Day - 
+:tepper.freenode.net 372 user42 :- Welcome to tepper.freenode.net in Buffalo, NY.
+:tepper.freenode.net 372 user42 :- Thanks to http://www.servermania.com/ for sponsoring
+:tepper.freenode.net 372 user42 :- this server!
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- TEPPER, SHERI S. (1929-), an American science fiction,
+:tepper.freenode.net 372 user42 :- horror and mystery novel author, behind more than thirty
+:tepper.freenode.net 372 user42 :- books, many themed unapologetically eco-feminist. Her
+:tepper.freenode.net 372 user42 :- writing career started composing children's stories, but
+:tepper.freenode.net 372 user42 :- moved to adult fiction in 1982. With the 1991 novel
+:tepper.freenode.net 372 user42 :- 'Beauty' she won the Locus award for Best Fantasy Novel.
+:tepper.freenode.net 372 user42 :- Her other well-known works include 'Grass' (1989, nominated
+:tepper.freenode.net 372 user42 :- for Hugo and Locus Awards in 1990) and 'Gate to Women's
+:tepper.freenode.net 372 user42 :- Country' (1988).
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- Welcome to freenode - supporting the free and open source
+:tepper.freenode.net 372 user42 :- software communities since 1998.
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- By connecting to freenode you indicate that you have read and
+:tepper.freenode.net 372 user42 :- accept our policies and guidelines as set out on https://freenode.net
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- In the event that you observe behaviour that contravenes our policies,
+:tepper.freenode.net 372 user42 :- please notify a volunteer staff member via private message, or send us an
+:tepper.freenode.net 372 user42 :- e-mail to complaints@freenode.net -- we will do our best to address the
+:tepper.freenode.net 372 user42 :- situation within a reasonable period of time, and we may request further
+:tepper.freenode.net 372 user42 :- information or, as appropriate, involve other parties such as channel operators 
+:tepper.freenode.net 372 user42 :- Group Contacts representing an on-topic group.
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- freenode runs an open proxy scanner.
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- If you are looking for assistance, you may be able to find a list of 
+:tepper.freenode.net 372 user42 :- volunteer staff on '/stats p' (shows only on-call staff) or by joining 
+:tepper.freenode.net 372 user42 :- #freenode and using the '/who freenode/staff/*' command. You may message
+:tepper.freenode.net 372 user42 :- any of us at any time. Please note that freenode predominantly provides 
+:tepper.freenode.net 372 user42 :- assistance via private message, and while we have a network channel the 
+:tepper.freenode.net 372 user42 :- primary venue for support requests is via private message to a member 
+:tepper.freenode.net 372 user42 :- of the volunteer staff team.
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- From time to time, volunteer staff may send server-wide notices relating to
+:tepper.freenode.net 372 user42 :- the project, or the communities that we host. The majority of such notices
+:tepper.freenode.net 372 user42 :- will be sent as wallops, and you can '/mode <yournick> +w' to ensure that you
+:tepper.freenode.net 372 user42 :- do not miss them. Important messages relating to the freenode project, including
+:tepper.freenode.net 372 user42 :- notices of upcoming maintenance and other scheduled downtime will be issued as
+:tepper.freenode.net 372 user42 :- global notices.
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- Representing an on-topic project? Don't forget to register, more information
+:tepper.freenode.net 372 user42 :- can be found on the https://freenode.net website under "Group Registration".
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- Thank you also to our server sponsors for the sustained support in keeping the
+:tepper.freenode.net 372 user42 :- network going for close to two decades.
+:tepper.freenode.net 372 user42 :-  
+:tepper.freenode.net 372 user42 :- Thank you for using freenode!
+:tepper.freenode.net 376 user42 :End of /MOTD command.
+:user42 MODE user42 :+i
+:freenode-connect!frigg@freenode/utility-bot/frigg NOTICE user42 :Welcome to freenode. To protect the network all new connections will be scanned for vulnerabilities. This will not harm your computer, and vulnerable hosts will be notified.
+:freenode-connect!frigg@freenode/utility-bot/frigg PRIVMSG user42 :VERSION
+NOTICE freenode-connect :VERSION WeeChat 1.9.1 (Mar  1 2018)
+PING 127.0.0.1
+:tepper.freenode.net PONG tepper.freenode.net :127.0.0.1
+PING 127.0.0.1
+:tepper.freenode.net PONG tepper.freenode.net :127.0.0.1
+PING 127.0.0.1
+:tepper.freenode.net PONG tepper.freenode.net :127.0.0.1
+QUIT :WeeChat 1.9.1
+:user42!~user42@62.210.33.219 QUIT :Client Quit
+ERROR :Closing Link: 62.210.33.219 (Client Quit)

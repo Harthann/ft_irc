@@ -13,6 +13,7 @@
 #include <string.h>
 #include "ft_irc.hpp"
 #include "server_except.hpp"
+#include <iterator>
 
 class Socket
 {
