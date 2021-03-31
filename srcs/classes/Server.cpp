@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 Server::Server(int const &master_port, std::string pass)
-: users(), host(nullptr), server_password(pass), state(1), proxy(0)
+: clients(), host(nullptr), server_password(pass), state(1), proxy(0)
 {
 	std::cout << "Constructing Server on port : " << master_port << "\n";
 	this->master = new Socket(master_port);
@@ -18,34 +18,37 @@ Server::Server(int const &master_port, std::string pass)
 Server::Server(Server const &x)
 {
 	this->readfds = x.readfds;
-	this->users = x.users;
+	this->clients = x.clients;
 	this->max_fd = x.max_fd;
 }
 
 Server	&Server::operator=(Server const &x)
 {
 	this->readfds = x.readfds;
-	this->users = x.users;
+	this->clients = x.clients;
 	this->max_fd = x.max_fd;
 	return (*this);
 }
 
 Server::~Server()
 {
-	for (std::vector<Socket*>::iterator it = users.begin(); it != users.end(); ++it)
-		delete *it;
+	for (client_it it = clients.begin(); it != clients.end(); ++it)
+		delete (*it).first;
 	delete master;
 }
 
 void	Server::setHost(host_info &host)
 {
 	try {
+		std::string ret("SERVER ftirc.test.42 1 :");
 		this->host = new Socket(host);
 		std::cout << "Host socket adress is : " << this->host << std::endl;
 		this->proxy = 1;
 		if (this->host->Connect())
 			throw se::ConnectionFailed(this->host->getInfo());
-		// this->host->Send("SERVER chat.freenode.net 1 :ftirc.test.42 Experimental server\r\n");
+		ret.append(this->host->getHostName());
+		ret.append("  Experimental server\r\n");
+		this->host->Send(ret);
 	} catch (std::exception &e)
 	{
 		std::cout << e.what() << std::endl;
@@ -60,10 +63,10 @@ Socket *Server::Select()
 	activity = select(this->max_fd + 1, &this->readfds, NULL, NULL, NULL);
 	if (activity < 0)
 		throw se::SelectFailed();
-	for (size_t i = 0; i < users.size(); ++i) {
-		if (FD_ISSET(this->users[i]->getSocket(), &this->readfds)) {
-			std::cout << "Activity detected on client socket : " << users[i]->getSocket() << "\n";
-			return this->users[i];
+	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
+		if (FD_ISSET((*it).first->getSocket(), &this->readfds)) {
+			std::cout << "Activity detected on client socket : " << (*it).first->getSocket() << "\n";
+			return (*it).first;
 		}
 
 	}
@@ -77,7 +80,7 @@ void	Server::add(Socket *x)
 {
 	std::string datas;
 
-	users.push_back(x);
+	clients[x] = 0;
 	if (x->getSocket() > max_fd)
 		max_fd = x->getSocket();
 	FD_SET(x->getSocket(), &this->readfds);
@@ -95,18 +98,18 @@ void	Server::remove(Socket *x)
 	std::cout << "User left : " << inet_ntoa(tmp_addr_info.sin_addr);
 	std::cout << " : " << ntohs(tmp_addr_info.sin_port) << std::endl;
 	FD_CLR(x->getSocket(), &this->readfds);
-	for (std::vector<Socket*>::iterator it = users.begin(); it != users.end(); ++it)
-		if (*it == x)
+	for (client_it it = clients.begin(); it != clients.end(); ++it)
+		if ((*it).first == x)
 		{
-			std::cout << "Closing connection on socket : " << (*it)->getSocket() << std::endl;
-			delete (*it);
-			users.erase(it);
+			std::cout << "Closing connection on socket : " << (*it).first->getSocket() << std::endl;
+			delete (*it).first;
+			clients.erase(it);
 			break ;
 		}
 	this->max_fd = master->getSocket();
-	for (std::vector<Socket*>::iterator it = users.begin(); it != users.end(); ++it)
-		if ((*it)->getSocket() > this->max_fd)
-			this->max_fd = (*it)->getSocket();
+	for (client_it it = clients.begin(); it != clients.end(); ++it)
+		if ((*it).first->getSocket() > this->max_fd)
+			this->max_fd = (*it).first->getSocket();
 }
 
 void	Server::update()
@@ -118,16 +121,23 @@ void	Server::update()
 		FD_SET(this->host->getSocket(), &this->readfds);
 		max_fd = std::max(max_fd, this->host->getSocket());
 	}
-	for (std::vector<Socket*>::iterator it = users.begin(); it != users.end(); ++it) {
-		if ((*it)->getSocket() > 0)
-			FD_SET((*it)->getSocket(), &this->readfds);
+	for (client_it it = clients.begin(); it != clients.end(); ++it) {
+		if ((*it).first->getSocket() > 0)
+			FD_SET((*it).first->getSocket(), &this->readfds);
 		else {
-			delete *it;
-			it = users.erase(it);
+			delete (*it).first;
+			clients.erase(it);
 		}
-		if ((*it)->getSocket() > max_fd)
-			max_fd = (*it)->getSocket();
+		if ((*it).first->getSocket() > max_fd)
+			max_fd = (*it).first->getSocket();
 	}
+}
+
+char	&Server::setClientType(Socket *x)
+{
+	if (this->clients.find(x) == this->clients.end())
+		throw "Socket not found";
+	return (*this->clients.find(x)).second;
 }
 
 std::string		Server::IP() const

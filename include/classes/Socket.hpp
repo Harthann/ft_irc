@@ -30,6 +30,7 @@ class Socket
 		bool			Connect();
 		bool			Listen();
 		std::string		IP() const;
+		std::string		getHostName() const;
 		Socket			*Accept();
 		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
 		std::string		Receive();

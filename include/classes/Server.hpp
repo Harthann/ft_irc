@@ -4,6 +4,7 @@
 #include "Socket.hpp"
 #include "ft_irc.hpp"
 #include <vector>
+#include <map>
 #include <sys/time.h>
 #include "server_except.hpp"
 
@@ -31,19 +32,16 @@ class Server
 		bool	IsRunning() const;
 		bool	IsProxy() const;
 
-		Socket *operator[](int i) {
-			if (i == -1)
-				return (host);
-			if (!users.empty())
-				return users[i];
-			return nullptr;
-		};
+		char	&setClientType(Socket *);
+
+		typedef std::map<Socket*, char>::iterator		client_it;
+		typedef std::map<Socket*, char>::const_iterator	const_client_it;
 
 	protected:
 		Socket					*master;
-		std::vector<Socket*>	users;
+		std::map<Socket*, char>	clients;
+		// std::vector<Socket*>	clients;
 		Socket					*host;
-		std::vector<Socket*>	servers;
 		
 		fd_set					readfds;
 		int						max_fd;

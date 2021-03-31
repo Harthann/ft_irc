@@ -10,6 +10,7 @@
 void	not_implemented(std::string &, Socket *, Server&);
 void	pong_response(std::string &, Socket *, Server&);
 void	exit_server(std::string &, Socket *, Server&);
+void	add_server_proxy(std::string &, Socket *, Server&);
 
 
 class Commands

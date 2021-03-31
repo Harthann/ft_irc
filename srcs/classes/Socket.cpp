@@ -88,8 +88,6 @@ bool	Socket::Connect()
 		std::cout << "Something went wrong at connection phase for socket : " << this->socketfd << std::endl;
 		std::cout << strerror(error) << std::endl;
 	}
-	// this->Send();
-	// std::cout << this->Receive() << std::endl;
 	return (static_cast<bool>(ret));
 }
 
@@ -105,8 +103,8 @@ bool	Socket::Listen() {
 Socket	*Socket::Accept()
 {
 	int					new_fd;
-	struct sockaddr_in	tmp_addr_info;
-	int					tmp_addr_len;
+	struct sockaddr_in	tmp_addr_info = {0};
+	int					tmp_addr_len = {0};
 
 	new_fd = accept(this->socketfd, reinterpret_cast<struct sockaddr*>(&tmp_addr_info),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
@@ -152,6 +150,20 @@ std::string		Socket::IP() const
 
 sockaddr_in	Socket::getInfo() const {
 	return this->addr_info;
+}
+
+std::string	Socket::getHostName() const
+{
+	return ("");
+	// struct hostent *tmp;
+	// char buff[256];
+	
+	// // getnameinfo(reinterpret_cast<const sockaddr *>(&this->addr_info), sizeof(this->addr_info), buff, 256, NULL, 0, 0);
+	// // return (buff);
+	// tmp = gethostbyaddr(reinterpret_cast<const struct in_addr*>(&this->addr_info), sizeof(struct in_addr), AF_INET);
+	// if (!tmp)
+	// 	return ("");
+	// return tmp->h_name;
 }
 
 /*

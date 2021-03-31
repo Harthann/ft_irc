@@ -30,13 +30,18 @@ void	exit_server(std::string &, Socket *, Server &server)
 	server.Stop();
 }
 
-void	redirect_datas(std::string &datas, Socket *client, Server &server)
+void	add_server_proxy(std::string &datas, Socket *client, Server &server)
 {
-	if (server.IsHost(client) && server[0]) {
-		server[0]->Send(datas);
-	} else
-		server[-1]->Send(datas);
+	server.setClientType(client) = 's';
 }
+
+// void	redirect_datas(std::string &datas, Socket *client, Server &server)
+// {
+// 	if (server.IsHost(client) && server[0]) {
+// 		server[0]->Send(datas);
+// 	} else
+// 		server[-1]->Send(datas);
+// }
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::fstream& log_output)
 {
@@ -44,8 +49,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	std::stringstream ss(datas);
 	std::string			buff;
 
-	if (server.IsProxy())
-		redirect_datas(datas, client, server);
+	// if (server.IsProxy())
+	// 	redirect_datas(datas, client, server);
 	ss >> buff;
 	cmd[buff](datas, client, server);
 	std::cout << "{" << datas << "}" << std::endl;
