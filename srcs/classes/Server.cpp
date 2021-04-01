@@ -60,15 +60,20 @@ Socket *Server::Select()
 {
 	int activity;
 
-	activity = select(this->max_fd + 1, &this->readfds, NULL, NULL, NULL);
+	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, NULL);
 	if (activity < 0)
 		throw se::SelectFailed();
 	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
 		if (FD_ISSET((*it).first->getSocket(), &this->readfds)) {
-			std::cout << "Activity detected on client socket : " << (*it).first->getSocket() << "\n";
+			std::cout << "Activity detected on client socket : " << (*it).first->getSocket() << " for reading\n";
 			return (*it).first;
 		}
-
+	}
+	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
+		if (FD_ISSET((*it).first->getSocket(), &this->writefds)) {
+			// std::cout << "Activity detected on client socket : " << (*it).first->getSocket() << " for writing\n";
+			return (*it).first;
+		}
 	}
 	if (this->host && FD_ISSET(this->host->getSocket(), &this->readfds))
 		return (this->host);
@@ -115,15 +120,19 @@ void	Server::remove(Socket *x)
 void	Server::update()
 {
 	FD_ZERO(&this->readfds);
+	FD_ZERO(&this->writefds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 	max_fd = this->master->getSocket();
 	if (this->host) {
 		FD_SET(this->host->getSocket(), &this->readfds);
+		FD_SET(this->host->getSocket(), &this->writefds);
 		max_fd = std::max(max_fd, this->host->getSocket());
 	}
 	for (client_it it = clients.begin(); it != clients.end(); ++it) {
-		if ((*it).first->getSocket() > 0)
+		if ((*it).first->getSocket() > 0) {
 			FD_SET((*it).first->getSocket(), &this->readfds);
+			FD_SET((*it).first->getSocket(), &this->writefds);
+		}
 		else {
 			delete (*it).first;
 			clients.erase(it);
@@ -168,4 +177,14 @@ bool		Server::IsProxy() const
 bool		Server::IsHost(Socket *x) const
 {
 	return x == this->host;
+}
+
+bool		Server::readable(Socket *x) const
+{
+	return FD_ISSET(x->getSocket(), &this->readfds);
+}
+
+bool		Server::writeable(Socket *x) const
+{
+	return FD_ISSET(x->getSocket(), &this->writefds);
 }

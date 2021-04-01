@@ -9,6 +9,7 @@ Commands::Commands()
 	}
 	list["PING"]  = &pong_response;
 	list["DIE"]  = &exit_server;
+	list["NOTICE"]  = &notice_command;
 }
 
 Commands::Commands(Commands const &)

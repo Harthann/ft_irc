@@ -46,7 +46,6 @@ host_info	parse_info(int ac, char **av, int &port, std::string &pass)
 
 	if (ac < 2 || ac > 3)
 		throw WrongArgumentNumber();
-
 	for (int i = 1; i < ac; ++i)
 		params.push_back(av[i]);
 	if (params[0].find('.') != std::string::npos || params[0].find(':') != std::string::npos) {

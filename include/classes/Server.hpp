@@ -31,6 +31,8 @@ class Server
 		bool	IsHost(Socket *) const;
 		bool	IsRunning() const;
 		bool	IsProxy() const;
+		bool	readable(Socket *x) const;
+		bool	writeable(Socket *x) const;
 
 		char	&setClientType(Socket *);
 
@@ -46,6 +48,8 @@ class Server
 		fd_set					readfds;
 		int						max_fd;
 		
+		fd_set					writefds;
+
 		std::string				server_password;
 		bool					state;
 		bool					proxy;

@@ -16,13 +16,17 @@
 void	not_implemented(std::string &, Socket *, Server&)
 {
 	std::cout << "This command isn't implemented yet" << std::endl;
-	// client->Send("NOTICE es Commands not allowed\r\n");
 }
 
 void	pong_response(std::string &, Socket *client, Server &server)
 {
 	client->Send("PONG " + server.IP() + "\r\n");
 	std::cout << "PONG RESPONS SEND" << std::endl;
+}
+
+void	notice_command(std::string &datas, Socket *, Server &server)
+{
+	std::cout << datas;
 }
 
 void	exit_server(std::string &, Socket *, Server &server)
@@ -43,24 +47,27 @@ void	add_server_proxy(std::string &datas, Socket *client, Server &server)
 // 		server[-1]->Send(datas);
 // }
 
-void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::fstream& log_output)
+void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::fstream& irc_log)
 {
-	static Commands cmd;
-	std::stringstream ss(datas);
+	// static Commands cmd;
 	std::string			buff;
+	std::vector<std::string>	cmd;
 
+	cmd = utils::split_params(datas);
+	for (std::vector<std::string>::iterator it = cmd.begin(); it != cmd.end(); ++it)
+		std::cout << *it << std::endl;
 	// if (server.IsProxy())
 	// 	redirect_datas(datas, client, server);
-	ss >> buff;
-	cmd[buff](datas, client, server);
-	std::cout << "{" << datas << "}" << std::endl;
-	log_output << datas;
+
+	// cmd[buff](datas, client, server);
+	// irc_log << datas;
+	// std::cout << "{" << datas << "}" << std::endl;
 }
 
 void	server_loop(int port, std::string password, host_info &host)
 {
-	std::fstream log_output;
-	log_output.open("log_output", std::ios::out);
+	std::fstream irc_log;
+	irc_log.open("irc_log", std::ios::out);
 	try
 	{
 		Server		server(port, password);
@@ -74,12 +81,12 @@ void	server_loop(int port, std::string password, host_info &host)
 			curr_client = server.Select();
 			if (server.IsMaster(curr_client))
 				server.add(curr_client->Accept());
-			else {
+			else if (server.readable(curr_client)) {
 				datas = curr_client->Receive();
 				if (!datas.length())
 					server.remove(curr_client);
 				else
-					command_dispatcher(datas, curr_client, server, log_output);
+					command_dispatcher(datas, curr_client, server, irc_log);
 			}
 		}
 	}

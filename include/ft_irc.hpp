@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <ctime>
 
 #include <sys/time.h>
 // IO header
@@ -51,7 +52,11 @@ struct host_info
 };
 
 
-host_info	parse_info(int ac, char **av, int &port, std::string &pass);
+host_info					parse_info(int ac, char **av, int &port, std::string &pass);
+namespace utils {
+	std::vector<std::string>	split_params(std::string &datas);
+
+}
 
 
 #endif
