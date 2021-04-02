@@ -4,11 +4,11 @@ NICK user42
 Activity detected on client socket : 6 for reading
 USER user42 0 * :user42
 Activity detected on client socket : 6 for reading
-:ircnet.clue.be 020 * :Please wait while we process your connection.
+:orwell.freenode.net NOTICE * :*** Looking up your hostname...
 Activity detected on master socket : 4
 Activity detected on client socket : 6 for reading
 NICK user42
 Activity detected on client socket : 6 for reading
 USER user42 0 * :user42
 Activity detected on client socket : 6 for reading
-ERROR :Closing Link: [unknown@62.210.33.19] (Ping timeout)
+:orwell.freenode.net NOTICE * :*** No Ident response

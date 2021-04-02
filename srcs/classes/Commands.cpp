@@ -1,15 +1,30 @@
 #include "Commands.hpp"
 
 
-Commands::Commands()
+Commands::Commands(std::string &datas)
+: valid(true)
 {
-	for (int i = 0; i < 59; ++i)
-	{
-		list[tokens[i]] = &not_implemented;
-	}
-	list["PING"]  = &pong_response;
-	list["DIE"]  = &exit_server;
-	list["NOTICE"]  = &notice_command;
+	size_t						tmp = 0;
+	size_t						tmp2 = 0;
+	int							length;
+
+	if (datas.find("\r\n", 0) != std::string::npos)
+		datas.erase(datas.find("\r\n", 2));
+	else
+		this->valid = false;
+	do {
+		tmp2 = datas.find(' ', tmp);
+		if (tmp2 == std::string::npos)
+			tmp2 = datas.length();
+		length = tmp2 - tmp;
+		this->cmd.push_back(datas.substr(tmp, length));
+		tmp = tmp2 + 1;
+	} while (tmp2 != datas.length());
+}
+
+Commands::~Commands()
+{
+
 }
 
 Commands::Commands(Commands const &)
@@ -22,15 +37,40 @@ Commands	&Commands::operator=(Commands const &)
 	return (*this);
 }
 
-Commands::~Commands()
+std::string		Commands::as_string()
 {
+	std::string ret;
+	for (std::vector<std::string>::iterator it = this->cmd.begin(); it != this->cmd.end(); ++it) {
+		ret += *it;
+		if (it + 1 != this->cmd.end())
+			ret += " ";
+	}
+	return ret;
+}
 
+void	Commands::add(std::string x)
+{
+	this->cmd.push_back(x);
+}
+
+std::string		Commands::from()
+{
+	if (this->cmd[0].find(':') == 0)
+		return (this->cmd[0]);
+	return ("");
+}
+
+std::string		Commands::name()
+{
+	if (this->cmd[0].find(':') == 0)
+		return (this->cmd[1]);
+	return (this->cmd[0]);
 }
 
 
-Commands::fcntl Commands::operator[](std::string &key)
+std::string	&Commands::operator[](int i)
 {
-	if (list.find(key) == list.end())
-		return (list["WRONGCMD"]);
-	return (list[key]);
+	if (i < this->cmd.size())
+		return this->cmd[i];
+	throw Commands::out_of_range();
 }

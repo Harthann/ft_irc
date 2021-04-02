@@ -1,8 +1,8 @@
-SRC_FILE= utils.cpp \
-server_info.cpp \
+SRC_FILE= server_info.cpp \
 main.cpp
 
-CLASSES= Commands \
+CLASSES= Proxy \
+Commands \
 Server \
 Socket \
 

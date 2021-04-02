@@ -2,32 +2,37 @@
 #define COMMANDS_HPP
 
 #include <map>
+#include <exception>
 #include "Socket.hpp"
 #include "Server.hpp"
 #include "tokens.hpp"
 
-
-void	not_implemented(std::string &, Socket *, Server&);
-void	pong_response(std::string &, Socket *, Server&);
-void	exit_server(std::string &, Socket *, Server&);
-void	add_server_proxy(std::string &, Socket *, Server&);
-void	notice_command(std::string &, Socket *, Server&);
-
-
 class Commands
 {
-	typedef void (*fcntl)(std::string &, Socket*, Server&);
 	
 	public:
-		Commands();
+		Commands(std::string &datas);
 		~Commands();
 
-		fcntl	operator[](std::string &);
+		void		add(std::string);
+		std::string as_string();
+		std::string name();
+		std::string from();
+
+		std::string &operator[](int);
+
+
+		struct out_of_range : public std::exception {
+			const char *what() const throw() {
+				return ("access out of range parameter on command line");
+			};
+		};
 	private:
 		Commands(Commands const &);
 		Commands &operator=(Commands const&);
 
-		std::map<std::string, fcntl>	list;
+		std::vector<std::string>	cmd;
+		bool						valid;
 };
 
 #endif

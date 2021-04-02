@@ -32,7 +32,7 @@ static	void	fill_host(std::string &param, struct sockaddr_in &addr, std::string 
 	}
 	else
 	{
-		addr = *reinterpret_cast<struct sockaddr_in*>(list->ai_addr);
+		addr = *reinterpret_cast<struct sockaddr_in*>(list->ai_addr); // to upgrade
 		addr.sin_zero[0] = 'h';
 		freeaddrinfo(list);
 	}
@@ -42,7 +42,6 @@ host_info	parse_info(int ac, char **av, int &port, std::string &pass)
 {
 	host_info					addr;
 	std::vector<std::string>	params;
-
 
 	if (ac < 2 || ac > 3)
 		throw WrongArgumentNumber();

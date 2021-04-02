@@ -103,8 +103,8 @@ bool	Socket::Listen() {
 Socket	*Socket::Accept()
 {
 	int					new_fd;
-	struct sockaddr_in	tmp_addr_info = {0};
-	int					tmp_addr_len = {0};
+	struct sockaddr_in	tmp_addr_info;
+	int					tmp_addr_len;
 
 	new_fd = accept(this->socketfd, reinterpret_cast<struct sockaddr*>(&tmp_addr_info),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
