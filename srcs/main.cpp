@@ -8,6 +8,7 @@
 #include <sys/time.h>
 #include "Server.hpp"
 #include "Commands.hpp"
+#include "Addr.hpp"
 
 #include <limits.h>
 #include <float.h>
@@ -83,7 +84,13 @@ int main(int ac, char **av)
 
 	try {
 		host = parse_info(ac, av, port, pass);
-		server_loop(port, pass, host);
+		std::cout << "Host ip : " << host.host.getIP() << std::endl;
+		std::cout << "Host port : " << host.host.getPort() << std::endl;
+		std::cout << "Host pass : " << host.pass << std::endl;
+		std::cout << "Host status "	<< host.host.sin_zero << std::endl;
+		std::cout << "Server port : " << port << std::endl;
+		std::cout << "Server pass : " << pass << std::endl;
+		// server_loop(port, pass, host);
 	}
 	catch (se::ServerException &e) {
 		std::cout << e.what() << std::endl;

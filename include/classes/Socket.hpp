@@ -14,6 +14,7 @@
 #include "ft_irc.hpp"
 #include "server_except.hpp"
 #include <iterator>
+#include "Addr.hpp"
 
 class Socket
 {
@@ -25,7 +26,7 @@ class Socket
 		~Socket();
 
 		const int &		getSocket() const;
-		sockaddr_in		getInfo() const;
+		Addr		getInfo() const;
 		bool			Bind();
 		bool			Connect();
 		bool			Listen();
@@ -46,10 +47,9 @@ class Socket
 		};
 
 	protected:
-		Socket(int fd, struct sockaddr_in addr, int addr_l);
+		Socket(int fd, Addr addr, int addr_l);
 
-		struct sockaddr_in	addr_info;
-		int					addr_len;
+		Addr				addr;
 		int					socketfd;
 };
 

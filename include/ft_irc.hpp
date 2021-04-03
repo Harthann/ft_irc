@@ -30,24 +30,27 @@
 # define nullptr 0
 #endif
 
+#include "Addr.hpp"
+#include "server_except.hpp"
 
-struct WrongArgumentNumber : public std::exception
+struct WrongArgumentNumber : public se::ServerException
 {
-	const char	*what() const throw() {
-		return ("Wrong argument number");
-	};
+	WrongArgumentNumber() : ServerException("Wrong argument number") {};
 };
 
-struct WrongHostFormat : public std::exception
+struct WrongHostFormat : public se::ServerException
 {
-	const char	*what() const throw() {
-		return ("Wrong host format");
-	};
+	WrongHostFormat() : ServerException("Wrong host format") {};
+};
+
+struct WrongPortFormat : public se::ServerException
+{
+	WrongPortFormat() : ServerException("Wrong Port format") {};
 };
 
 struct host_info
 {
-	struct sockaddr_in	host;
+	Addr	host;
 	std::string			pass;
 };
 

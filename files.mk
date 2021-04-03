@@ -1,7 +1,8 @@
 SRC_FILE= server_info.cpp \
 main.cpp
 
-CLASSES= Proxy \
+CLASSES= Addr \
+Proxy \
 Commands \
 Server \
 Socket \
