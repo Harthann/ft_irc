@@ -1,7 +1,6 @@
 #ifndef ADDR_HPP
 #define ADDR_HPP
 
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/select.h>
@@ -35,9 +34,8 @@ class Addr : public sockaddr_in
 		int		addrlen() const;
 
 		struct sockaddr*	as_sockaddr();
+		struct sockaddr_in*	as_sockaddr_in();
 		~Addr();
-	protected:
-	private:
 };
 
 #endif

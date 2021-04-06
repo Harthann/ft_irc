@@ -14,8 +14,13 @@ Addr::Addr(const char *ip, int port, int type)
 	this->sin_family = type;
 }
 
-Addr::Addr(Addr const &)
+Addr::Addr(Addr const &x)
 {
+	this->sin_addr = x.sin_addr;
+	this->sin_family = x.sin_family;
+	this->sin_port = x.sin_port;
+	for (int i = 0; i < 8; ++i)
+		this->sin_zero[i] = x.sin_zero[i];
 }
 
 Addr	&Addr::operator=(Addr const &x)
@@ -71,4 +76,9 @@ int		Addr::addrlen() const
 sockaddr	*Addr::as_sockaddr()
 {
 	return (reinterpret_cast<struct sockaddr*>(this));
+}
+
+sockaddr_in	*Addr::as_sockaddr_in()
+{
+	return (reinterpret_cast<struct sockaddr_in*>(this));
 }

@@ -56,10 +56,6 @@ struct host_info
 
 
 host_info					parse_info(int ac, char **av, int &port, std::string &pass);
-namespace utils {
-	std::vector<std::string>	split_params(std::string &datas);
-	std::string					reunite_params(std::vector<std::string> &params);
-}
 
 
 #endif

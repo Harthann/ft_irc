@@ -19,20 +19,10 @@ void	pong_response(Commands &, Socket *client, Server &server)
 	std::cout << "PONG RESPONS SEND" << std::endl;
 }
 
-// void	notice_command(Commands &datas, Socket *, Server &server)
-// {
-// 	std::cout << datas;
-// }
-
 void	exit_server(Commands &, Socket *, Server &server)
 {
 	server.Stop();
 }
-
-// void	add_server_proxy(Commands &datas, Socket *client, Server &server)
-// {
-// 	server.setClientType(client) = 's';
-// }
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 {
@@ -44,6 +34,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 	std::cout << "Command name : " << cmd.name() << std::endl;
 	if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
+	else if (!cmd.name().compare("SERVER"))
+		server.setProxy(cmd, client);
 	if (server.IsProxy())
 		server.redirect(datas, client);
 }
@@ -84,13 +76,13 @@ int main(int ac, char **av)
 
 	try {
 		host = parse_info(ac, av, port, pass);
-		std::cout << "Host ip : " << host.host.getIP() << std::endl;
-		std::cout << "Host port : " << host.host.getPort() << std::endl;
-		std::cout << "Host pass : " << host.pass << std::endl;
-		std::cout << "Host status "	<< host.host.sin_zero << std::endl;
-		std::cout << "Server port : " << port << std::endl;
-		std::cout << "Server pass : " << pass << std::endl;
-		// server_loop(port, pass, host);
+		// std::cout << "Host ip : " << host.host.getIP() << std::endl;
+		// std::cout << "Host port : " << host.host.getPort() << std::endl;
+		// std::cout << "Host pass : " << host.pass << std::endl;
+		// std::cout << "Host status "	<< host.host.sin_zero << std::endl;
+		// std::cout << "Server port : " << port << std::endl;
+		// std::cout << "Server pass : " << pass << std::endl;
+		server_loop(port, pass, host);
 	}
 	catch (se::ServerException &e) {
 		std::cout << e.what() << std::endl;

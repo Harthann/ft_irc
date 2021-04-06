@@ -3,17 +3,15 @@
 Socket::Socket(int port, std::string , std::string IP)
 : addr()
 {
+	time(&this->timestamp);
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (!this->socketfd)
 		throw se::SocketFailed();
-	// addr_info.sin_family = AF_INET;
 	this->addr.setPort(port);
 	this->addr.setIP(IP.c_str());
-	// addr_info.sin_addr.s_addr = inet_addr(IP.c_str());
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-	// this->addr_len = sizeof(this->addr_info);
 	if (this->Bind())
 		throw se::InvalidBind();
 }
@@ -21,41 +19,33 @@ Socket::Socket(int port, std::string , std::string IP)
 Socket::Socket(host_info &host)
 {
 	const int opt = 1;
+	time(&this->timestamp);
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	// addr_info = host.host;
-	std::cout << "Addrsss : " << this->addr.getIP() << std::endl;
-	std::cout << "Port : " << this->addr.getPort() << std::endl;
 	if (!this->socketfd)
 		throw se::SocketFailed();
+	this->addr = host.host;
+	std::cout << "Addrsss : " << this->addr.getIP() << std::endl;
+	std::cout << "Port : " << this->addr.getPort() << std::endl;
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
-	// this->addr_len = sizeof(this->addr_info);
 }
 
 Socket::Socket(int fd, Addr ad, int length)
 {
 	this->socketfd = fd;
 	this->addr = ad;
-	// this->addr_info = addr;
-	// this->addr_len = addr_l;
 }
 
 Socket::Socket(Socket const &x)
 {
 	this->addr = x.addr;
 	this->socketfd = x.socketfd;
-	// this->addr_info = x.addr_info;
-	// this->socketfd = x.socketfd;
-	// this->addr_len = x.addr_len;
 }
 
 Socket	&Socket::operator=(Socket const &x)
 {
 	this->addr = x.addr;
 	this->socketfd = x.socketfd;
-	// this->addr_info = x.addr_info;
-	// this->addr_len = x.addr_len;
-	// this->socketfd = x.socketfd;
 	return (*this);
 }
 
@@ -171,6 +161,11 @@ std::string	Socket::getHostName() const
 	// if (!tmp)
 	// 	return ("");
 	// return tmp->h_name;
+}
+
+time_t		Socket::getTime() const
+{
+	return (this->timestamp);
 }
 
 /*

@@ -2,15 +2,16 @@
 # define SERVER_EXCEPT_HPP
 
 #include <exception>
-#include "ft_irc.hpp"
+#include "utils.hpp"
 #include <sstream>
+#include "Addr.hpp"
 
 namespace se {
 
 	struct	ServerException {
 
 		ServerException(std::string err = "ServerException") : error(err) {};
-		ServerException(struct sockaddr_in x, std::string err = "ServerException") : info(x), error(err)
+		ServerException(Addr x, std::string err = "ServerException") : info(x), error(err)
 		{
 			error.append("\n");
 			error.append(this->who());
@@ -21,28 +22,30 @@ namespace se {
 			std::string str;
 			std::stringstream str_stream;
 			
-			str_stream << inet_ntoa(info.sin_addr) << ':' << ntohs(info.sin_port);
-			str = str_stream.str();
+			str = info.getIP();
+			str += ':';
+			str += utils::itos(info.getPort());
+			// str = str_stream.str();
 			return (str);
 		};
 
-		struct sockaddr_in	info;
+		Addr	info;
 		std::string	error;
 	};
 
 	struct InvalidAccept : public se::ServerException {
 		InvalidAccept() : ServerException("Couldn't accept connection") {};
-		InvalidAccept(struct sockaddr_in info) : ServerException(info, "Couldn't accept connection") {};
+		InvalidAccept(Addr info) : ServerException(info, "Couldn't accept connection") {};
 	};
 
 	struct InvalidBind : public se::ServerException {
 		InvalidBind() : ServerException("Couldn't bind socket to port") {};
-		InvalidBind(struct sockaddr_in info) : ServerException(info, "Couldn't bind socket to port") {};
+		InvalidBind(Addr info) : ServerException(info, "Couldn't bind socket to port") {};
 	};
 
 	struct ReadFailed : public se::ServerException {
 		ReadFailed() : ServerException("Error reading socket of :") {};
-		ReadFailed(struct sockaddr_in info) : ServerException(info, "Error reading socket of :") {};
+		ReadFailed(Addr info) : ServerException(info, "Error reading socket of :") {};
 	};
 	
 	struct SocketFailed : public se::ServerException {
@@ -51,12 +54,12 @@ namespace se {
 
 	struct ConnectionFailed : public se::ServerException {
 		ConnectionFailed() : ServerException("Failed to connect to distant host") {};
-		ConnectionFailed(struct sockaddr_in info) : ServerException(info, "Failed to connect to distant host") {};
+		ConnectionFailed(Addr info) : ServerException(info, "Failed to connect to distant host") {};
 	};
 	
 	struct LostConnection : public se::ServerException {
 		LostConnection() : ServerException("Lost connection to distant host") {};
-		LostConnection(struct sockaddr_in info) : ServerException(info, "Lost connection to distant host") {};
+		LostConnection(Addr info) : ServerException(info, "Lost connection to distant host") {};
 	};
 
 	struct SelectFailed : public se::ServerException {

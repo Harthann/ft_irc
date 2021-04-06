@@ -1,4 +1,5 @@
-SRC_FILE= server_info.cpp \
+SRC_FILE= utils.cpp \
+server_info.cpp \
 main.cpp
 
 CLASSES= Addr \
@@ -14,7 +15,8 @@ INTERFACES=
 TEMPLATES= 
 
 
-HEADERS= tokens.hpp \
+HEADERS= utils.hpp \
+tokens.hpp \
 ft_irc.hpp \
 server_except.hpp \
 

@@ -13,7 +13,6 @@ Server::Server(int const &master_port, std::string pass)
 	FD_ZERO(&this->readfds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 
-	// std::cout << "Master pointer adress : " <<  this->master << std::endl;
 }
 
 Server::Server(Server const &x)
@@ -23,18 +22,22 @@ Server::Server(Server const &x)
 	this->max_fd = x.max_fd;
 }
 
-Server	&Server::operator=(Server const &x)
-{
-	this->readfds = x.readfds;
-	this->clients = x.clients;
-	this->max_fd = x.max_fd;
-	return (*this);
-}
+// Server	&Server::operator=(Server const &x)
+// {
+// 	this->readfds = x.readfds;
+// 	this->clients = x.clients;
+// 	this->servers = x.servers;
+// 	this->server_password = x.server_password;
+// 	this->max_fd = x.max_fd;
+// 	return (*this);
+// }
 
 Server::~Server()
 {
 	for (client_it it = clients.begin(); it != clients.end(); ++it)
 		delete (*it);
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
+		delete (*it).getSocketPtr();
 	delete master;
 }
 
@@ -50,12 +53,31 @@ void	Server::setHost(host_info &host)
 		ret.append(this->host->getHostName());
 		ret.append("  Experimental server\r\n");
 		std::cout << ret;
-		// this->host->Send(ret);
-	} catch (std::exception &e)
-	{
+		this->host->Send(ret);
+	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 		throw e;
 	}
+}
+
+void	Server::setProxy(Commands &datas, Socket *client)
+{
+	int		hopcount;
+	std::string name;
+
+	for (Server::proxy_it it = servers.begin(); it != servers.end(); ++it)
+		if ((*it).getSocketPtr() == client)
+			return ;
+	for (Server::client_it it = clients.begin(); it != clients.end(); ++it)
+		if (*it == client) {
+			clients.erase(it);
+			break ;
+		}
+	name = datas.getCmdParam(1);
+	hopcount = utils::stoi(datas.getCmdParam(2));
+	Proxy tmp(client, hopcount, name);
+	this->servers.push_back(tmp);
+	std::cout << "Added server to network" << std::endl;
 }
 
 Socket *Server::Select()
@@ -66,16 +88,20 @@ Socket *Server::Select()
 	if (activity < 0)
 		throw se::SelectFailed();
 	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
-		if (FD_ISSET((*it)->getSocket(), &this->readfds)) {
+		if (this->readable(*it)) {
 			this->irc_log << "Activity detected on client socket : " << (*it)->getSocket() << " for reading\n";
 			return (*it);
 		}
 	}
-	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
-		if (FD_ISSET((*it)->getSocket(), &this->writefds)) {
-			// this->irc_log << "Activity detected on client socket : " << (*it)->getSocket() << " for writing\n";
-			return (*it);
+	for (Server::proxy_it it = this->servers.begin(); it != servers.end(); ++it) {
+		if (this->readable((*it).getSocketPtr())) {
+			this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
+			return ((*it).getSocketPtr());
 		}
+	}
+	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
+		if (this->writeable(*it))
+			return (*it);
 	}
 	if (this->host && FD_ISSET(this->host->getSocket(), &this->readfds))
 		return (this->host);
@@ -120,6 +146,40 @@ void	Server::remove(Socket *x)
 			this->max_fd = (*it)->getSocket();
 }
 
+void	Server::fdSet(clients_vector &clients)
+{
+	for (client_it it = clients.begin(); it != clients.end(); ++it)
+	{
+		if ((*it)->getSocket() > 0 && !timedOut(*it)) {
+			FD_SET((*it)->getSocket(), &this->readfds);
+			FD_SET((*it)->getSocket(), &this->writefds);
+			if ((*it)->getSocket() > max_fd)
+				max_fd = (*it)->getSocket();
+		}
+		else {
+			delete (*it);
+			clients.erase(it);
+		}
+	}
+}
+
+void	Server::fdSet(proxy_vector &proxies)
+{
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
+		if ((*it).getSocket() > 0) {
+			FD_SET((*it).getSocket(), &this->readfds);
+			FD_SET((*it).getSocket(), &this->writefds);
+			if ((*it).getSocket() > max_fd)
+				max_fd = (*it).getSocket();
+		}
+		else {
+			delete ((*it).getSocketPtr());
+			servers.erase(it);
+		}
+	}
+}
+
+
 void	Server::update()
 {
 	FD_ZERO(&this->readfds);
@@ -131,18 +191,15 @@ void	Server::update()
 		FD_SET(this->host->getSocket(), &this->writefds);
 		max_fd = std::max(max_fd, this->host->getSocket());
 	}
-	for (client_it it = clients.begin(); it != clients.end(); ++it) {
-		if ((*it)->getSocket() > 0) {
-			FD_SET((*it)->getSocket(), &this->readfds);
-			FD_SET((*it)->getSocket(), &this->writefds);
-		}
-		else {
-			delete (*it);
-			clients.erase(it);
-		}
-		if ((*it)->getSocket() > max_fd)
-			max_fd = (*it)->getSocket();
-	}
+	fdSet(this->clients);
+	fdSet(this->servers);
+}
+
+bool	Server::timedOut(Socket *x)
+{
+	if (!x)
+		return false;
+	return (difftime(time(NULL), x->getTime()) > TIME_LIMIT);
 }
 
 void	Server::redirect(std::string datas, Socket *client)
@@ -153,13 +210,6 @@ void	Server::redirect(std::string datas, Socket *client)
 	else
 		this->host->Send(datas);
 }
-
-// char	&Server::setClientType(Socket *x)
-// {
-// 	if (this->clients.find(x) == this->clients.end())
-// 		throw "Socket not found";
-// 	return (*this->clients.find(x)).second;
-// }
 
 std::string		Server::IP() const
 {

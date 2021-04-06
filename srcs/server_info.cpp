@@ -35,19 +35,6 @@ static	void	fill_host(std::string &param, Addr &addr, std::string &host_pass)
 	}
 }
 
-int			stoi(std::string &str)
-{
-	int i = 0;
-
-	for (size_t j = 0; str[j]; ++j)
-	{
-		if (str[j] < '0' || str[j] > '9')
-			throw WrongPortFormat();
-		i = i * 10 + str[j] - '0';
-	}
-	return (i);
-}
-
 host_info	parse_info(int ac, char **av, int &port, std::string &pass)
 {
 	host_info					addr;
@@ -64,7 +51,7 @@ host_info	parse_info(int ac, char **av, int &port, std::string &pass)
 		} catch (std::exception &e) { throw e; }
 	}
 	try {
-		port = stoi(params[0]);
+		port = utils::stoi(params[0]);
 	} catch (se::ServerException &e) { throw e; }
 	if (params.size() == 2)
 		pass = params[1];

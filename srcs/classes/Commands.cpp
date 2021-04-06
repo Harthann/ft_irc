@@ -67,10 +67,20 @@ std::string		Commands::name()
 	return (this->cmd[0]);
 }
 
-
-std::string	&Commands::operator[](int i)
+std::string		&Commands::getCmdParam(size_t i)
 {
-	if (i < this->cmd.size())
-		return this->cmd[i];
-	throw Commands::out_of_range();
+	if (i > this->cmd.size())
+		throw Commands::out_of_range();
+	if (this->cmd[0].find(':') == 0)
+		return (this->cmd[i + 1]);
+	return (this->cmd[i]);
+}
+
+std::string	&Commands::operator[](size_t i)
+{
+	if (i > this->cmd.size())
+		throw Commands::out_of_range();
+	if (this->cmd[0].find(':') == 0)
+		return (this->cmd[i + 1]);
+	return (this->cmd[i]);
 }

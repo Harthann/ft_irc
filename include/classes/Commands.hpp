@@ -4,7 +4,6 @@
 #include <map>
 #include <exception>
 #include "Socket.hpp"
-#include "Server.hpp"
 #include "tokens.hpp"
 
 class Commands
@@ -18,8 +17,9 @@ class Commands
 		std::string as_string();
 		std::string name();
 		std::string from();
+		std::string &getCmdParam(size_t);
 
-		std::string &operator[](int);
+		std::string &operator[](size_t);
 
 
 		struct out_of_range : public std::exception {
