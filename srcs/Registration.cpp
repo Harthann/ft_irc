@@ -1,10 +1,11 @@
 #include "Socket.hpp"
 #include "User.hpp"
 #include "Server.hpp"
+#include "Commands.hpp"
 #include <vector>
 #include <iostream>
 
-void	add_user(Socket *client, std::vector<User> &temp_user, std::string datas)
+void	add_user(Socket *client, std::vector<User> &temp_user, Commands cmd)
 {
 	unsigned long i;
 	int n = 0;
@@ -17,9 +18,9 @@ void	add_user(Socket *client, std::vector<User> &temp_user, std::string datas)
 		}
 	}
 	if(n == 1 && !temp_user[i].getStatus())
-		temp_user[i].setDatas(datas);
+		temp_user[i].setDatas(cmd);
 	else if(n == 0)
-		temp_user.push_back(User(client, datas));
+		temp_user.push_back(User(client, cmd));
 }
 
 int		already_register(Socket *client, Server &server)

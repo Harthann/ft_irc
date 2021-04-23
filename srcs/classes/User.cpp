@@ -4,7 +4,7 @@ User::User()
 {
 }
 
-User::User(Socket *client, std::string datas)
+User::User(Socket *client, Commands cmd)
 {
 	this->self = client;
 	this->status = 0;

@@ -2,20 +2,20 @@
 #define USER_HPP
 
 #include "Socket.hpp"
+#include "Commands.hpp"
 #include <string.h>
 #include <vector>
-
 
 class User
 {
 	public:
 		User();
-		User(Socket *client, std::string datas);
+		User(Socket *client, Commands cmd);
 		~User();
 		Socket *	getSocket() const;
 		int			getStatus() const;
 		void		displayinfo();
-		void		setDatas(std::string datas);
+		void		setDatas(Commands cmd);
 	protected:
 	private:
 		std::string	nickname;
@@ -28,7 +28,6 @@ class User
 		std::string	realname;
 		std::string	password;
 		Socket		*self;
-
 };
 
 #endif

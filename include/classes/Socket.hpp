@@ -11,39 +11,31 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include "ft_irc.hpp"
+#include "server_except.hpp"
+#include <iterator>
+#include "Addr.hpp"
 
 class Socket
 {
 	public:
-		Socket(int port = 0);
+		Socket(int port = 0, std::string = "", std::string IP = "127.0.0.1");
+		Socket(host_info &);
 		Socket(Socket const &);
 		Socket &operator=(Socket const&);
 		~Socket();
 
 		const int &		getSocket() const;
+		Addr			getInfo() const;
 		bool			Bind();
+		bool			Connect();
 		bool			Listen();
+		std::string		IP() const;
+		std::string		getHostName() const;
 		Socket			*Accept();
 		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
 		std::string		Receive();
-
-		struct InvalidAccept : public std::exception {
-			char const *what() const throw() {
-				return ("Error accepting new connection");
-			}
-		};
-
-		struct InvalidBind : public std::exception {
-			char const *what() const throw() {
-				return ("Error binding new socket");
-			}
-		};
-
-		struct SelectionError : public std::exception {
-			char const *what() const throw() {
-				return ("Error selecting incoming request");
-			}
-		};
+		time_t			getTime() const;
 
 		bool	operator==(Socket const& x) {
 			return (x.socketfd == this->socketfd);
@@ -54,11 +46,11 @@ class Socket
 		};
 
 	protected:
-		Socket(int fd, struct sockaddr_in addr, int addr_l);
+		Socket(int fd, Addr addr, int addr_l);
 
-		struct sockaddr_in	addr_info;
-		int					addr_len;
+		Addr				addr;
 		int					socketfd;
+		time_t				timestamp;
 };
 
 #endif
