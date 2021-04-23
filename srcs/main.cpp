@@ -76,12 +76,12 @@ void	server_loop(int port, std::string password, host_info &host)
 				else
 					command_dispatcher(datas, curr_client, server, temp_users);
 			}
-			for(unsigned long i = 0; i < server.getClients().size(); i++)
+/*			for(unsigned long i = 0; i < server.getClients().size(); i++)
 			{
 				std::cout << "  ########### USER " << i << " ############\n" << std::endl;
 				server.getClients()[i].displayinfo();
 				//				std::cout << "\n";
-			}
+			}*/
 		}
 	}
 	catch (se::ServerException &e) {
