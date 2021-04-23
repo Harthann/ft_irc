@@ -1,3 +1,13 @@
 Activity detected on master socket : 4
+Activity detected on client socket : 6 for reading
+Hello
+
+Activity detected on client socket : 6 for reading
+DIE
+
+n client socket : 5 for reading
+Hello
+
 Activity detected on client socket : 5 for reading
-SERVER ftirc.test.42 1 :  Experimental server
+DIE
+

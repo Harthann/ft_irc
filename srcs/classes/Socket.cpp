@@ -1,7 +1,8 @@
 #include "Socket.hpp"
+#include <fcntl.h>
 
 Socket::Socket(int port, std::string , std::string IP)
-: addr()
+: addr(), buff()
 {
 	time(&this->timestamp);
 	const int opt = 1;
@@ -11,12 +12,15 @@ Socket::Socket(int port, std::string , std::string IP)
 	this->addr.setPort(port);
 	this->addr.setIP(IP.c_str());
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
+	fcntl(this->socketfd, F_SETFL, O_NONBLOCK);
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
 	if (this->Bind())
 		throw se::InvalidBind();
 }
 
 Socket::Socket(host_info &host)
+: buff()
 {
 	const int opt = 1;
 	time(&this->timestamp);
@@ -28,10 +32,12 @@ Socket::Socket(host_info &host)
 	std::cout << "Port : " << this->addr.getPort() << std::endl;
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
 }
 
 Socket::Socket(int fd, Addr ad, int length)
 {
+	time(&this->timestamp);
 	this->socketfd = fd;
 	this->addr = ad;
 }
@@ -40,6 +46,7 @@ Socket::Socket(Socket const &x)
 {
 	this->addr = x.addr;
 	this->socketfd = x.socketfd;
+	this->timestamp = x.timestamp;
 }
 
 Socket	&Socket::operator=(Socket const &x)
@@ -112,6 +119,10 @@ Socket	*Socket::Accept()
 	return (new Socket(new_fd, addr, tmp_addr_len));
 }
 
+//	Receive and Send actually use read/write but will probably switch
+//	to Receive and Send respectively for an extra argument that set
+//	a timeout option in case of error
+
 void	Socket::Send(std::string message)
 {
 	// char str[256];
@@ -125,19 +136,34 @@ void	Socket::Send(std::string message)
 
 std::string Socket::Receive()
 {
+	//	Actually reading char one by one to avoid looking passed the command line
+	//	Can be change to a bigger read for performance but 
+	//	will need to store in buffer all extra char readed
+	//	as they can be part of the next command line
 	std::string	ret;
-	char		buffer[513];
+	char		buffer;
 	int			readed;
 
 	do {
-		readed = read(this->socketfd, buffer, 512);
+		readed = read(this->socketfd, &buffer, 1);
+		// if (readed > 0)
+		// 	buffer[readed] = '\0';
+		// else
+		// 	return ("");
 		if (readed > 0)
-			buffer[readed] = '\0';
-		else
-			return ("");
-		ret += buffer;
+			ret += buffer;
 	} while (readed && *(ret.end() - 1) != '\n' && *(ret.end() - 2) != '\r');
 	return (ret);
+}
+
+void			Socket::setBuff(std::string &x)
+{
+	this->buff = x;
+}
+
+std::string		&Socket::getBuff()
+{
+	return (this->buff);
 }
 
 std::string		Socket::IP() const
@@ -151,21 +177,38 @@ Addr	Socket::getInfo() const {
 
 std::string	Socket::getHostName() const
 {
+	//	Probably not necessary and actually not working well
+	//	This function will eventually be deleted if no solution found
+	//	The goal is found host name base on ip address
+	//	Ex : ip = 127.0.0.1 will give "localhost" as return value
 	return ("");
-	// struct hostent *tmp;
-	// char buff[256];
-	
-	// // getnameinfo(reinterpret_cast<const sockaddr *>(&this->addr_info), sizeof(this->addr_info), buff, 256, NULL, 0, 0);
-	// // return (buff);
-	// tmp = gethostbyaddr(reinterpret_cast<const struct in_addr*>(&this->addr_info), sizeof(struct in_addr), AF_INET);
-	// if (!tmp)
-	// 	return ("");
-	// return tmp->h_name;
 }
 
 time_t		Socket::getTime() const
 {
 	return (this->timestamp);
+}
+
+std::string	Socket::strTime() const
+{
+	std::string ret;
+
+	ret =   asctime(gmtime(&this->timestamp));
+	return ret;
+}
+
+std::string Socket::flush()
+{
+	std::string ret;
+	char		buffer;
+	int			readed;
+
+	do {
+		readed = read(this->socketfd, &buffer, 1);
+		if (readed > 0)
+			ret += buffer;
+	} while (readed > 0);
+	return ret;
 }
 
 /*

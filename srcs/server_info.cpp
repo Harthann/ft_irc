@@ -53,7 +53,7 @@ host_info	parse_info(int ac, char **av, int &port, std::string &pass)
 	try {
 		port = utils::stoi(params[0]);
 	} catch (se::ServerException &e) { throw e; }
-	if (params.size() == 2)
+	if (params.size() == 2) 
 		pass = params[1];
 	return (addr);		
 }

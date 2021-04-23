@@ -18,6 +18,8 @@ class Commands
 		std::string name();
 		std::string from();
 		std::string &getCmdParam(size_t);
+		size_t		length() const;
+		bool		isValid();
 
 		std::string &operator[](size_t);
 

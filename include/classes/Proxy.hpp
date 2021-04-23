@@ -7,7 +7,7 @@
 class Proxy
 {
 	public:
-		Proxy(Socket * = NULL, int = 1, std::string = NULL);
+		Proxy(Socket * = NULL, int = 1, std::string = std::string());
 		Proxy(Proxy const &);
 		Proxy &operator=(Proxy const&);
 		~Proxy();
