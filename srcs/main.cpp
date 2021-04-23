@@ -26,7 +26,21 @@ void	exit_server(Commands &, Socket *, Server &server)
 	server.Stop();
 }
 
+<<<<<<< HEAD
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
+=======
+void	identification(Commands &cmd, Socket *client, Server &server)
+{
+	if (!cmd.name().compare("PASS")) {
+		client->setBuff(cmd[1]);
+		std::cout << "Password set to : " << cmd[1] << std::endl;
+	}
+	else if (!cmd.name().compare("SERVER"))
+		server.setProxy(cmd, client);
+}
+
+void	command_dispatcher(std::string &datas, Socket *client, Server &server)
+>>>>>>> b8e6bdb76eb2832dca21e6eeb94954940e0c4a43
 {
 	Commands cmd(datas);
 	std::string	cmd_name;
@@ -34,10 +48,16 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 //	(void)temp_user;
 
 	server.logString(cmd.as_string());
-	std::cout << "Command from : " << cmd.from() << std::endl;
-	std::cout << "Command name : " << cmd.name() << std::endl;
-	if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
+	std::cout << cmd.as_string() << std::endl;
+	if (!cmd.isValid()) {
+		std::cout << "Command format invalid" << std::endl;
+		client->Send("Command format invalid");
+	}
+	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK")
+		identification(cmd, client, server);
+	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
+<<<<<<< HEAD
 	else if (!cmd.name().compare("SERVER"))
 		server.setProxy(cmd, client);
 	if (server.IsProxy())
@@ -52,6 +72,10 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	}
 	ret = 0;*/
 
+=======
+	// if (server.IsProxy())
+	server.redirect(cmd, client);
+>>>>>>> b8e6bdb76eb2832dca21e6eeb94954940e0c4a43
 }
 
 void	server_loop(int port, std::string password, host_info &host)
@@ -64,10 +88,11 @@ void	server_loop(int port, std::string password, host_info &host)
 
 		if (host.host.sin_zero[0] == 'h')
 			server.setHost(host);
+		std::cout << "Server construction done" << std::endl;
 		while (server.IsRunning()) {
 				server.update();
 			curr_client = server.Select();
-			if (server.IsMaster(curr_client))
+			if (server.IsMaster(curr_client) && server.readable(curr_client))
 				server.add(curr_client->Accept());
 			else if (server.readable(curr_client)) {
 				datas = curr_client->Receive();

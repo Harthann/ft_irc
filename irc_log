@@ -1,0 +1,16 @@
+<<<<<<< HEAD
+=======
+Activity detected on master socket : 4
+Activity detected on client socket : 6 for reading
+Hello
+
+Activity detected on client socket : 6 for reading
+DIE
+
+n client socket : 5 for reading
+Hello
+
+Activity detected on client socket : 5 for reading
+DIE
+
+>>>>>>> b8e6bdb76eb2832dca21e6eeb94954940e0c4a43

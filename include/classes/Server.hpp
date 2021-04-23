@@ -16,7 +16,8 @@
 //	chat.freeenode.net
 //	irc.ircnet.com
 
-# define TIME_LIMIT 60.0
+# define TIME_LIMIT 10.0
+# define SET_TIMEOUT false
 
 class Server
 {
@@ -36,18 +37,20 @@ class Server
 
 		std::string		IP() const;
 		bool			IsMaster(Socket*);
-		bool			IsHost(Socket *) const;
+		// bool			IsHost(Socket *) const;
 		bool			IsRunning() const;
-		bool			IsProxy() const;
+		// bool			IsProxy() const;
 
 		bool			readable(Socket *) const;
 		bool			writeable(Socket *) const;
-		void			redirect(std::string, Socket *);
+		void			redirect(Commands &, Socket *);
 		std::fstream	&logStream();
 		void			logString(std::string);
 
 		void			fdSet(std::vector<Socket*> &);
 		void			fdSet(std::vector<Proxy> &);
+
+		void			removeSocket(Socket *);
 
 		void			setProxy(Commands &, Socket *);
 		bool			timedOut(Socket *);
@@ -67,7 +70,7 @@ class Server
 		std::fstream irc_log;
 		
 		Socket					*master;
-		Socket					*host;
+		// Socket					*host;
 
 		clients_vector			clients;
 		proxy_vector			servers;
@@ -80,7 +83,7 @@ class Server
 
 		std::string				server_password;
 		bool					state;
-		bool					proxy;
+//		bool					proxy;
 //		std::vector<Socket*>	users;
 //		std::vector<User>		clients;
 };

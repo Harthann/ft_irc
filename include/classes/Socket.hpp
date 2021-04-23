@@ -35,7 +35,11 @@ class Socket
 		Socket			*Accept();
 		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
 		std::string		Receive();
+		void			setBuff(std::string &);
+		std::string 	&getBuff();
+		std::string		flush();
 		time_t			getTime() const;
+		std::string		strTime() const;
 
 		bool	operator==(Socket const& x) {
 			return (x.socketfd == this->socketfd);
@@ -51,6 +55,7 @@ class Socket
 		Addr				addr;
 		int					socketfd;
 		time_t				timestamp;
+		std::string			buff;
 };
 
 #endif

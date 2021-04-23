@@ -1,15 +1,18 @@
 #include "Commands.hpp"
 
-
 Commands::Commands(std::string &datas)
 : valid(true)
 {
-	size_t						tmp = 0;
-	size_t						tmp2 = 0;
-	int							length;
+	size_t	tmp = 0;
+	size_t	tmp2 = 0;
+	int		length;
 
-	if (datas.find("\r\n", 0) != std::string::npos)
-		datas.erase(datas.find("\r\n", 2));
+	if (datas.find("\n", 0) != std::string::npos)
+	{
+		datas.erase(datas.find("\n", 1));
+		if (datas.find("\r", 0) != std::string::npos)
+			datas.erase(datas.find("\r", 1));
+	}
 	else
 		this->valid = false;
 	do {
@@ -45,7 +48,13 @@ std::string		Commands::as_string()
 		if (it + 1 != this->cmd.end())
 			ret += " ";
 	}
+	ret.append("\r\n");
 	return ret;
+}
+
+bool	Commands::isValid()
+{
+	return this->valid;
 }
 
 void	Commands::add(std::string x)
@@ -65,6 +74,13 @@ std::string		Commands::name()
 	if (this->cmd[0].find(':') == 0)
 		return (this->cmd[1]);
 	return (this->cmd[0]);
+}
+
+size_t			Commands::length() const
+{
+	if (this->cmd[0].find(':') == 0)
+		return (this->cmd.size() - 1);
+	return (this->cmd.size());
 }
 
 std::string		&Commands::getCmdParam(size_t i)
