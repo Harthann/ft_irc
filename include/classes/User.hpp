@@ -19,9 +19,9 @@ class User
 	protected:
 	private:
 		std::string	nickname;
-		void		setNICK(char *str);
-		void		setPASS(char *str);
-		void		setUSER(char *datas);
+		void		setNICK(std::string str);
+		void		setPASS(std::string str);
+		void		setUSER(Commands cmd);
 		std::string	user;
 		std::string	mode;
 		int status;

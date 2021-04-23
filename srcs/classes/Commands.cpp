@@ -30,11 +30,6 @@ Commands::~Commands()
 
 }
 
-Commands::Commands(Commands const &)
-{
-
-}
-
 Commands	&Commands::operator=(Commands const &)
 {
 	return (*this);

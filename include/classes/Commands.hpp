@@ -30,7 +30,7 @@ class Commands
 				return ("access out of range parameter on command line");
 			};
 		};
-		Commands(Commands const &);
+//		Commands(Commands const &);
 	private:
 	//	Commands(Commands const &);
 		Commands &operator=(Commands const&);

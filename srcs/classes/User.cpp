@@ -8,67 +8,32 @@ User::User(Socket *client, Commands cmd)
 {
 	this->self = client;
 	this->status = 0;
-/*	char *str;
 
-	str = (char *)datas.c_str();
-	if(!strncmp(str, "PASS", 4))
-		this->setPASS(str + 4);
-	while(str && strncmp(str, "NICK", 4))
-	{
-		if(strlen(str) == 4)
-			break;
-		str++;
-	}
-	if(!strncmp(str, "NICK", 4))
-		this->setNICK(str + 4);
-	while(str && strncmp(str, "USER", 4))
-	{
-		if(strlen(str) == 4)
-			break;
-		str++;
-	}
-	if(!strncmp(str, "USER", 4))
-		this->setUSER(str);*/
+	if(cmd[0].compare("PASS") == 0)
+		this->setPASS(cmd[1]);
+	else if(cmd[0].compare("NICK") == 0)
+		this->setNICK(cmd[1]);
+	else if(cmd[0].compare("USER") == 0)
+		this->setUSER(cmd);
 }
 
-void	User::setPASS(char *str)
-{
-	int i = 0;
 
-	while(str[i] >= 32)
-		i++;
-	password.assign(str, i);
+void	User::setPASS(std::string str)
+{
+	password.assign(str);
 }
 
-void	User::setNICK(char *str)
+void	User::setNICK(std::string str)
 {
-	int i = 0;
-	while(str[i] >= 32)
-		i++;
-	nickname.assign(str, i);
+	nickname.assign(str);
 }
 
-void	User::setUSER(char *datas)
+void	User::setUSER(Commands cmd)
 {
-	char *str = datas;
-	char *res;
-	int i = 0;
-	std::vector<char *> temp;
-	char s[2] = " ";
-
-	res = strtok(str, s);
-	temp.push_back(res);
-	while(res != NULL)
-	{
-		res = strtok(NULL, s);
-		temp.push_back(res);
-	}
-	this->user = temp[1];
-	this->mode = temp[2];
-	res = temp[4];
-	while(res[i] >= 32)
-		i++;
-	realname.assign(res + 1, i - 1);
+	this->user = cmd[1];
+	this->mode = cmd[2];
+	std::string res = cmd[4].substr(1, cmd[4].length());
+	realname.assign(res);
 	this->status = 1;
 }
 
@@ -84,20 +49,10 @@ int 	User::getStatus() const
 
 void	User::setDatas(Commands cmd)
 {
-/*	char *str;
-
-	str = (char *)datas.c_str();
-	if(!strncmp(str, "NICK", 4))
-		this->setNICK(str + 4);
-	while(str && strncmp(str, "USER", 4))
-	{
-		if(strlen(str) == 4)
-			break;
-		str++;
-	}
-	if(!strncmp(str, "USER", 4))
-		this->setUSER(str);*/
-
+	if(cmd[0].compare("NICK") == 0)
+		this->setNICK(cmd[1]);
+	else if(cmd[0].compare("USER") == 0)
+		this->setUSER(cmd);
 }
 
 void	User::displayinfo()

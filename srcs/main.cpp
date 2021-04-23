@@ -26,26 +26,28 @@ void	exit_server(Commands &, Socket *, Server &server)
 	server.Stop();
 }
 
-<<<<<<< HEAD
-void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
-=======
-void	identification(Commands &cmd, Socket *client, Server &server)
+void	identification(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users)
 {
+	int ret = 0;
+
 	if (!cmd.name().compare("PASS")) {
 		client->setBuff(cmd[1]);
-		std::cout << "Password set to : " << cmd[1] << std::endl;
+//		std::cout << "Password set to : " << cmd[1] << std::endl;
 	}
 	else if (!cmd.name().compare("SERVER"))
 		server.setProxy(cmd, client);
+	ret = already_register(client, server);
+	if(!ret)
+	{
+		add_user(client, temp_users, cmd);
+		update_server_user(temp_users, server);
+	}
 }
 
-void	command_dispatcher(std::string &datas, Socket *client, Server &server)
->>>>>>> b8e6bdb76eb2832dca21e6eeb94954940e0c4a43
+void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
 {
 	Commands cmd(datas);
 	std::string	cmd_name;
-//	int ret = 0;
-//	(void)temp_user;
 
 	server.logString(cmd.as_string());
 	std::cout << cmd.as_string() << std::endl;
@@ -53,33 +55,16 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server)
 		std::cout << "Command format invalid" << std::endl;
 		client->Send("Command format invalid");
 	}
-	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK")
-		identification(cmd, client, server);
+	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
+		identification(cmd, client, server, temp_users);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
-<<<<<<< HEAD
-	else if (!cmd.name().compare("SERVER"))
-		server.setProxy(cmd, client);
-	if (server.IsProxy())
-		server.redirect(datas, client);
-	for(size_t i = 0; i < cmd.length(); ++i)
-		std::cout << "Received : " << i << " " << cmd[i] << std::endl;
-/*	ret = already_register(client, server);
-	if(!ret)
-	{
-		add_user(curr_client, temp_users, cmd);
-		update_server_user(temp_users, server);
-	}
-	ret = 0;*/
-
-=======
-	// if (server.IsProxy())
 	server.redirect(cmd, client);
->>>>>>> b8e6bdb76eb2832dca21e6eeb94954940e0c4a43
 }
 
 void	server_loop(int port, std::string password, host_info &host)
 {	
+	int test = 0;
 	try {
 		Server		server(port, password);
 		Socket		*curr_client;
@@ -101,12 +86,16 @@ void	server_loop(int port, std::string password, host_info &host)
 				else
 					command_dispatcher(datas, curr_client, server, temp_users);
 			}
-/*			for(unsigned long i = 0; i < server.getClients().size(); i++)
+			if(test < server.getClients().size())
 			{
-				std::cout << "  ########### USER " << i << " ############\n" << std::endl;
-				server.getClients()[i].displayinfo();
-				//				std::cout << "\n";
-			}*/
+				for(unsigned long i = 0; i < server.getClients().size(); i++)
+				{
+					std::cout << "  ########### USER " << i << " ############\n" << std::endl;
+					server.getClients()[i].displayinfo();
+					//				std::cout << "\n";
+				}
+				test = server.getClients().size();
+			}
 		}
 	}
 	catch (se::ServerException &e) {
