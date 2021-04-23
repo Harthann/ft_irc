@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 
-void	add_user(Socket *client, std::vector<User> &temp_user, Commands cmd)
+void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd)
 {
 	unsigned long i;
 	int n = 0;

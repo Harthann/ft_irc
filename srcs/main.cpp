@@ -30,7 +30,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 {
 	Commands cmd(datas);
 	std::string	cmd_name;
-	int ret = 0;
+//	int ret = 0;
+//	(void)temp_user;
 
 	server.logString(cmd.as_string());
 	std::cout << "Command from : " << cmd.from() << std::endl;
@@ -41,15 +42,15 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		server.setProxy(cmd, client);
 	if (server.IsProxy())
 		server.redirect(datas, client);
-	std::cout << "Received : " << datas << std::endl;
-	ret = already_register(client, server);
+	for(size_t i = 0; i < cmd.length(); ++i)
+		std::cout << "Received : " << i << " " << cmd[i] << std::endl;
+/*	ret = already_register(client, server);
 	if(!ret)
 	{
 		add_user(curr_client, temp_users, cmd);
 		update_server_user(temp_users, server);
 	}
-	ret = 0;
-}
+	ret = 0;*/
 
 }
 
@@ -73,7 +74,7 @@ void	server_loop(int port, std::string password, host_info &host)
 				if (!datas.length())
 					server.remove(curr_client);
 				else
-					command_dispatcher(datas, curr_client, server);
+					command_dispatcher(datas, curr_client, server, temp_users);
 			}
 			for(unsigned long i = 0; i < server.getClients().size(); i++)
 			{

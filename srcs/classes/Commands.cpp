@@ -84,3 +84,8 @@ std::string	&Commands::operator[](size_t i)
 		return (this->cmd[i + 1]);
 	return (this->cmd[i]);
 }
+
+size_t	Commands::length()
+{
+	return this->cmd.size();
+}

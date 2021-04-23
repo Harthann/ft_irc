@@ -17,6 +17,7 @@ class Commands
 		std::string as_string();
 		std::string name();
 		std::string from();
+		size_t length();
 		std::string &getCmdParam(size_t);
 
 		std::string &operator[](size_t);
@@ -27,8 +28,9 @@ class Commands
 				return ("access out of range parameter on command line");
 			};
 		};
-	private:
 		Commands(Commands const &);
+	private:
+	//	Commands(Commands const &);
 		Commands &operator=(Commands const&);
 
 		std::vector<std::string>	cmd;

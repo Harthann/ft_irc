@@ -8,7 +8,7 @@ User::User(Socket *client, Commands cmd)
 {
 	this->self = client;
 	this->status = 0;
-	char *str;
+/*	char *str;
 
 	str = (char *)datas.c_str();
 	if(!strncmp(str, "PASS", 4))
@@ -28,7 +28,7 @@ User::User(Socket *client, Commands cmd)
 		str++;
 	}
 	if(!strncmp(str, "USER", 4))
-		this->setUSER(str);
+		this->setUSER(str);*/
 }
 
 void	User::setPASS(char *str)
@@ -82,9 +82,9 @@ int 	User::getStatus() const
 	return this->status;
 }
 
-void	User::setDatas(std::string datas)
+void	User::setDatas(Commands cmd)
 {
-	char *str;
+/*	char *str;
 
 	str = (char *)datas.c_str();
 	if(!strncmp(str, "NICK", 4))
@@ -96,7 +96,7 @@ void	User::setDatas(std::string datas)
 		str++;
 	}
 	if(!strncmp(str, "USER", 4))
-		this->setUSER(str);
+		this->setUSER(str);*/
 
 }
 
