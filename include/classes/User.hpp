@@ -3,6 +3,7 @@
 
 #include "Socket.hpp"
 #include "Commands.hpp"
+#include "Channel.hpp"
 #include <string.h>
 #include <vector>
 
@@ -22,6 +23,7 @@ class User
 		void		setNICK(std::string str);
 		void		setPASS(std::string str);
 		void		setUSER(Commands cmd);
+		Channel		*current_channel;
 		std::string	user;
 		std::string	mode;
 		int status;

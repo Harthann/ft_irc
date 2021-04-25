@@ -2,7 +2,8 @@ SRC_FILE= utils.cpp \
 server_info.cpp \
 main.cpp
 
-CLASSES= Addr \
+CLASSES= Channel \
+Addr \
 Proxy \
 Commands \
 Server \

@@ -3,6 +3,7 @@
 
 #include "Socket.hpp"
 #include "User.hpp"
+#include "Channel.hpp"
 #include "ft_irc.hpp"
 #include "Proxy.hpp"
 #include "Commands.hpp"
@@ -64,6 +65,7 @@ class Server
 
 		typedef	std::vector<Socket*>					clients_vector;
 		typedef	std::vector<User>						user_vector;
+		typedef	std::vector<Channel>					channel_vector;
 		typedef	std::vector<Proxy>						proxy_vector;
 
 	protected:
@@ -75,6 +77,7 @@ class Server
 		clients_vector			clients;
 		proxy_vector			servers;
 		user_vector				users;
+		channel_vector			channels;
 		
 		fd_set					readfds;
 		int						max_fd;
