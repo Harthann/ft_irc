@@ -17,6 +17,7 @@ class User
 		~User();
 		Socket *	getSocket() const;
 		int			getStatus() const;
+		std::string	getNickname() const;
 		void		displayinfo();
 		void		setDatas(Commands cmd);
 		void		ActiveChannel(Channel * ch);

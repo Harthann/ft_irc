@@ -34,6 +34,8 @@ class Socket
 		std::string		getHostName() const;
 		Socket			*Accept();
 		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
+		void			Confirm(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
+
 		std::string		Receive();
 		void			setBuff(std::string &);
 		std::string 	&getBuff();

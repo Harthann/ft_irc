@@ -1,5 +1,17 @@
 #include "Registration.hpp"
 
+void	validation(std::vector<User> &temp_user, Socket *client)
+{
+	for (unsigned int i = 0; i < temp_user.size(); i++)
+	{
+		if(temp_user[i].getSocket() == client)
+		{
+			client->Confirm("001 WELCOME_MSG " + temp_user[i].getNickname() + " Welcome to the server");
+			break;
+		}
+	}
+}
+
 void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd)
 {
 	unsigned long i;
@@ -16,6 +28,7 @@ void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd)
 		temp_user[i].setDatas(cmd);
 	else if(n == 0)
 		temp_user.push_back(User(client, cmd));
+	validation(temp_user, client);
 }
 
 int		already_register(Socket *client, Server &server)

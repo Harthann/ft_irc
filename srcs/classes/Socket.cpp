@@ -134,6 +134,12 @@ void	Socket::Send(std::string message)
 	// std::cout << "Recieved back : " <<  str << std::endl;
 }
 
+void	Socket::Confirm(std::string message)
+{
+	send(this->socketfd, message.c_str(), message.length(), MSG_CONFIRM);
+
+}
+
 std::string Socket::Receive()
 {
 	//	Actually reading char one by one to avoid looking passed the command line
