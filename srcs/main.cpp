@@ -2,15 +2,16 @@
 #include "ft_irc.hpp"
 #include "Socket.hpp"
 #include <sstream>
+#include "utils.hpp"
 #include <errno.h>
 #include <string.h>
 #include <vector>
 #include <sys/time.h>
-#include "Server.hpp"
 #include "User.hpp"
-#include "Registration.cpp"
 #include "Commands.hpp"
 #include "Addr.hpp"
+#include "Registration.hpp"
+#include "Channel_Registration.hpp"
 
 #include <limits.h>
 #include <float.h>
@@ -57,6 +58,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	}
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
+	else if(cmd.name() == "JOIN")
+		add_to_channel(cmd, client, server, temp_users);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
 	server.redirect(cmd, client);
@@ -86,7 +89,7 @@ void	server_loop(int port, std::string password, host_info &host)
 				else
 					command_dispatcher(datas, curr_client, server, temp_users);
 			}
-			if(test < server.getClients().size())
+/*			if(test < server.getClients().size())
 			{
 				for(unsigned long i = 0; i < server.getClients().size(); i++)
 				{
@@ -95,7 +98,7 @@ void	server_loop(int port, std::string password, host_info &host)
 					//				std::cout << "\n";
 				}
 				test = server.getClients().size();
-			}
+			}*/
 		}
 	}
 	catch (se::ServerException &e) {

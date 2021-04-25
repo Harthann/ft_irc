@@ -3,7 +3,6 @@
 
 #include "Socket.hpp"
 #include "User.hpp"
-#include "Channel.hpp"
 #include "ft_irc.hpp"
 #include "Proxy.hpp"
 #include "Commands.hpp"
@@ -19,6 +18,7 @@
 
 # define TIME_LIMIT 10.0
 # define SET_TIMEOUT false
+class Channel;
 
 class Server
 {
@@ -32,7 +32,9 @@ class Server
 		void	add(Socket*);				// add a client to the list
 		void	remove(Socket*);			// Remove a client on the list
 		void	update();					// Update fd_set of all client still connected
-		std::vector<User>	& getClients();
+		std::vector<User> & 		getClients();
+		std::vector<Channel> &		getChannels();
+
 		void	setHost(host_info &);
 		void	Stop();
 
@@ -55,6 +57,7 @@ class Server
 
 		void			setProxy(Commands &, Socket *);
 		bool			timedOut(Socket *);
+		void			addChannel(Channel &Ch);
 
 		typedef std::vector<Socket*>::iterator			client_it;
 		typedef std::vector<Socket*>::const_iterator	const_client_it;

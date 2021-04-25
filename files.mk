@@ -1,14 +1,17 @@
 SRC_FILE= utils.cpp \
 server_info.cpp \
-main.cpp
+main.cpp \
+Registration.cpp \
+Channel_Registration.cpp
 
-CLASSES= Channel \
+CLASSES= Server \
 Addr \
 Proxy \
 Commands \
-Server \
 Socket \
 User \
+Channel \
+
 
 
 INTERFACES= 
@@ -21,4 +24,5 @@ HEADERS= utils.hpp \
 tokens.hpp \
 ft_irc.hpp \
 server_except.hpp \
-
+Registration.hpp \
+Channel_Registration.hpp

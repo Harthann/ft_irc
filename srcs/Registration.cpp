@@ -1,9 +1,4 @@
-#include "Socket.hpp"
-#include "User.hpp"
-#include "Server.hpp"
-#include "Commands.hpp"
-#include <vector>
-#include <iostream>
+#include "Registration.hpp"
 
 void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd)
 {

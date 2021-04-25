@@ -2,12 +2,14 @@
 
 User::User()
 {
+	this->current_channel = 0;
 }
 
 User::User(Socket *client, Commands cmd)
 {
 	this->self = client;
 	this->status = 0;
+	this->current_channel = 0;
 
 	if(cmd[0].compare("PASS") == 0)
 		this->setPASS(cmd[1]);
@@ -63,6 +65,11 @@ void	User::displayinfo()
 	std::cout << "mode : " << mode << std::endl;
 	std::cout << "status : " << status << std::endl;
 	std::cout << "realname : " << realname << std::endl;
+}
+
+void	User::ActiveChannel(Channel * ch)
+{
+	this->current_channel = ch;
 }
 
 User::~User()

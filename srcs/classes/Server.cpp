@@ -271,6 +271,11 @@ std::vector<User>	& Server::getClients()
 	return this->users;
 }
 
+std::vector<Channel>	& Server::getChannels()
+{
+	return this->channels;
+}
+
 std::string		Server::IP() const
 {
 	return (this->master->IP());
@@ -304,6 +309,11 @@ bool		Server::writeable(Socket *x) const
 std::fstream	&Server::logStream()
 {
 	return (this->irc_log);
+}
+
+void			Server::addChannel(Channel &Ch)
+{
+	this->channels.push_back(Ch);
 }
 
 void			Server::logString(std::string to_log)

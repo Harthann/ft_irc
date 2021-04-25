@@ -7,6 +7,8 @@
 #include <string.h>
 #include <vector>
 
+class Channel;
+
 class User
 {
 	public:
@@ -17,6 +19,7 @@ class User
 		int			getStatus() const;
 		void		displayinfo();
 		void		setDatas(Commands cmd);
+		void		ActiveChannel(Channel * ch);
 	protected:
 	private:
 		std::string	nickname;
