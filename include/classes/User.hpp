@@ -12,10 +12,15 @@ class User
 		User();
 		User(Socket *client, Commands cmd);
 		~User();
-		Socket *	getSocket() const;
+		Socket *	getSocketPtr() const;
 		int			getStatus() const;
 		void		displayinfo();
 		void		setDatas(Commands cmd);
+
+		const std::string &getNick() const;
+		int			getSocket() const;
+
+
 	protected:
 	private:
 		std::string	nickname;

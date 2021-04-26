@@ -37,7 +37,7 @@ void	User::setUSER(Commands cmd)
 	this->status = 1;
 }
 
-Socket * User::getSocket() const
+Socket * User::getSocketPtr() const
 {
 	return this->self;
 }
@@ -63,6 +63,16 @@ void	User::displayinfo()
 	std::cout << "mode : " << mode << std::endl;
 	std::cout << "status : " << status << std::endl;
 	std::cout << "realname : " << realname << std::endl;
+}
+
+const std::string	const &User::getNick() const
+{
+	return nickname;
+}
+
+int		User::getSocket() const
+{
+	return (this->self->getSocket());
 }
 
 User::~User()

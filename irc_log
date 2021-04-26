@@ -1,10 +1,9 @@
 Activity detected on master socket : 4
 Activity detected on client socket : 5 for reading
-PASS password
+NICK nieyraud
 
 Activity detected on client socket : 5 for reading
-NICK blacksmith
+USER nieyraud 0 * :nieyraud
 
-Activity detected on client socket : 5 for reading
-USER blacksmith 0 * :blacksmith
+QUIT :WeeChat 3.0
 

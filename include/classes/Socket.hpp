@@ -35,8 +35,8 @@ class Socket
 		Socket			*Accept();
 		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
 		std::string		Receive();
-		void			setBuff(std::string &);
-		std::string 	&getBuff();
+		void			setPassword(std::string &);
+		std::string 	&getPassword();
 		std::string		flush();
 		time_t			getTime() const;
 		std::string		strTime() const;
@@ -55,7 +55,7 @@ class Socket
 		Addr				addr;
 		int					socketfd;
 		time_t				timestamp;
-		std::string			buff;
+		std::string			password;
 };
 
 #endif
