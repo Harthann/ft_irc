@@ -54,6 +54,11 @@ std::string	User::getNickname() const
 	return this->nickname;
 }
 
+std::string	User::getUser() const
+{
+	return this->user;
+}
+
 void	User::setDatas(Commands cmd)
 {
 	if(cmd[0].compare("NICK") == 0)
