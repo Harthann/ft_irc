@@ -132,7 +132,7 @@ void				Server::addUser(User &x)
 		if (*it == client) {
 			std::cout << "Socket password : " << client->getPassword() << std::endl;
 			std::cout << "Server password : " << this->server_password << std::endl;
-			if (this->server_password == "" || client->getPassword() == this->server_password) {
+			if (client->getPassword() == this->server_password) {
 				clients.erase(it);
 				users.push_back(x);
 			}

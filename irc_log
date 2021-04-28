@@ -3,21 +3,6 @@ Activity detected on client socket : 5 for reading
 PASS password
 
 Activity detected on client socket : 5 for reading
-NICK Welcome
-
-Activity detected on client socket : 5 for reading
-USER blacksmith 0 * :blacksmith
-
-Activity detected on client socket : 5 for reading
-QUIT :WeeChat 3.1
-
-Activity detected on client socket : 5 for reading
-
-Activity detected on master socket : 4
-Activity detected on client socket : 5 for reading
-PASS password
-
-Activity detected on client socket : 5 for reading
 NICK blacksmith
 
 Activity detected on client socket : 5 for reading
@@ -25,7 +10,4 @@ USER blacksmith 0 * :blacksmith
 
 Activity detected on client socket : 5 for reading
 JOIN #test
-
-Activity detected on client socket : 5 for reading
-PING 127.0.0.1
 
