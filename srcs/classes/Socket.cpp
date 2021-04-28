@@ -2,7 +2,7 @@
 #include <fcntl.h>
 
 Socket::Socket(int port, std::string , std::string IP)
-: addr(), buff()
+: addr(), password()
 {
 	time(&this->timestamp);
 	const int opt = 1;
@@ -20,7 +20,7 @@ Socket::Socket(int port, std::string , std::string IP)
 }
 
 Socket::Socket(host_info &host)
-: buff()
+: password()
 {
 	const int opt = 1;
 	time(&this->timestamp);
@@ -162,14 +162,14 @@ std::string Socket::Receive()
 	return (ret);
 }
 
-void			Socket::setBuff(std::string &x)
+void			Socket::setPassword(std::string &x)
 {
-	this->buff = x;
+	this->password = x;
 }
 
-std::string		&Socket::getBuff()
+std::string		&Socket::getPassword()
 {
-	return (this->buff);
+	return (this->password);
 }
 
 std::string		Socket::IP() const

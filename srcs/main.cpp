@@ -31,9 +31,12 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 {
 	int ret = 0;
 
-	if (!cmd.name().compare("PASS")) {
-		client->setBuff(cmd[1]);
-//		std::cout << "Password set to : " << cmd[1] << std::endl;
+	if (!cmd.name().compare("PASS"))
+	{
+		if (!server.isRegister(client))
+			client->setPassword(cmd[1]);
+		else
+			client->Send("462 ERR_ALREADYREGISTRED Password can't be changed");
 	}
 	else if (!cmd.name().compare("SERVER"))
 		server.setProxy(cmd, client);
@@ -67,12 +70,11 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 
 void	server_loop(int port, std::string password, host_info &host)
 {	
-	int test = 0;
 	try {
-		Server		server(port, password);
-		Socket		*curr_client;
-		std::string	datas;
-		std::vector<User> temp_users;
+		Server				server(port, password);
+		Socket				*curr_client;
+		std::string			datas;
+		std::vector<User> 	temp_users;
 
 		if (host.host.sin_zero[0] == 'h')
 			server.setHost(host);
@@ -83,22 +85,13 @@ void	server_loop(int port, std::string password, host_info &host)
 			if (server.IsMaster(curr_client) && server.readable(curr_client))
 				server.add(curr_client->Accept());
 			else if (server.readable(curr_client)) {
+				std::cout << "Read signal received" << std::endl;
 				datas = curr_client->Receive();
 				if (!datas.length())
 					server.remove(curr_client);
 				else
 					command_dispatcher(datas, curr_client, server, temp_users);
 			}
-/*			if(test < server.getClients().size())
-			{
-				for(unsigned long i = 0; i < server.getClients().size(); i++)
-				{
-					std::cout << "  ########### USER " << i << " ############\n" << std::endl;
-					server.getClients()[i].displayinfo();
-					//				std::cout << "\n";
-				}
-				test = server.getClients().size();
-			}*/
 		}
 	}
 	catch (se::ServerException &e) {

@@ -8,6 +8,7 @@ NICK blacksmith
 Activity detected on client socket : 5 for reading
 USER blacksmith 0 * :blacksmith
 
-Activity detected on client socket : 5 for reading
 JOIN #test
+PING 127.0.0.1
+QUIT :WeeChat 3.1
 

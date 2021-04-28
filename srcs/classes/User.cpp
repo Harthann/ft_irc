@@ -39,7 +39,7 @@ void	User::setUSER(Commands cmd)
 	this->status = 1;
 }
 
-Socket * User::getSocket() const
+Socket * User::getSocketPtr() const
 {
 	return this->self;
 }
@@ -80,6 +80,16 @@ void	User::displayinfo()
 void	User::ActiveChannel(Channel * ch)
 {
 	this->current_channel = ch;
+}
+
+const std::string	const &User::getNick() const
+{
+	return nickname;
+}
+
+int		User::getSocket() const
+{
+	return (this->self->getSocket());
 }
 
 User::~User()

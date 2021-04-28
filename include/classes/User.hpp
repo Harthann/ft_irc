@@ -15,7 +15,7 @@ class User
 		User();
 		User(Socket *client, Commands cmd);
 		~User();
-		Socket *	getSocket() const;
+		Socket *	getSocketPtr() const;
 		int			getStatus() const;
 		std::string	getNickname() const;
 		std::string	getUser() const;
@@ -23,6 +23,9 @@ class User
 		void		displayinfo();
 		void		setDatas(Commands cmd);
 		void		ActiveChannel(Channel * ch);
+		const std::string &getNick() const;
+		int			getSocket() const;
+
 	protected:
 	private:
 		std::string	nickname;

@@ -13,7 +13,6 @@ Server::Server(int const &master_port, std::string pass)
 	this->max_fd = this->master->getSocket();
 	FD_ZERO(&this->readfds);
 	FD_SET(this->master->getSocket(), &this->readfds);
-
 }
 
 Server::Server(Server const &x)
@@ -74,7 +73,20 @@ void	Server::setHost(host_info &host)
 	}
 }
 
-//	Allow to add a server to proxy list if he succeed identification
+//	Verify if a client is lready register as server or user
+
+bool	Server::isRegister(Socket *client)
+{
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
+		if (client == (*it).getSocketPtr())
+			return true;
+	for (user_it it = users.begin(); it != users.end(); ++it)
+		if (client == (*it).getSocketPtr())
+			return true;
+	return false;
+}
+
+//	Add a server to proxy list if he succeed identification
 
 void	Server::setProxy(Commands &datas, Socket *client)
 {
@@ -90,8 +102,8 @@ void	Server::setProxy(Commands &datas, Socket *client)
 			return ;
 	for (Server::client_it it = clients.begin(); it != clients.end(); ++it)
 		if (*it == client) {
-			std::cout << "Socket password : " << client->getBuff() << std::endl;
-			if (client->getBuff() == this->server_password) {
+			std::cout << "Socket password : " << client->getPassword() << std::endl;
+			if (client->getPassword() == this->server_password) {
 				clients.erase(it);
 			}
 			else {
@@ -106,6 +118,32 @@ void	Server::setProxy(Commands &datas, Socket *client)
 	Proxy tmp(client, hopcount, name);
 	this->servers.push_back(tmp);
 	std::cout << "Added server to network" << std::endl;
+}
+
+//	Add a user to the users list if he succeed identification
+
+void				Server::addUser(User &x)
+{
+	Socket *client = x.getSocketPtr();
+
+	x.getSocketPtr()->Send("001 RPL_WELCOME " + x.getNick() + " Welcome to the server\r\n");
+	for (client_it it = clients.begin(); it != clients.end(); ++it)
+		if (*it == client) {
+			std::cout << "Socket password : " << client->getPassword() << std::endl;
+			if (client->getPassword() == this->server_password) {
+				clients.erase(it);
+				users.push_back(x);
+			}
+			else {
+				client->Send("Connection refused");
+				this->remove(*it);
+				return ;
+			}
+			break ;
+		}
+	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
+	x.displayinfo();
+	std::cout << "  ###############################" << std::endl;
 }
 
 //	Detect activity on any clients connected to the server
@@ -127,6 +165,12 @@ Socket *Server::Select()
 		}
 	}
 	for (Server::proxy_it it = this->servers.begin(); it != servers.end(); ++it) {
+		if (this->readable((*it).getSocketPtr())) {
+			this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
+			return ((*it).getSocketPtr());
+		}
+	}
+	for (Server::user_it it = this->users.begin(); it != users.end(); ++it) {
 		if (this->readable((*it).getSocketPtr())) {
 			this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
 			return ((*it).getSocketPtr());
@@ -169,6 +213,15 @@ void	Server::removeSocket(Socket *x)
 			std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
 			delete (*it).getSocketPtr();
 			servers.erase(it);
+			return ;
+		}
+	}
+	for (user_it it = users.begin(); it != users.end(); ++it)
+	{
+		if ((*it).getSocketPtr() == x) {
+			std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
+			delete (*it).getSocketPtr();
+			users.erase(it);
 			return ;
 		}
 	}
@@ -232,6 +285,26 @@ void	Server::fdSet(proxy_vector &)
 	}
 }
 
+void	Server::fdSet(user_vector &)
+{
+	for (user_it it = users.begin(); it != users.end(); ++it)
+	{
+		if ((*it).getSocket() > 0) {
+			FD_SET((*it).getSocket(), &this->readfds);
+			FD_SET((*it).getSocket(), &this->writefds);
+			if ((*it).getSocket() > max_fd)
+				max_fd = (*it).getSocket();
+		}
+		else {
+			delete ((*it).getSocketPtr());
+			users.erase(it);
+		}
+	}
+}
+
+//	Update fds that are connected to server
+//	before using select
+
 void	Server::update()
 {
 	FD_ZERO(&this->readfds);
@@ -240,6 +313,7 @@ void	Server::update()
 	max_fd = this->master->getSocket();
 	fdSet(this->clients);
 	fdSet(this->servers);
+	fdSet(this->users);
 }
 
 bool	Server::timedOut(Socket *x)
@@ -266,7 +340,7 @@ void	Server::redirect(Commands &cmd, Socket *client)
 	}
 }
 
-std::vector<User>	& Server::getClients()
+std::vector<User>	&Server::getClients()
 {
 	return this->users;
 }

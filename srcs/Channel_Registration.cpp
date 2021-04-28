@@ -5,12 +5,12 @@ User	 check_user(std::vector<User> &temp_users, std::vector<User>server_users, S
 	User temp;
 	for (unsigned long i = 0; i < temp_users.size(); i++)
 	{
-		if(temp_users[i].getSocket() == client)
+		if(temp_users[i].getSocketPtr() == client)
 			temp = temp_users[i];
 	}
 	for (unsigned long i = 0; i < server_users.size(); i++)
 	{
-		if(server_users[i].getSocket() == client)
+		if(server_users[i].getSocketPtr() == client)
 			temp = server_users[i];
 	}
 	return temp;
