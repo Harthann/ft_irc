@@ -128,9 +128,11 @@ void				Server::addUser(User &x)
 
 	x.getSocketPtr()->Send("001 RPL_WELCOME " + x.getNick() + " Welcome to the server\r\n");
 	for (client_it it = clients.begin(); it != clients.end(); ++it)
+	{
 		if (*it == client) {
 			std::cout << "Socket password : " << client->getPassword() << std::endl;
-			if (client->getPassword() == this->server_password) {
+			std::cout << "Server password : " << this->server_password << std::endl;
+			if (this->server_password == "" || client->getPassword() == this->server_password) {
 				clients.erase(it);
 				users.push_back(x);
 			}
@@ -141,6 +143,7 @@ void				Server::addUser(User &x)
 			}
 			break ;
 		}
+	}
 	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
 	x.displayinfo();
 	std::cout << "  ###############################" << std::endl;

@@ -7,7 +7,7 @@ void	validation(std::vector<User> &temp_user, Socket *client)
 		if(temp_user[i].getSocketPtr() == client)
 		{
 	//		client->Confirm("001  RPL_WELCOME Welcome to the Internet Relay Network " + temp_user[i].getNickname() + "!" + temp_user[i].getUser() + "@127.0.0.1");
-			client->Send("001 RPL_WELCOME   Welcome to the Internet Relay Network " + temp_user[i].getNickname() + "!" + temp_user[i].getUser() + "@localhost\n");
+//			client->Send("001 RPL_WELCOME   Welcome to the Internet Relay Network " + temp_user[i].getNickname() + "!" + temp_user[i].getUser() + "@localhost\n");
 
 			break;
 		}

@@ -46,6 +46,7 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 		add_user(client, temp_users, cmd);
 		update_server_user(temp_users, server);
 	}
+
 }
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
