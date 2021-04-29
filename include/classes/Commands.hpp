@@ -6,11 +6,14 @@
 #include "Socket.hpp"
 #include "tokens.hpp"
 
+#define CMD_TYPE 0
+#define MSG_TYPE 1
+
 class Commands
 {
 	
 	public:
-		Commands(std::string &datas);
+		Commands(std::string &datas, int = 0);
 		Commands(Commands const &);
 		Commands &operator=(Commands const&);
 		~Commands();
@@ -23,6 +26,8 @@ class Commands
 		std::string &getCmdParam(size_t);
 		size_t		length() const;
 		bool		isValid();
+		void		setType(int &);
+		const int	&getType() const;
 
 		std::string &operator[](size_t);
 
@@ -36,6 +41,7 @@ class Commands
 
 		std::vector<std::string>	cmd;
 		bool						valid;
+		int							type;
 };
 
 #endif

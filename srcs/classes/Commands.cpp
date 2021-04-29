@@ -1,7 +1,7 @@
 #include "Commands.hpp"
 
-Commands::Commands(std::string &datas)
-: valid(true)
+Commands::Commands(std::string &datas, int type)
+: valid(true), type(type)
 {
 	size_t	tmp = 0;
 	size_t	tmp2 = 0;
@@ -34,6 +34,7 @@ Commands	&Commands::operator=(const Commands &x)
 {
 	this->cmd = x.cmd;
 	this->valid = x.valid;
+	this->type = x.type;
 	return *this;
 }
 
@@ -101,6 +102,16 @@ std::string	&Commands::operator[](size_t i)
 	if (this->cmd[0].find(':') == 0)
 		return (this->cmd[i + 1]);
 	return (this->cmd[i]);
+}
+
+void	Commands::setType(int &type)
+{
+	this->type = type;
+}
+
+const int	&Commands::getType() const
+{
+	return this->type;
 }
 
 size_t	Commands::length()

@@ -18,6 +18,7 @@
 
 # define TIME_LIMIT 10.0
 # define SET_TIMEOUT false
+class Channel;
 
 class Server
 {
@@ -60,6 +61,9 @@ class Server
 		void					setProxy(Commands &, Socket *);
 		void					addUser(User &);
 		bool					timedOut(Socket *);
+		std::vector<Channel>	&getChannels();
+		void					addChannel(Channel &Ch);
+
 
 		typedef std::vector<Socket*>::iterator			client_it;
 		typedef std::vector<Socket*>::const_iterator	const_client_it;
@@ -72,6 +76,7 @@ class Server
 
 		typedef	std::vector<Socket*>					clients_vector;
 		typedef	std::vector<User>						user_vector;
+		typedef	std::vector<Channel>					channel_vector;
 		typedef	std::vector<Proxy>						proxy_vector;
 
 	protected:
@@ -82,6 +87,7 @@ class Server
 		clients_vector			clients;
 		proxy_vector			servers;
 		user_vector				users;
+		channel_vector			channels;
 		
 		fd_set					readfds;
 		int						max_fd;

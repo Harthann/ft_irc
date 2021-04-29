@@ -3,8 +3,11 @@
 
 #include "Socket.hpp"
 #include "Commands.hpp"
+#include "Channel.hpp"
 #include <string.h>
 #include <vector>
+
+class Channel;
 
 class User
 {
@@ -14,12 +17,13 @@ class User
 		~User();
 		Socket *	getSocketPtr() const;
 		int			getStatus() const;
+		std::string	getNickname() const;
+		std::string	getUser() const;
+
 		void		displayinfo();
 		void		setDatas(Commands cmd);
-
-		const std::string &getNick() const;
+		void		ActiveChannel(Channel * ch);
 		int			getSocket() const;
-
 
 	protected:
 	private:
@@ -27,6 +31,7 @@ class User
 		void		setNICK(std::string str);
 		void		setPASS(std::string str);
 		void		setUSER(Commands cmd);
+		Channel		*current_channel;
 		std::string	user;
 		std::string	mode;
 		int status;

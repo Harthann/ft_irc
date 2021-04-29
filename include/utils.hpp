@@ -10,5 +10,4 @@ namespace utils {
 	int							stoi(std::string &str);
 	std::string					itos(int i);
 }
-
 #endif

@@ -2,15 +2,16 @@
 #include "ft_irc.hpp"
 #include "Socket.hpp"
 #include <sstream>
+#include "utils.hpp"
 #include <errno.h>
 #include <string.h>
 #include <vector>
 #include <sys/time.h>
-#include "Server.hpp"
 #include "User.hpp"
-#include "Registration.cpp"
 #include "Commands.hpp"
 #include "Addr.hpp"
+#include "Registration.hpp"
+#include "Channel_Registration.hpp"
 
 #include <limits.h>
 #include <float.h>
@@ -45,6 +46,7 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 		add_user(client, temp_users, cmd);
 		update_server_user(temp_users, server);
 	}
+
 }
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
@@ -60,6 +62,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	}
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
+	else if(cmd.name() == "JOIN")
+		add_to_channel(cmd, client, server, temp_users);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
 	server.redirect(cmd, client);
@@ -67,10 +71,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 
 void	server_loop(int port, std::string password, host_info &host)
 {	
-	int test = 0;
 	try {
 		Server				server(port, password);
-		// Socket				*curr_client;
 		Server::clients_vector	client_list;
 		std::string			datas;
 		std::vector<User> 	temp_users;
@@ -80,7 +82,6 @@ void	server_loop(int port, std::string password, host_info &host)
 		std::cout << "Server construction done" << std::endl;
 		while (server.IsRunning()) {
 				server.update();
-			// curr_client = server.Select();
 			client_list = server.Select();
 			for (Server::client_it it = client_list.begin(); it != client_list.end(); ++ it)
 			{
@@ -99,17 +100,6 @@ void	server_loop(int port, std::string password, host_info &host)
 				if (server.writeable(*it))
 					(*it)->flushWrite();
 			}
-			// if (server.IsMaster(curr_client) && server.readable(curr_client))
-			// 	server.add(curr_client->Accept());
-			// else if (server.readable(curr_client)) {
-			// 	std::cout << "Read signal received" << std::endl;
-			// 	datas = curr_client->Receive();
-			// 	if (!datas.length())
-			// 		server.remove(curr_client);
-			// 	else
-			// 		command_dispatcher(datas, curr_client, server, temp_users);
-			// }
-			// server.flushClient();
 		}
 	}
 	catch (se::ServerException &e) {
@@ -125,11 +115,6 @@ int main(int ac, char **av)
 
 	try {
 		host = parse_info(ac, av, port, pass);
-		// std::cout << "Host ip : " << host.host.getIP() << std::endl;
-		// std::cout << "Host port : " << host.host.getPort() << std::endl;
-		// std::cout << "Host pass : " << host.pass << std::endl;
-		// std::cout << "Host status "	<< host.host.sin_zero << std::endl;
-		// std::cout << "Server port : " << port << std::endl;
 		// std::cout << "Server pass : " << pass << std::endl;
 		server_loop(port, pass, host);
 	}

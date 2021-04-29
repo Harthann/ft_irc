@@ -123,15 +123,16 @@ Socket	*Socket::Accept()
 //	to Receive and Send respectively for an extra argument that set
 //	a timeout option in case of error
 
-void	Socket::Send(std::string message)
+void	Socket::Send(std::string message, int type)
 {
-	// char str[256];
-	write(this->socketfd, message.c_str(), message.length());
+	send(this->socketfd, message.c_str(), message.length(), type * MSG_CONFIRM);
 	// if (send(this->socketfd, message.c_str(), message.length(), 0) != message.length())
 	// 	std::cout << "Error sending message to client : " << this->socketfd << std::endl;
-	// recv(this->socketfd, str, 256, 0);
-	// std::string tmp(str);
-	// std::cout << "Recieved back : " <<  str << std::endl;
+}
+
+void	Socket::Confirm(std::string message)
+{
+	send(this->socketfd, message.c_str(), message.length(), MSG_CONFIRM);
 }
 
 std::string Socket::Receive()
@@ -146,31 +147,28 @@ std::string Socket::Receive()
 
 	do {
 		readed = read(this->socketfd, &buffer, 1);
-		// if (readed > 0)
-		// 	buffer[readed] = '\0';
-		// else
-		// 	return ("");
 		if (readed > 0)
 			ret += buffer;
 	} while (readed && *(ret.end() - 1) != '\n' && *(ret.end() - 2) != '\r');
 	return (ret);
 }
 
-void			Socket::bufferize(Commands &cmd)
+void			Socket::bufferize(Commands &cmd, int type)
 {
+	cmd.setType(type);
 	cmd_buffer.push_back(cmd);
 }
 
-void			Socket::bufferize(std::string cmd)
+void			Socket::bufferize(std::string cmd, int type)
 {
-	cmd_buffer.push_back(Commands(cmd));
+	cmd_buffer.push_back(Commands(cmd, type));
 }
 
 void			Socket::flushWrite()
 {
 	if (!cmd_buffer.empty())
 	{
-		this->Send(cmd_buffer[0].as_string());
+		this->Send(cmd_buffer[0].as_string(), cmd_buffer[0].getType());
 		cmd_buffer.erase(cmd_buffer.begin());
 	}
 }
@@ -229,9 +227,5 @@ std::string Socket::flush()
 	} while (readed > 0);
 	return ret;
 }
-
-/*
-/join channelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelooochannelllllllkllkkkchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchannelchan
-*/
 
 // }

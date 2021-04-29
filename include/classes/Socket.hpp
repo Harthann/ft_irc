@@ -40,7 +40,9 @@ class Socket
 		std::string		getHostName() const;
 		Socket			*Accept();
 		
-		void			Send(std::string message);
+		void			Send(std::string , int );
+		void			Confirm(std::string );
+
 		std::string		Receive();
 
 		void			setPassword(std::string &);
@@ -51,8 +53,8 @@ class Socket
 		std::string		strTime() const;
 		
 		//		Flush respectively read buffer and write buffer
-		void			bufferize(Commands &);
-		void			bufferize(std::string);
+		void			bufferize(Commands &, int = 0);
+		void			bufferize(std::string, int = 0);
 		std::string		flush();
 		void			flushWrite();
 

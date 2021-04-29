@@ -2,12 +2,14 @@
 
 User::User()
 {
+	this->current_channel = 0;
 }
 
 User::User(Socket *client, Commands cmd)
 {
 	this->self = client;
 	this->status = 0;
+	this->current_channel = 0;
 
 	if(cmd[0].compare("PASS") == 0)
 		this->setPASS(cmd[1]);
@@ -47,12 +49,26 @@ int 	User::getStatus() const
 	return this->status;
 }
 
+std::string	User::getNickname() const
+{
+	return this->nickname;
+}
+
+std::string	User::getUser() const
+{
+	return this->user;
+}
+
 void	User::setDatas(Commands cmd)
 {
 	if(cmd[0].compare("NICK") == 0)
+	{
+		std::cout << "Here" << std::endl;
 		this->setNICK(cmd[1]);
+	}
 	else if(cmd[0].compare("USER") == 0)
 		this->setUSER(cmd);
+	
 }
 
 void	User::displayinfo()
@@ -65,9 +81,9 @@ void	User::displayinfo()
 	std::cout << "realname : " << realname << std::endl;
 }
 
-const std::string	const &User::getNick() const
+void	User::ActiveChannel(Channel * ch)
 {
-	return nickname;
+	this->current_channel = ch;
 }
 
 int		User::getSocket() const

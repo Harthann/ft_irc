@@ -47,7 +47,7 @@ Server::~Server()
 
 //	Add a server to connect to base on info inside host_info structure
 //	This server is added to the proxy list and is handle like one
-//	We just need to redirect command to the server to propagate
+//	We just need to redirect command to the sergver to propagate
 //	the information and just indicate wich server as redirect the command
 //	and the hopcount from the client.
 
@@ -122,14 +122,18 @@ void	Server::setProxy(Commands &datas, Socket *client)
 
 //	Add a user to the users list if he succeed identification
 
+
 void				Server::addUser(User &x)
 {
 	Socket *client = x.getSocketPtr();
 
-	x.getSocketPtr()->Send("001 RPL_WELCOME " + x.getNick() + " Welcome to the server\r\n");
+	x.getSocketPtr()->bufferize("001 RPL_WELCOME " + x.getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+	std::cout << "001 RPL_WELCOME " + x.getNickname() + " Welcome to the server" << std::endl;
 	for (client_it it = clients.begin(); it != clients.end(); ++it)
+	{
 		if (*it == client) {
 			std::cout << "Socket password : " << client->getPassword() << std::endl;
+			std::cout << "Server password : " << this->server_password << std::endl;
 			if (client->getPassword() == this->server_password) {
 				clients.erase(it);
 				users.push_back(x);
@@ -141,6 +145,7 @@ void				Server::addUser(User &x)
 			}
 			break ;
 		}
+	}
 	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
 	x.displayinfo();
 	std::cout << "  ###############################" << std::endl;
@@ -165,22 +170,16 @@ Server::clients_vector Server::Select()
 	}
 	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
 		if (this->readable(*it) || this->writeable(*it)) {
-			// this->irc_log << "Activity detected on client socket : " << (*it)->getSocket() << " for reading\n";
-			// return (*it);
 			ret.push_back(*it);
 		}
 	}
 	for (Server::proxy_it it = this->servers.begin(); it != servers.end(); ++it) {
 		if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
-			// this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
-			// return ((*it).getSocketPtr());
 			ret.push_back((*it).getSocketPtr());
 		}
 	}
 	for (Server::user_it it = this->users.begin(); it != users.end(); ++it) {
 		if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
-			// this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
-			// return ((*it).getSocketPtr());
 			ret.push_back((*it).getSocketPtr());
 		}
 	}
@@ -349,7 +348,7 @@ void	Server::redirect(Commands &cmd, Socket *client)
 		{
 			std::cout << "Redirect message to socket : ";
 			std::cout << (*it).getSocket() << std::endl;
-			(*it).getSocketPtr()->Send(datas);
+			(*it).getSocketPtr()->bufferize(datas);
 		}
 	}
 }
@@ -357,6 +356,11 @@ void	Server::redirect(Commands &cmd, Socket *client)
 std::vector<User>	&Server::getClients()
 {
 	return this->users;
+}
+
+std::vector<Channel>	& Server::getChannels()
+{
+	return this->channels;
 }
 
 std::string		Server::IP() const
@@ -392,6 +396,11 @@ bool		Server::writeable(Socket *x) const
 std::fstream	&Server::logStream()
 {
 	return (this->irc_log);
+}
+
+void			Server::addChannel(Channel &Ch)
+{
+	this->channels.push_back(Ch);
 }
 
 void			Server::logString(std::string to_log)
