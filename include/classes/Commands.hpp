@@ -11,6 +11,8 @@ class Commands
 	
 	public:
 		Commands(std::string &datas);
+		Commands(Commands const &);
+		Commands &operator=(Commands const&);
 		~Commands();
 
 		void		add(std::string);
@@ -30,10 +32,7 @@ class Commands
 				return ("access out of range parameter on command line");
 			};
 		};
-//		Commands(Commands const &);
 	private:
-	//	Commands(Commands const &);
-		Commands &operator=(Commands const&);
 
 		std::vector<std::string>	cmd;
 		bool						valid;

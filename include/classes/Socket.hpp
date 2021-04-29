@@ -11,10 +11,13 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include "ft_irc.hpp"
 #include "server_except.hpp"
 #include <iterator>
+#include "ft_irc.hpp"
 #include "Addr.hpp"
+#include "Commands.hpp"
+
+class Commands;
 
 class Socket
 {
@@ -27,19 +30,31 @@ class Socket
 
 		const int &		getSocket() const;
 		Addr			getInfo() const;
+		
+		//	Socket control operators
+
 		bool			Bind();
 		bool			Connect();
 		bool			Listen();
 		std::string		IP() const;
 		std::string		getHostName() const;
 		Socket			*Accept();
-		void			Send(std::string message = "NOTICE {HOME_CHANNEL} Welcome to this server\n");
+		
+		void			Send(std::string message);
 		std::string		Receive();
+
 		void			setPassword(std::string &);
 		std::string 	&getPassword();
-		std::string		flush();
+		
+		//	Control socket timers
 		time_t			getTime() const;
 		std::string		strTime() const;
+		
+		//		Flush respectively read buffer and write buffer
+		void			bufferize(Commands &);
+		void			bufferize(std::string);
+		std::string		flush();
+		void			flushWrite();
 
 		bool	operator==(Socket const& x) {
 			return (x.socketfd == this->socketfd);
@@ -52,10 +67,12 @@ class Socket
 	protected:
 		Socket(int fd, Addr addr, int addr_l);
 
-		Addr				addr;
-		int					socketfd;
-		time_t				timestamp;
-		std::string			password;
+		Addr					addr;
+		int						socketfd;
+		time_t					timestamp;
+		std::string				password;
+		std::vector<Commands>	cmd_buffer;
+		bool					writable;
 };
 
 #endif

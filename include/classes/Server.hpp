@@ -27,38 +27,39 @@ class Server
 		// Server &operator=(Server const&);
 		~Server();
 
-		Socket				*Select();					// Wait for any readable connection
-		void				add(Socket*);				// add a client to the list
-		void				remove(Socket*);			// Remove a client on the list
-		void				update();					// Update fd_set of all client still connected
-		std::vector<User>	&getClients();
-		void				setHost(host_info &);
-		void				Stop();
+		std::vector<Socket*>	Select();					// Wait for any readable connection
+		void					add(Socket*);				// add a client to the list
+		void					remove(Socket*);			// Remove a client on the list
+		void					update();					// Update fd_set of all client still connected
+		std::vector<User>		&getClients();
+		void					setHost(host_info &);
+		void					Stop();
 
-		std::string			IP() const;
-		bool				IsMaster(Socket*);
-		bool				IsRunning() const;
+		std::string				IP() const;
+		bool					IsMaster(Socket*);
+		bool					IsRunning() const;
 
-		bool				readable(Socket *) const;
-		bool				writeable(Socket *) const;
-		void				redirect(Commands &, Socket *);
+		bool					readable(Socket *) const;
+		bool					writeable(Socket *) const;
+		void					redirect(Commands &, Socket *);
+		void					flushClient(); // Try to send pending message for each client
 		
 		// logs function to keep a trace of events
 		
-		std::fstream		&logStream();
-		void				logString(std::string);
+		std::fstream			&logStream();
+		void					logString(std::string);
 
 		//	fdSet functions update socket list for select
-		void				fdSet(std::vector<Socket*> &);
-		void				fdSet(std::vector<Proxy> &);
-		void				fdSet(std::vector<User> &);
+		void					fdSet(std::vector<Socket*> &);
+		void					fdSet(std::vector<Proxy> &);
+		void					fdSet(std::vector<User> &);
 
 		//	Controls Socket flows inside server
-		bool				isRegister(Socket *);
-		void				removeSocket(Socket *);
-		void				setProxy(Commands &, Socket *);
-		void				addUser(User &);
-		bool				timedOut(Socket *);
+		bool					isRegister(Socket *);
+		void					removeSocket(Socket *);
+		void					setProxy(Commands &, Socket *);
+		void					addUser(User &);
+		bool					timedOut(Socket *);
 
 		typedef std::vector<Socket*>::iterator			client_it;
 		typedef std::vector<Socket*>::const_iterator	const_client_it;

@@ -2,7 +2,7 @@
 #include <fcntl.h>
 
 Socket::Socket(int port, std::string , std::string IP)
-: addr(), password()
+: addr(), password(), cmd_buffer(), writable(false)
 {
 	time(&this->timestamp);
 	const int opt = 1;
@@ -20,7 +20,7 @@ Socket::Socket(int port, std::string , std::string IP)
 }
 
 Socket::Socket(host_info &host)
-: password()
+: password(), cmd_buffer(), writable(false)
 {
 	const int opt = 1;
 	time(&this->timestamp);
@@ -154,6 +154,25 @@ std::string Socket::Receive()
 			ret += buffer;
 	} while (readed && *(ret.end() - 1) != '\n' && *(ret.end() - 2) != '\r');
 	return (ret);
+}
+
+void			Socket::bufferize(Commands &cmd)
+{
+	cmd_buffer.push_back(cmd);
+}
+
+void			Socket::bufferize(std::string cmd)
+{
+	cmd_buffer.push_back(Commands(cmd));
+}
+
+void			Socket::flushWrite()
+{
+	if (!cmd_buffer.empty())
+	{
+		this->Send(cmd_buffer[0].as_string());
+		cmd_buffer.erase(cmd_buffer.begin());
+	}
 }
 
 void			Socket::setPassword(std::string &x)

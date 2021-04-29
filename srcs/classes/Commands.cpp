@@ -25,14 +25,21 @@ Commands::Commands(std::string &datas)
 	} while (tmp2 != datas.length());
 }
 
+Commands::Commands(const Commands &x)
+{
+	*this = x;
+}
+
+Commands	&Commands::operator=(const Commands &x)
+{
+	this->cmd = x.cmd;
+	this->valid = x.valid;
+	return *this;
+}
+
 Commands::~Commands()
 {
 
-}
-
-Commands	&Commands::operator=(Commands const &)
-{
-	return (*this);
 }
 
 std::string		Commands::as_string()

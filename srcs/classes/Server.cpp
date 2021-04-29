@@ -66,7 +66,7 @@ void	Server::setHost(host_info &host)
 			throw se::ConnectionFailed(mem->getInfo());
 		ret.append(mem->getHostName());
 		ret.append("Experimental server\r\n");
-		mem->Send(ret);
+		mem->bufferize(ret);
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 		throw e;
@@ -94,7 +94,7 @@ void	Server::setProxy(Commands &datas, Socket *client)
 	std::string name;
 
 	if (datas.length() < 4) {
-		client->Send("ERRROR :SERVER Wrong command format\r\n");
+		client->bufferize("ERRROR :SERVER Wrong command format\r\n");
 		return ;
 	}
 	for (Server::proxy_it it = servers.begin(); it != servers.end(); ++it)
@@ -107,7 +107,7 @@ void	Server::setProxy(Commands &datas, Socket *client)
 				clients.erase(it);
 			}
 			else {
-				client->Send("Connection refused");
+				client->bufferize("Connection refused");
 				this->remove(*it);
 				return ;
 			}
@@ -135,7 +135,7 @@ void				Server::addUser(User &x)
 				users.push_back(x);
 			}
 			else {
-				client->Send("Connection refused");
+				client->bufferize("Connection refused");
 				this->remove(*it);
 				return ;
 			}
@@ -151,38 +151,40 @@ void				Server::addUser(User &x)
 //	datas by updating constantly writefds that contains
 //	all writeable fds
 
-Socket *Server::Select()
+Server::clients_vector Server::Select()
 {
 	int activity;
+	clients_vector ret;
 
 	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, NULL);
 	if (activity < 0)
 		throw se::SelectFailed();
+	if (this->readable(master)) {
+		this->irc_log << "Activity detected on master socket : " << master->getSocket() << "\n";
+		ret.push_back(master);
+	}
 	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
-		if (this->readable(*it)) {
-			this->irc_log << "Activity detected on client socket : " << (*it)->getSocket() << " for reading\n";
-			return (*it);
+		if (this->readable(*it) || this->writeable(*it)) {
+			// this->irc_log << "Activity detected on client socket : " << (*it)->getSocket() << " for reading\n";
+			// return (*it);
+			ret.push_back(*it);
 		}
 	}
 	for (Server::proxy_it it = this->servers.begin(); it != servers.end(); ++it) {
-		if (this->readable((*it).getSocketPtr())) {
-			this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
-			return ((*it).getSocketPtr());
+		if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
+			// this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
+			// return ((*it).getSocketPtr());
+			ret.push_back((*it).getSocketPtr());
 		}
 	}
 	for (Server::user_it it = this->users.begin(); it != users.end(); ++it) {
-		if (this->readable((*it).getSocketPtr())) {
-			this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
-			return ((*it).getSocketPtr());
+		if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
+			// this->irc_log << "Activity detected on client socket : " << (*it).getSocket() << " for reading\n";
+			// return ((*it).getSocketPtr());
+			ret.push_back((*it).getSocketPtr());
 		}
 	}
-	for (Server::client_it it = this->clients.begin(); it != clients.end(); ++it) {
-		if (this->writeable(*it))
-			return (*it);
-	}
-	if (this->readable(master))
-		this->irc_log << "Activity detected on master socket : " << master->getSocket() << "\n";
-	return master;
+	return ret;
 }
 
 void	Server::add(Socket *x)
@@ -242,6 +244,18 @@ void	Server::remove(Socket *x)
 	std::cout << " : " << tmp.getPort() << std::endl;
 	removeSocket(x);
 	this->update();
+}
+
+void	Server::flushClient()
+{
+	for (client_it it = clients.begin(); it != clients.end(); ++it)
+		if (writeable(*it))
+			(*it)->flushWrite();
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
+		if (writeable((*it).getSocketPtr()))
+			(*it).getSocketPtr()->flushWrite();
+	// for ()
+
 }
 
 void	Server::fdSet(clients_vector &clients)

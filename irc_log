@@ -1,9 +1,20 @@
 Activity detected on master socket : 4
-Activity detected on client socket : 5 for reading
 NICK nieyraud
 
-Activity detected on client socket : 5 for reading
 USER nieyraud 0 * :nieyraud
 
+Activity detected on master socket : 4
+CAP LS 302
+
+NICK harthann
+
+USER harth 0 * :realname
+
+JOIN test
+
+QUIT :Leaving
+
+
 QUIT :WeeChat 3.0
+
 
