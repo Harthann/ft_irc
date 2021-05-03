@@ -17,8 +17,10 @@ class Channel
 	protected:
 		Channel();
 		std::string				name;
+		std::string				topic;
 		user_vector				active_users;
 		User					 * channel_operator;
+		std::string 			list_all_users();
 };
 
 #endif
