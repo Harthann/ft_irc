@@ -28,7 +28,7 @@ class Server
 		// Server &operator=(Server const&);
 		~Server();
 
-		std::vector<Socket*>	Select();					// Wait for any readable connection
+		std::vector<Socket*>	&Select();					// Wait for any readable connection
 		void					add(Socket*);				// add a client to the list
 		void					remove(Socket*);			// Remove a client on the list
 		void					update();					// Update fd_set of all client still connected
@@ -65,28 +65,33 @@ class Server
 		void					addChannel(Channel &Ch);
 
 
-		typedef std::vector<Socket*>::iterator			client_it;
-		typedef std::vector<Socket*>::const_iterator	const_client_it;
-
-		typedef std::vector<Proxy>::iterator			proxy_it;
-		typedef std::vector<Proxy>::const_iterator		const_proxy_it;
-
-		typedef std::vector<User>::iterator				user_it;
-		typedef std::vector<User>::const_iterator		const_user_it;
-
 		typedef	std::vector<Socket*>					clients_vector;
 		typedef	std::vector<User>						user_vector;
 		typedef	std::vector<Channel>					channel_vector;
 		typedef	std::vector<Proxy>						proxy_vector;
+	
+		typedef clients_vector::iterator				client_it;
+		typedef clients_vector::const_iterator			const_client_it;
+
+		typedef proxy_vector::iterator					proxy_it;
+		typedef proxy_vector::const_iterator			const_proxy_it;
+
+		typedef user_vector::iterator					user_it;
+		typedef user_vector::const_iterator				const_user_it;
+
+		typedef channel_vector::iterator				channel_it;
+		typedef channel_vector::const_iterator			const_channel_it;
 
 	protected:
 		std::fstream irc_log;
 		
 		Socket					*master;
 
-		clients_vector			clients;
+		clients_vector			pending_clients;
+		clients_vector			socket_list;
 		proxy_vector			servers;
 		user_vector				users;
+
 		channel_vector			channels;
 		
 		fd_set					readfds;

@@ -86,13 +86,15 @@ void	server_loop(int port, std::string password, host_info &host)
 			for (Server::client_it it = client_list.begin(); it != client_list.end(); ++ it)
 			{
 				if (server.readable(*it)) {
-					std::cout << "Read signal received" << std::endl;
+					std::cout << "Read signal received on socket : " << (*it)->getSocket() << std::endl;
 					if (server.IsMaster(*it))
 						server.add((*it)->Accept());
 					else {
 						datas = (*it)->Receive();
-						if (!datas.length())
+						if (!datas.length()) {
 							server.remove(*it);
+							break ;
+						}
 						else
 							command_dispatcher(datas, *it, server, temp_users);
 					}
