@@ -6,19 +6,7 @@ USER blacksmith 0 * :blacksmith
 
 JOIN #test
 
-PRIVMSG Welcome :dffddf
-
-PRIVMSG Welcome :fdfdfd
-
-PRIVMSG Welcome :fdgdg
-
-PRIVMSG Welcome :gdgqmldmds
-
-PRIVMSG Welcome :sdlkklds
-
-PRIVMSG Welcome :fdkldfkjfdjs
-
-PRIVMSG Welcome :sdkjfdjkfd
+MODE #test
 
 QUIT :WeeChat 3.1
 

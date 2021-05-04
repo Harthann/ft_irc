@@ -21,6 +21,7 @@ class Channel
 		user_vector				active_users;
 		User					 * channel_operator;
 		std::string 			list_all_users();
+		std::string				server_name;
 };
 
 #endif
