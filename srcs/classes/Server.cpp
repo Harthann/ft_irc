@@ -90,7 +90,7 @@ bool	Server::isRegister(Socket *client)
 		if (client == (*it).getSocketPtr())
 			return true;
 	for (user_it it = users.begin(); it != users.end(); ++it)
-		if (client == (*it).getSocketPtr())
+		if (client == (*it)->getSocketPtr())
 			return true;
 	return false;
 }
@@ -131,9 +131,9 @@ void	Server::setProxy(Commands &datas, Socket *client)
 
 //	Add a user to the users list if he succeed identification
 
-void				Server::addUser(User &x)
+void				Server::addUser(User *x)
 {
-	Socket *client = x.getSocketPtr();
+	Socket *client = x->getSocketPtr();
 
 	// for (proxy_it it = servers.begin(); it != servers.end(); ++it)
 	// {
@@ -163,9 +163,9 @@ void				Server::addUser(User &x)
 			break ;
 		}
 	}
-	x.getSocketPtr()->bufferize("001 RPL_WELCOME " + x.getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+	x->getSocketPtr()->bufferize("001 RPL_WELCOME " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
 	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
-	x.displayinfo();
+	x->displayinfo();
 	std::cout << "  ###############################" << std::endl;
 }
 
@@ -240,7 +240,7 @@ void	Server::removeSocket(Socket *x)
 	}
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
-		if ((*it).getSocketPtr() == x) {
+		if ((*it)->getSocketPtr() == x) {
 			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
 			// delete (*it).getSocketPtr();
 			users.erase(it);
@@ -332,14 +332,14 @@ void	Server::fdSet(user_vector &)
 {
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
-		if ((*it).getSocket() > 0) {
-			FD_SET((*it).getSocket(), &this->readfds);
-			FD_SET((*it).getSocket(), &this->writefds);
-			if ((*it).getSocket() > max_fd)
-				max_fd = (*it).getSocket();
+		if ((*it)->getSocket() > 0) {
+			FD_SET((*it)->getSocket(), &this->readfds);
+			FD_SET((*it)->getSocket(), &this->writefds);
+			if ((*it)->getSocket() > max_fd)
+				max_fd = (*it)->getSocket();
 		}
 		else {
-			delete ((*it).getSocketPtr());
+			delete ((*it)->getSocketPtr());
 			users.erase(it);
 		}
 	}
@@ -383,12 +383,12 @@ void	Server::redirect(Commands &cmd, Socket *client)
 	}
 }
 
-std::vector<User>	&Server::getClients()
+std::vector<User *>	&Server::getClients()
 {
 	return this->users;
 }
 
-std::vector<Channel>	& Server::getChannels()
+std::vector<Channel *>	& Server::getChannels()
 {
 	return this->channels;
 }
@@ -428,7 +428,7 @@ std::fstream	&Server::logStream()
 	return (this->irc_log);
 }
 
-void			Server::addChannel(Channel &Ch)
+void			Server::addChannel(Channel *Ch)
 {
 	this->channels.push_back(Ch);
 }

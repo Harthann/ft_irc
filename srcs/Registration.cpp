@@ -39,7 +39,7 @@ int		already_register(Socket *client, Server &server)
 {
 	for(unsigned long i = 0; i < server.getClients().size(); ++i)
 	{
-		if(server.getClients()[i].getSocketPtr() == client)
+		if(server.getClients()[i]->getSocketPtr() == client)
 			return (1);
 	}
 	return (0);
@@ -48,11 +48,13 @@ int		already_register(Socket *client, Server &server)
 void	update_server_user(std::vector<User> &temp_user, Server &server)
 {
 	std::vector<User>::iterator ite = temp_user.end();
+	User *temp;
 	for (std::vector<User>::iterator it = temp_user.begin(); it != ite; ++it)
 	{
 		if (it->getStatus() == 1)
 		{
-			server.addUser(*it);
+			temp = new User(*it);
+			server.addUser(temp);
 			it = temp_user.erase(it);
 		}
 	}

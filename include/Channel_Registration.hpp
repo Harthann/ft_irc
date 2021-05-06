@@ -6,7 +6,7 @@
 /*   By: stbaleba <stbaleba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/25 18:08:42 by stbaleba          #+#    #+#             */
-/*   Updated: 2021/04/25 18:13:11 by stbaleba         ###   ########.fr       */
+/*   Updated: 2021/05/07 01:06:21 by stbaleba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,11 @@
 # include <vector>
 # include <iostream>
 
-User	 check_user(std::vector<User> &temp_users, std::vector<User>server_users, Socket *client);
+User	 *check_user(std::vector<User>server_users, Socket *client);
 int		channel_exist(std::string name, Server &server);
-void	add_member(User &user, Server &server, std::string name);
-void	add_to_channel(Commands cmd, Socket *client, Server &server, std::vector<User> &temp_users);
+void	add_member(User *user, Server &server, std::string name);
+void	add_to_channel(Commands cmd, Socket *client, Server &server);
+void	part_from_channel(Commands cmd, Socket *client, Server &server);
+
 
 #endif

@@ -9,18 +9,22 @@ class User;
 class Channel
 {
 	public:
-		Channel(std::string Name, User &channel_operator);
-		std::string			getName();
-		void				addUser(User &user);
-		~Channel();
-		typedef	std::vector<User>		user_vector;
-	protected:
 		Channel();
+		Channel(std::string Name, User *channel_operator);
+		std::string			getName();
+		void				addUser(User *user);
+		void				part(Socket *user);
+		~Channel();
+		typedef	std::vector<User *>		user_vector;
+		typedef	std::vector<std::string>		string_vector;
+
+	protected:
 		std::string				name;
 		std::string				topic;
 		user_vector				active_users;
-		User					 * channel_operator;
-		std::string 			list_all_users();
+		User					*channel_operator;
+		string_vector 			list_all_users;
+		std::string				user_list();
 		std::string				server_name;
 };
 

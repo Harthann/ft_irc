@@ -8,6 +8,5 @@ JOIN #test
 
 MODE #test
 
-QUIT :WeeChat 3.1
-
+PART #test :WeeChat 3.1
 

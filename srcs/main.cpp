@@ -63,7 +63,9 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
 	else if(cmd.name() == "JOIN")
-		add_to_channel(cmd, client, server, temp_users);
+		add_to_channel(cmd, client, server);
+	else if(cmd.name() == "PART")
+		part_from_channel(cmd, client, server);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
 	server.redirect(cmd, client);

@@ -22,8 +22,9 @@ class User
 
 		void		displayinfo();
 		void		setDatas(Commands cmd);
-		void		ActiveChannel(Channel * ch);
+		void		ActiveChannel(Channel *ch);
 		int			getSocket() const;
+		void		partChannel(std::string ch);
 
 	protected:
 	private:
@@ -31,7 +32,7 @@ class User
 		void		setNICK(std::string str);
 		void		setPASS(std::string str);
 		void		setUSER(Commands cmd);
-		Channel		*current_channel;
+		std::vector	<Channel *> current_channel;
 		std::string	user;
 		std::string	mode;
 		int status;

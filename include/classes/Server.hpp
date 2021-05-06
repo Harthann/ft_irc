@@ -32,7 +32,7 @@ class Server
 		void					add(Socket*);				// add a client to the list
 		void					remove(Socket*);			// Remove a client on the list
 		void					update();					// Update fd_set of all client still connected
-		std::vector<User>		&getClients();
+		std::vector<User *>		&getClients();
 		void					setHost(host_info &);
 		void					Stop();
 
@@ -53,21 +53,21 @@ class Server
 		//	fdSet functions update socket list for select
 		void					fdSet(std::vector<Socket*> &);
 		void					fdSet(std::vector<Proxy> &);
-		void					fdSet(std::vector<User> &);
+		void					fdSet(std::vector<User *> &);
 
 		//	Controls Socket flows inside server
 		bool					isRegister(Socket *);
 		void					removeSocket(Socket *);
 		void					setProxy(Commands &, Socket *);
-		void					addUser(User &);
+		void					addUser(User *);
 		bool					timedOut(Socket *);
-		std::vector<Channel>	&getChannels();
-		void					addChannel(Channel &Ch);
+		std::vector<Channel *>	&getChannels();
+		void					addChannel(Channel *Ch);
 
 
 		typedef	std::vector<Socket*>					clients_vector;
-		typedef	std::vector<User>						user_vector;
-		typedef	std::vector<Channel>					channel_vector;
+		typedef	std::vector<User *>						user_vector;
+		typedef	std::vector<Channel *>					channel_vector;
 		typedef	std::vector<Proxy>						proxy_vector;
 	
 		typedef clients_vector::iterator				client_it;
