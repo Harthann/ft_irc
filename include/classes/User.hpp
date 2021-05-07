@@ -25,6 +25,7 @@ class User
 		void		ActiveChannel(Channel *ch);
 		int			getSocket() const;
 		void		partChannel(std::string ch);
+		void		partChannels();
 
 	protected:
 	private:

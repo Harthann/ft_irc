@@ -27,6 +27,15 @@ void	exit_server(Commands &, Socket *, Server &server)
 	server.Stop();
 }
 
+void	quit_server(Socket *client, Server &server, Commands &cmd)
+{
+	User *temp = check_user(server.getClients(), client);
+
+	temp->partChannels();
+	server.delete_user(temp, cmd[1]);
+	delete temp;
+}
+
 void	identification(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users)
 {
 	int ret = 0;
@@ -66,6 +75,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		add_to_channel(cmd, client, server);
 	else if(cmd.name() == "PART")
 		part_from_channel(cmd, client, server);
+	else if(cmd.name() == "QUIT")
+		quit_server(client, server, cmd);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
 	server.redirect(cmd, client);

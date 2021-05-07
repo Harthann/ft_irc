@@ -33,6 +33,7 @@ class Server
 		void					remove(Socket*);			// Remove a client on the list
 		void					update();					// Update fd_set of all client still connected
 		std::vector<User *>		&getClients();
+		void					delete_user(User *user, std::string msg1);
 		void					setHost(host_info &);
 		void					Stop();
 

@@ -437,3 +437,18 @@ void			Server::logString(std::string to_log)
 {
 	this->irc_log << to_log << std::endl;
 }
+
+void			Server::delete_user(User *user, std::string msg1)
+{
+	std::string msg;
+	for(unsigned int i = 0; i < users.size(); ++i)
+	{
+		if(user->getSocketPtr() == users[i]->getSocketPtr())
+		{
+			msg = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1 QUIT :" + msg1 + "\n";
+			user->getSocketPtr()->bufferize(msg);
+			users.erase(users.begin() + i);
+			break;
+		}
+	}
+}

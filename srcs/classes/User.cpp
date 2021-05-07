@@ -102,6 +102,15 @@ void	User::partChannel(std::string ch)
 	}
 }
 
+void	User::partChannels()
+{
+	for(unsigned int i = 0; i < current_channel.size(); ++i)
+	{
+		current_channel[i]->part(this->getSocketPtr());
+		current_channel.erase(current_channel.begin() + i);
+	}
+}
+
 User::~User()
 {
 }
