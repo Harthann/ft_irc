@@ -14,6 +14,7 @@ class Channel
 		std::string			getName();
 		void				addUser(User *user);
 		void				part(Socket *user);
+		int					NumberOfUsers();
 		~Channel();
 		typedef	std::vector<User *>		user_vector;
 		typedef	std::vector<std::string>		string_vector;

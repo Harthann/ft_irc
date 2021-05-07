@@ -80,6 +80,11 @@ void				Channel::part(Socket *user)
 	}
 }
 
+int				Channel::NumberOfUsers()
+{
+	return active_users.size();
+}
+
 Channel::~Channel()
 {
 

@@ -452,3 +452,17 @@ void			Server::delete_user(User *user, std::string msg1)
 		}
 	}
 }
+
+void		Server::checkChannels()
+{
+	Channel *temp;
+	for(unsigned int i = 0; i < channels.size(); ++i)
+	{
+		if (channels[i]->NumberOfUsers() == 0)
+		{
+			temp = channels[i];
+			channels.erase(channels.begin() + i);
+			delete temp;
+		}
+	}
+}

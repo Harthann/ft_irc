@@ -64,6 +64,7 @@ class Server
 		bool					timedOut(Socket *);
 		std::vector<Channel *>	&getChannels();
 		void					addChannel(Channel *Ch);
+		void					checkChannels();
 
 
 		typedef	std::vector<Socket*>					clients_vector;

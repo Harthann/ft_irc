@@ -115,6 +115,7 @@ void	server_loop(int port, std::string password, host_info &host)
 				if (server.writeable(*it))
 					(*it)->flushWrite();
 			}
+			server.checkChannels();
 		}
 	}
 	catch (se::ServerException &e) {

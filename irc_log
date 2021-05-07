@@ -11,3 +11,16 @@ MODE #test
 QUIT :WeeChat 3.1
 
 
+PASS password
+
+NICK blacksmith
+
+USER blacksmith 0 * :blacksmith
+
+JOIN #test
+
+MODE #test
+
+QUIT :WeeChat 3.1
+
+
