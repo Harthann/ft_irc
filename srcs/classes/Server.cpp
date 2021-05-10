@@ -130,21 +130,21 @@ void	Server::setProxy(Commands &datas, Socket *client)
 }
 
 //	Add a user to the users list if he succeed identification
-
 void				Server::addUser(User &x)
 {
 	Socket *client = x.getSocketPtr();
 
-	// for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-	// {
-	// 	if (x.getSocketPtr() == (*it).getSocketPtr()) {
-	// 		if (client->getPassword() == this->server_password)
-	// 			(*it).addUser(x);
-	// 		else
-	// 			client->bufferize("Connection refused");
-	// 		return ;
-	// 	}
-	// }
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
+	{
+		if (x.getSocketPtr() == (*it).getSocketPtr()) {
+			if (client->getPassword() == this->server_password)
+				users.push_back(x);
+			else {
+				client->bufferize("Connection refused");
+				return ;
+			}
+		}
+	}
 	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 	{
 		if (*it == client) {
@@ -153,7 +153,6 @@ void				Server::addUser(User &x)
 			if (client->getPassword() == this->server_password) {
 				pending_clients.erase(it);
 				users.push_back(x);
-				// socket_list.push_back(client);
 			}
 			else {
 				client->bufferize("Connection refused");
@@ -182,27 +181,7 @@ Server::clients_vector &Server::Select()
 	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, NULL);
 	if (activity < 0)
 		throw se::SelectFailed();
-	// if (this->readable(master)) {
-	// 	this->irc_log << "Activity detected on master socket : " << master->getSocket() << "\n";
-	// 	ret.push_back(master);
-	// }
 	return this->socket_list;
-	// for (Server::client_it it = this->pending_clients.begin(); it != pending_clients.end(); ++it) {
-	// 	if (this->readable(*it) || this->writeable(*it)) {
-	// 		ret.push_back(*it);
-	// 	}
-	// }
-	// for (Server::proxy_it it = this->servers.begin(); it != servers.end(); ++it) {
-	// 	if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
-	// 		ret.push_back((*it).getSocketPtr());
-	// 	}
-	// }
-	// for (Server::user_it it = this->users.begin(); it != users.end(); ++it) {
-	// 	if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
-	// 		ret.push_back((*it).getSocketPtr());
-	// 	}
-	// }
-	// return ret;
 }
 
 void	Server::add(Socket *x)
@@ -224,29 +203,12 @@ void	Server::removeSocket(Socket *x)
 	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it) {
 		if ((*it) == x)
 		{
-			// std::cout << "Closing connection on socket : " << (*it)->getSocket() << std::endl;
-			// delete (*it);
 			pending_clients.erase(it);
 			break ;
 		}
 	}
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
-		if ((*it).getSocketPtr() == x) {
-			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
-			// delete (*it).getSocketPtr();
-			servers.erase(it);
-			break ;
-		}
-	}
-	for (user_it it = users.begin(); it != users.end(); ++it)
-	{
-		if ((*it).getSocketPtr() == x) {
-			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
-			// delete (*it).getSocketPtr();
-			users.erase(it);
-			break ;
-		}
-	}
+	removeServer(x);
+	removeUser(x);
 	for (client_it it = socket_list.begin(); it != socket_list.end(); ++it) {
 		if ((*it) == x)
 		{
@@ -254,6 +216,41 @@ void	Server::removeSocket(Socket *x)
 			delete (*it);
 			socket_list.erase(it);
 			return ;
+		}
+	}
+}
+
+void	Server::removeUser(Socket *x)
+{
+	for (user_it it = this->users.begin(); it != users.end(); ++it)
+	{
+		if (x == (*it).getSocketPtr()) {
+			std::cout << "Users " << (*it).getNickname() << " left" << std::endl;
+			it = users.erase(it);
+		}
+	}
+}
+
+void	Server::removeUser(User &user)
+{
+	for (user_it it = this->users.begin(); it != users.end(); ++it)
+	{
+		if (*it == user)
+		{
+			std::cout << "Users " << (*it).getNickname() << " left" << std::endl;
+			users.erase(it);
+			break ;
+		}
+	}
+}
+
+void	Server::removeServer(Socket *x)
+{
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
+	{
+		if (x == (*it).getSocketPtr()) {
+			std::cout << "Server " << (*it).getSocket() << " left" << std::endl;
+			it = servers.erase(it);
 		}
 	}
 }
@@ -268,9 +265,10 @@ void	Server::remove(Socket *x)
 	this->irc_log << buffer << std::endl;
 	std::cout << buffer <<std::endl;
 	getpeername(x->getSocket(), tmp.as_sockaddr(),
-									reinterpret_cast<socklen_t*>(&tmp_addr_len));
+				reinterpret_cast<socklen_t*>(&tmp_addr_len));
 	std::cout << "User left : " << tmp.getIP();
 	std::cout << " : " << tmp.getPort() << std::endl;
+	// for each user, create cmd leave to send to every server
 	removeSocket(x);
 	this->update();
 }
@@ -283,7 +281,6 @@ void	Server::flushClient()
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
 		if (writeable((*it).getSocketPtr()))
 			(*it).getSocketPtr()->flushWrite();
-	// for ()
 
 }
 
@@ -380,6 +377,15 @@ void	Server::redirect(Commands &cmd, Socket *client)
 			std::cout << (*it).getSocket() << std::endl;
 			(*it).getSocketPtr()->bufferize(datas);
 		}
+	}
+}
+
+User 		&Server::getUserByName(std::string name)
+{
+	for (user_it it = users.begin(); it != users.end(); ++it)
+	{
+		if ((*it).getNickname() == name)
+			return (*it);
 	}
 }
 

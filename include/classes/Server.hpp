@@ -64,6 +64,12 @@ class Server
 		std::vector<Channel>	&getChannels();
 		void					addChannel(Channel &Ch);
 
+		void					removeUser(Socket*);
+		void					removeUser(User &);
+		void					removeServer(Socket*);
+
+		User					&getUserByName(std::string);
+
 
 		typedef	std::vector<Socket*>					clients_vector;
 		typedef	std::vector<User>						user_vector;

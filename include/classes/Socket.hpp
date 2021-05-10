@@ -75,6 +75,7 @@ class Socket
 		std::string				password;
 		std::vector<Commands>	cmd_buffer;
 		bool					writable;
+		int						usage;
 };
 
 #endif

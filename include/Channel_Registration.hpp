@@ -20,9 +20,9 @@
 # include <vector>
 # include <iostream>
 
-User	 check_user(std::vector<User> &temp_users, std::vector<User>server_users, Socket *client);
+User	 check_user(std::vector<User> &temp_users, std::vector<User> &server_users, Socket *client);
 int		channel_exist(std::string name, Server &server);
 void	add_member(User &user, Server &server, std::string name);
-void	add_to_channel(Commands cmd, Socket *client, Server &server, std::vector<User> &temp_users);
+void	add_to_channel(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users);
 
 #endif

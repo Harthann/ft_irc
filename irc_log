@@ -1,25 +1,16 @@
-PASS password
+NICK nieyraud
 
-NICK blacksmith
+USER nieyraud 0 * :nieyraud
 
-USER blacksmith 0 * :blacksmith
+001 RPL_WELCOME nieyraud Welcome to the servernieyraud JOIN tPRIVMSPRIVMSG Welcome :helCAP LSCAP LS NICK hNICK harthUSER hUSER harth 0 * :realnJOIN tharthaPING 127.0.0.1PIJOIN test
 
-JOIN #test
+JOIN Welcome
 
-PRIVMSG Welcome :dffddf
+QUIT :Leaving
 
-PRIVMSG Welcome :fdfdfd
 
-PRIVMSG Welcome :fdgdg
+ JOIN Welcome
 
-PRIVMSG Welcome :gdgqmldmds
-
-PRIVMSG Welcome :sdlkklds
-
-PRIVMSG Welcome :fdkldfkjfdjs
-
-PRIVMSG Welcome :sdkjfdjkfd
-
-QUIT :WeeChat 3.1
+QUIT :Leaving
 
 

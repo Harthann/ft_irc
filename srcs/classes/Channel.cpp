@@ -36,6 +36,16 @@ std::string			Channel::getName()
 	return this->name;
 }
 
+bool			Channel::checkPresence(User &x)
+{
+	for (user_vector::iterator it = active_users.begin(); it != active_users.end(); ++it)
+	{
+		if (x.getNickname() == (*it).getNickname())
+			return true;
+	}
+	return false;
+}
+
 std::string		Channel::list_all_users()
 {
 	std::string user_list;

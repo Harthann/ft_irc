@@ -79,6 +79,8 @@ void	User::displayinfo()
 	std::cout << "mode : " << mode << std::endl;
 	std::cout << "status : " << status << std::endl;
 	std::cout << "realname : " << realname << std::endl;
+	std::cout << "Socketptr : " << this->getSocketPtr() << std::endl;
+	std::cout << "Socket : " << this->getSocket() << std::endl;
 }
 
 void	User::ActiveChannel(Channel * ch)
@@ -89,6 +91,11 @@ void	User::ActiveChannel(Channel * ch)
 int		User::getSocket() const
 {
 	return (this->self->getSocket());
+}
+
+bool	User::operator==(const User& rhs)
+{
+	return (this->nickname == rhs.nickname && this->user == rhs.user);
 }
 
 User::~User()

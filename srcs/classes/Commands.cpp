@@ -72,6 +72,15 @@ std::string		Commands::from()
 	return ("");
 }
 
+void			Commands::setFrom(std::string str)
+{
+	if (this->cmd[0].find(':') == 0)
+		this->cmd[0] = str;
+	else
+		this->cmd.insert(this->cmd.begin(), str);
+
+}
+
 std::string		Commands::name()
 {
 	if (this->cmd[0].find(':') == 0)

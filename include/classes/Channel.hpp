@@ -10,9 +10,11 @@ class Channel
 {
 	public:
 		Channel(std::string Name, User &channel_operator);
-		std::string			getName();
-		void				addUser(User &user);
 		~Channel();
+
+		std::string			getName();
+		bool				checkPresence(User &);
+		void				addUser(User &user);
 		typedef	std::vector<User>		user_vector;
 	protected:
 		Channel();
