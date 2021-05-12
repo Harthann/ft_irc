@@ -27,6 +27,8 @@ class User
 		void		partChannel(std::string ch);
 		void		partChannels();
 
+		bool		operator == (User *u2);
+
 	protected:
 	private:
 		std::string	nickname;

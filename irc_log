@@ -1,26 +1,52 @@
-PASS password
+NICK user42
 
-NICK blacksmith
-
-USER blacksmith 0 * :blacksmith
+USER user42 0 * :user42
 
 JOIN #test
 
 MODE #test
 
-QUIT :WeeChat 3.1
+NICK user42
+
+USER steve 0 * :steve
+
+JOIN #test
+
+PING 127.0.0.1
+
+PING localhost
+
+QUIT :WeeChat 1.9.1
+
+QUIT :WeeChat 1.9.1
 
 
-PASS password
 
-NICK blacksmith
+NICK steve
 
-USER blacksmith 0 * :blacksmith
+USER steve 0 * :steve
 
 JOIN #test
 
 MODE #test
 
-QUIT :WeeChat 3.1
+NICK user42
+
+USER user42 0 * :user42
+
+JOIN #test
+
+MODE #test
+
+PING localhost
+
+PING 127.0.0.1
+
+PRIVMSG #test :hello
+
+QUIT :WeeChat 1.9.1
+
+QUIT :WeeChat 1.9.1
+
 
 
