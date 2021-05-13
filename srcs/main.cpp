@@ -46,7 +46,6 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 		add_user(client, temp_users, cmd);
 		update_server_user(temp_users, server);
 	}
-
 }
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
@@ -72,10 +71,10 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 void	server_loop(int port, std::string password, host_info &host)
 {	
 	try {
-		Server				server(port, password);
+		Server					server(port, password);
 		Server::clients_vector	client_list;
-		std::string			datas;
-		std::vector<User> 	temp_users;
+		std::string				datas;
+		std::vector<User> 		temp_users;
 
 		if (host.host.sin_zero[0] == 'h')
 			server.setHost(host);
@@ -117,7 +116,6 @@ int main(int ac, char **av)
 
 	try {
 		host = parse_info(ac, av, port, pass);
-		// std::cout << "Server pass : " << pass << std::endl;
 		server_loop(port, pass, host);
 	}
 	catch (se::ServerException &e) {

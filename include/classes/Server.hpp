@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include "server_except.hpp"
 #include <fstream>
+#include <string>
 
 //  irc.rizon.no
 //	chat.freeenode.net
@@ -25,88 +26,121 @@ class Server
 	public:
 		Server(int const &, std::string = "");
 		Server(Server const &);
-		// Server &operator=(Server const&);
+		Server &operator=(Server const&);
 		~Server();
 
-		std::vector<Socket*>	&Select();					// Wait for any readable connection
-		void					add(Socket*);				// add a client to the list
-		void					remove(Socket*);			// Remove a client on the list
-		void					update();					// Update fd_set of all client still connected
-		std::vector<User>		&getClients();
-		void					setHost(host_info &);
+
+
 		void					Stop();
-
-		std::string				IP() const;
-		bool					IsMaster(Socket*);
-		bool					IsRunning() const;
-
-		bool					readable(Socket *) const;
-		bool					writeable(Socket *) const;
 		void					redirect(Commands &, Socket *);
-		void					flushClient(); // Try to send pending message for each client
+		void					flushClient();
 		
-		// logs function to keep a trace of events
-		
+		/****************************************************************/
+		/*				logs function to keep a trace of events			*/
+		/****************************************************************/	
 		std::fstream			&logStream();
 		void					logString(std::string);
 
-		//	fdSet functions update socket list for select
+
+		/****************************************************************/
+		/*				Select linked function							*/
+		/****************************************************************/
+		std::vector<Socket*>	&Select();					
+		void					update();					
 		void					fdSet(std::vector<Socket*> &);
 		void					fdSet(std::vector<Proxy> &);
 		void					fdSet(std::vector<User> &);
+		bool					readable(Socket *) const;
+		bool					writeable(Socket *) const;
 
-		//	Controls Socket flows inside server
-		bool					isRegister(Socket *);
-		void					removeSocket(Socket *);
-		void					setProxy(Commands &, Socket *);
+		/****************************************************************/
+		/*			Controls Socket flows inside server					*/
+		/****************************************************************/
+		/*						ADDERS									*/
+		void					add(Socket*);				
 		void					addUser(User &);
-		bool					timedOut(Socket *);
-		std::vector<Channel>	&getChannels();
+		void					setHost(host_info &);
+		void					setProxy(Commands &, Socket *);
 		void					addChannel(Channel &Ch);
 
+		/*						REMOVERS								*/
+		void					remove(Socket*);
+		void					removeSocket(Socket *);
 		void					removeUser(Socket*);
 		void					removeUser(User &);
 		void					removeServer(Socket*);
 
+		/****************************************************************/
+		/*							Getters								*/
+		/****************************************************************/
+		std::vector<User>		&getClients();
 		User					&getUserByName(std::string);
+		std::vector<Channel>	&getChannels();
 
+		/****************************************************************/
+		/*					Information function						*/
+		/****************************************************************/
+		std::string				IP() const;
+		bool					IsMaster(Socket*);
+		bool					IsRunning() const;
+		bool					isRegister(Socket *);
+		bool					timedOut(Socket *);
 
+		/****************************************************************/
+		/*					Vector typedef								*/
+		/****************************************************************/
 		typedef	std::vector<Socket*>					clients_vector;
 		typedef	std::vector<User>						user_vector;
 		typedef	std::vector<Channel>					channel_vector;
 		typedef	std::vector<Proxy>						proxy_vector;
 	
+		/****************************************************************/
+		/*					Iterator typedef							*/
+		/****************************************************************/
 		typedef clients_vector::iterator				client_it;
 		typedef clients_vector::const_iterator			const_client_it;
-
 		typedef proxy_vector::iterator					proxy_it;
 		typedef proxy_vector::const_iterator			const_proxy_it;
-
 		typedef user_vector::iterator					user_it;
 		typedef user_vector::const_iterator				const_user_it;
-
 		typedef channel_vector::iterator				channel_it;
 		typedef channel_vector::const_iterator			const_channel_it;
+	
+	private:
+		/****************************************************************/
+		/*						Block parser							*/
+		/****************************************************************/
+		std::string			__extract_block(std::fstream &);
+		void				__process_block_me(std::string &);
 
 	protected:
-		std::fstream irc_log;
-		
-		Socket					*master;
+		std::fstream		irc_log;
 
-		clients_vector			pending_clients;
-		clients_vector			socket_list;
-		proxy_vector			servers;
-		user_vector				users;
+/****************************************************************/
+/*						Socket members							*/
+/****************************************************************/
+		Socket				*master;
+		clients_vector		pending_clients;
+		clients_vector		socket_list;
+		proxy_vector		servers;
+		user_vector			users;
 
-		channel_vector			channels;
+		channel_vector		channels;
 		
-		fd_set					readfds;
-		int						max_fd;
+/****************************************************************/
+/*						FDS BUFFER								*/
+/****************************************************************/
+		fd_set				readfds;
+		fd_set				writefds;
+		int					max_fd;
 		
-		fd_set					writefds;
-
-		std::string				server_password;
-		bool					state;
+/****************************************************************/
+/*						Server Info								*/
+/****************************************************************/
+		std::string			server_name;
+		std::string			server_message;
+		std::string			server_password;
+		bool				state;
 };
 
 #endif

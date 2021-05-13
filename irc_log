@@ -1,16 +1,32 @@
-NICK nieyraud
+NICK user42
 
-USER nieyraud 0 * :nieyraud
+USER user42 0 * :user42
 
-001 RPL_WELCOME nieyraud Welcome to the servernieyraud JOIN tPRIVMSPRIVMSG Welcome :helCAP LSCAP LS NICK hNICK harthUSER hUSER harth 0 * :realnJOIN tharthaPING 127.0.0.1PIJOIN test
+PING 127.0.0.1
 
-JOIN Welcome
+user42 JOIN #test
 
-QUIT :Leaving
+PRIVMSG Welcome :dfv b
+
+PRIVMSG Welcome : sdfgbd
+
+PRIVMSG Welcome : asgdas
+
+PRIVMSG Welcome : shdfh
+
+PRIVMSG Welcome :sdfg hsd
+
+PRIVMSG Welcome :gsdfgsdadfas
+
+QUIT :WeeChat 1.9.1
 
 
- JOIN Welcome
 
-QUIT :Leaving
+
+PRIVMSG Welcome :sdfg hsd
+
+PRIVMSG Welcome :gsdfgsdadfas
+
+QUIT :WeeChat 1.9.1
 
 
