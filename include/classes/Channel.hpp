@@ -22,6 +22,7 @@ class Channel
 	protected:
 		std::string				name;
 		std::string				topic;
+		char					channel_type;
 		user_vector				active_users;
 		User					*channel_operator;
 		string_vector 			list_all_users;

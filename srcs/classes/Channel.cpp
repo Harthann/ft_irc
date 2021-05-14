@@ -9,7 +9,11 @@ Channel::Channel(std::string Name, User *C_operator) : name(Name), topic(""), se
 {
 	this->channel_operator = C_operator;
 	this->active_users.push_back(C_operator);
-	this->list_all_users.push_back("@" + C_operator->getNickname());
+	this->channel_type = Name[0];
+	if (channel_type != '+')
+		this->list_all_users.push_back("@" + C_operator->getNickname());
+	else
+		this->list_all_users.push_back(C_operator->getNickname());
 	std::string temp = ":" + C_operator->getUser() + "!~" + C_operator->getUser() + "@127.0.0.1";
 	std::string msg = temp + " JOIN :"+ Name + "\n";
 	C_operator->getSocketPtr()->bufferize(msg);
