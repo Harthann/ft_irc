@@ -21,8 +21,10 @@ Server::Server(int const &master_port, std::string pass)
 			__process_block_me(block);
 	} while (!config_file.eof());
 	
-	std::cout << "Server password set as : " << server_password << std::endl;
 	this->irc_log.open("irc_log", std::ios::out);
+	std::cout << "Server password set as : " << server_password << std::endl;
+	std::cout << "Server name is : " << this->server_name << std::endl;
+	std::cout << "Server message is : " << this->server_message << std::endl;
 	std::cout << "Constructing Server on port : " << master_port << "\n";
 	this->master = new Socket(master_port);
 	std::cout << "Master socket created with fd : " << this->master->getSocket() << std::endl;
@@ -491,14 +493,11 @@ std::string		Server::__extract_block(std::fstream &fs)
 	do
 	{
 		getline(fs, buffer);
-		// std::cout << ret << std::endl;
-		// std::cout << buffer[buffer.size() - 1] << std::endl;
 		if ((buffer[buffer.size() - 1] != '{' && buffer[buffer.size() - 1] != '}' && buffer[buffer.size() - 1] != ';')
 			|| (buffer[buffer.size()] == '{' && buffer[buffer.size() - 2] != ' '))
 			throw (WrongConfigFileFormat());
  		ret += buffer;
 	} while (buffer[buffer.size() - 1] != '}' && !fs.eof());
-	std::cout << ret << std::endl;
 	return ret;
 }
 
@@ -517,13 +516,13 @@ void		Server::__process_block_me(std::string &str)
 		{
 			pos = str.find('"', pos);
 			second_pos = str.find('"', pos + 1);
-			server_name = str.substr(pos + 1, second_pos - pos);
+			server_name = str.substr(pos + 1, second_pos - pos - 1);
 		}
 		if (!str.compare(pos, second_pos - pos, "info"))
 		{
 			pos = str.find('"', pos);
 			second_pos = str.find('"', pos + 1);
-			server_message = str.substr(pos + 1, second_pos - pos);
+			server_message = str.substr(pos + 1, second_pos - pos - 1);
 		}
 		pos = str.find(';', pos) + 1;
 	}
