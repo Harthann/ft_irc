@@ -49,7 +49,7 @@ class Server
 		void					update();					
 		void					fdSet(std::vector<Socket*> &);
 		void					fdSet(std::vector<Proxy> &);
-		void					fdSet(std::vector<User> &);
+		void					fdSet(std::vector<User*> &);
 		bool					readable(Socket *) const;
 		bool					writeable(Socket *) const;
 
@@ -57,25 +57,25 @@ class Server
 		/*			Controls Socket flows inside server					*/
 		/****************************************************************/
 		/*						ADDERS									*/
-		void					add(Socket*);				
-		void					addUser(User &);
+		void					add(Socket*);
 		void					setHost(host_info &);
 		void					setProxy(Commands &, Socket *);
-		void					addChannel(Channel &Ch);
+		void					addUser(User *);
+		void					addChannel(Channel *Ch);
+		void					checkChannels();
 
 		/*						REMOVERS								*/
 		void					remove(Socket*);
 		void					removeSocket(Socket *);
-		void					removeUser(Socket*);
-		void					removeUser(User &);
 		void					removeServer(Socket*);
+		void					delete_user(User *user, std::string msg1);
 
 		/****************************************************************/
 		/*							Getters								*/
 		/****************************************************************/
-		std::vector<User>		&getClients();
+		std::vector<User*>		&getClients();
 		User					&getUserByName(std::string);
-		std::vector<Channel>	&getChannels();
+		std::vector<Channel *>	&getChannels();
 
 		/****************************************************************/
 		/*					Information function						*/
@@ -90,8 +90,8 @@ class Server
 		/*					Vector typedef								*/
 		/****************************************************************/
 		typedef	std::vector<Socket*>					clients_vector;
-		typedef	std::vector<User>						user_vector;
-		typedef	std::vector<Channel>					channel_vector;
+		typedef	std::vector<User *>						user_vector;
+		typedef	std::vector<Channel *>					channel_vector;
 		typedef	std::vector<Proxy>						proxy_vector;
 	
 		/****************************************************************/

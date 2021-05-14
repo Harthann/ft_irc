@@ -51,7 +51,6 @@ Server::Server(Server const &x)
 **	as it is probably useless or misleading on
 **	server manipulation
 */
-
 Server	&Server::operator=(Server const &x)
 {
 	this->readfds = x.readfds;
@@ -186,14 +185,14 @@ void	Server::fdSet(user_vector &)
 {
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
-		if ((*it).getSocket() > 0) {
-			FD_SET((*it).getSocket(), &this->readfds);
-			FD_SET((*it).getSocket(), &this->writefds);
-			if ((*it).getSocket() > max_fd)
-				max_fd = (*it).getSocket();
+		if ((*it)->getSocket() > 0) {
+			FD_SET((*it)->getSocket(), &this->readfds);
+			FD_SET((*it)->getSocket(), &this->writefds);
+			if ((*it)->getSocket() > max_fd)
+				max_fd = (*it)->getSocket();
 		}
 		else {
-			delete ((*it).getSocketPtr());
+			delete ((*it)->getSocketPtr());
 			users.erase(it);
 		}
 	}
@@ -225,13 +224,13 @@ void	Server::add(Socket *x)
 	FD_SET(x->getSocket(), &this->writefds);
 }
 
-void				Server::addUser(User &x)
+void				Server::addUser(User *x)
 {
-	Socket *client = x.getSocketPtr();
+	Socket *client = x->getSocketPtr();
 
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
 	{
-		if (x.getSocketPtr() == (*it).getSocketPtr()) {
+		if (x->getSocketPtr() == (*it).getSocketPtr()) {
 			if (client->getPassword() == this->server_password)
 				users.push_back(x);
 			else {
@@ -257,9 +256,9 @@ void				Server::addUser(User &x)
 			break ;
 		}
 	}
-	x.getSocketPtr()->bufferize("001 RPL_WELCOME " + x.getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+	x->getSocketPtr()->bufferize("001 RPL_WELCOME " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
 	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
-	x.displayinfo();
+	x->displayinfo();
 	std::cout << "  ###############################" << std::endl;
 }
 
@@ -333,7 +332,7 @@ void	Server::setProxy(Commands &datas, Socket *client)
 	std::cout << "Added server to network" << std::endl;
 }
 
-void			Server::addChannel(Channel &Ch)
+void			Server::addChannel(Channel *Ch)
 {
 	this->channels.push_back(Ch);
 }
@@ -366,8 +365,23 @@ void	Server::removeSocket(Socket *x)
 			break ;
 		}
 	}
-	removeServer(x);
-	removeUser(x);
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
+		if ((*it).getSocketPtr() == x) {
+			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
+			// delete (*it).getSocketPtr();
+			servers.erase(it);
+			break ;
+		}
+	}
+	for (user_it it = users.begin(); it != users.end(); ++it)
+	{
+		if ((*it)->getSocketPtr() == x) {
+			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
+			// delete (*it).getSocketPtr();
+			users.erase(it);
+			break ;
+		}
+	}
 	for (client_it it = socket_list.begin(); it != socket_list.end(); ++it) {
 		if ((*it) == x)
 		{
@@ -375,30 +389,6 @@ void	Server::removeSocket(Socket *x)
 			delete (*it);
 			socket_list.erase(it);
 			return ;
-		}
-	}
-}
-
-void	Server::removeUser(Socket *x)
-{
-	for (user_it it = this->users.begin(); it != users.end(); ++it)
-	{
-		if (x == (*it).getSocketPtr()) {
-			std::cout << "Users " << (*it).getNickname() << " left" << std::endl;
-			it = users.erase(it);
-		}
-	}
-}
-
-void	Server::removeUser(User &user)
-{
-	for (user_it it = this->users.begin(); it != users.end(); ++it)
-	{
-		if (*it == user)
-		{
-			std::cout << "Users " << (*it).getNickname() << " left" << std::endl;
-			users.erase(it);
-			break ;
 		}
 	}
 }
@@ -415,10 +405,7 @@ void	Server::removeServer(Socket *x)
 	}
 }
 
-/****************************************************************/
-/*							Getters								*/
-/****************************************************************/
-std::vector<User>	&Server::getClients()
+std::vector<User *>	&Server::getClients()
 {
 	return this->users;
 }
@@ -427,12 +414,12 @@ User 	&Server::getUserByName(std::string name)
 {
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
-		if ((*it).getNickname() == name)
-			return (*it);
+		if ((*it)->getNickname() == name)
+			return (**it);
 	}
 }
 
-std::vector<Channel>	& Server::getChannels()
+std::vector<Channel *>	& Server::getChannels()
 {
 	return this->channels;
 }
@@ -461,7 +448,7 @@ bool	Server::isRegister(Socket *client)
 		if (client == (*it).getSocketPtr())
 			return true;
 	for (user_it it = users.begin(); it != users.end(); ++it)
-		if (client == (*it).getSocketPtr())
+		if (client == (*it)->getSocketPtr())
 			return true;
 	return false;
 }
@@ -525,5 +512,34 @@ void		Server::__process_block_me(std::string &str)
 			server_message = str.substr(pos + 1, second_pos - pos - 1);
 		}
 		pos = str.find(';', pos) + 1;
+	}
+}
+
+void			Server::delete_user(User *user, std::string msg1)
+{
+	std::string msg;
+	for(unsigned int i = 0; i < users.size(); ++i)
+	{
+		if(user->getSocketPtr() == users[i]->getSocketPtr())
+		{
+			msg = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1 QUIT :" + msg1 + "\n";
+			user->getSocketPtr()->bufferize(msg);
+			users.erase(users.begin() + i);
+			break;
+		}
+	}
+}
+
+void		Server::checkChannels()
+{
+	Channel *temp;
+	for(unsigned int i = 0; i < channels.size(); ++i)
+	{
+		if (channels[i]->NumberOfUsers() == 0)
+		{
+			temp = channels[i];
+			channels.erase(channels.begin() + i);
+			delete temp;
+		}
 	}
 }

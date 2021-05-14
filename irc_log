@@ -1,0 +1,24 @@
+NICK user42
+
+USER user42 0 * :user42
+
+JOIN #test
+
+MODE #test
+
+PRIVMSG #test :dsfds
+
+PRIVMSG #test :fsdf
+
+PRIVMSG #test :werwe
+
+PRIVMSG #test :rwer
+
+PRIVMSG #test :werwe
+
+PRIVMSG #test :f
+
+PRIVMSG #test :qgbvw
+
+DIE
+

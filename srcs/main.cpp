@@ -27,6 +27,15 @@ void	exit_server(Commands &, Socket *, Server &server)
 	server.Stop();
 }
 
+void	quit_server(Socket *client, Server &server, Commands &cmd)
+{
+	User *temp = check_user(server.getClients(), client);
+
+	temp->partChannels();
+	server.delete_user(temp, cmd[1]);
+	delete temp;
+}
+
 void	identification(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users)
 {
 	int ret = 0;
@@ -62,7 +71,11 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
 	else if(cmd.name() == "JOIN")
-		add_to_channel(cmd, client, server, temp_users);
+		add_to_channel(cmd, client, server);
+	else if(cmd.name() == "PART")
+		part_from_channel(cmd, client, server);
+	else if(cmd.name() == "QUIT")
+		quit_server(client, server, cmd);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
 	server.redirect(cmd, client);
@@ -101,6 +114,7 @@ void	server_loop(int port, std::string password, host_info &host)
 				if (server.writeable(*it))
 					(*it)->flushWrite();
 			}
+			server.checkChannels();
 		}
 	}
 	catch (se::ServerException &e) {
