@@ -113,7 +113,7 @@ void	User::partChannels()
 
 bool	User::operator == (User *u2)
 {
-	if (this->nickname.compare(u2.getNickname()) == 0)
+	if (this->nickname.compare(u2->getNickname()) == 0)
 		return 0;
 	else
 		return 1;

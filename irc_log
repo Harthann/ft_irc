@@ -6,47 +6,8 @@ JOIN #test
 
 MODE #test
 
-NICK user42
-
-USER steve 0 * :steve
-
-JOIN #test
-
-PING 127.0.0.1
-
-PING localhost
+PART #test :WeeChat 1.9.1
 
 QUIT :WeeChat 1.9.1
-
-QUIT :WeeChat 1.9.1
-
-
-
-NICK steve
-
-USER steve 0 * :steve
-
-JOIN #test
-
-MODE #test
-
-NICK user42
-
-USER user42 0 * :user42
-
-JOIN #test
-
-MODE #test
-
-PING localhost
-
-PING 127.0.0.1
-
-PRIVMSG #test :hello
-
-QUIT :WeeChat 1.9.1
-
-QUIT :WeeChat 1.9.1
-
 
 

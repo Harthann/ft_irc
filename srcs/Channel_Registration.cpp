@@ -3,11 +3,6 @@
 User	*check_user(std::vector<User *>server_users, Socket *client)
 {
 	User *temp;
-/*	for (unsigned long i = 0; i < temp_users.size(); i++)
-	{
-		if(temp_users[i].getSocketPtr() == client)
-			temp = temp_users[i];
-	}*/
 	for (unsigned long i = 0; i < server_users.size(); i++)
 	{
 		if(server_users[i]->getSocketPtr() == client)
