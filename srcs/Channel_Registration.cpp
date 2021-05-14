@@ -36,7 +36,14 @@ void	add_member(User *user, Server &server, std::string name)
 int		CheckChannelName(std::string name)
 {
 	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
+	{
+		for (unsigned int i = 0; i < name.length(); ++i)
+		{
+			if (name[i] == ' ' || name[i] == ',' || name[i] == 7)
+				return 0;
+		}
 		return 1;
+	}
 	return 0;
 }
 
