@@ -33,6 +33,13 @@ void	add_member(User *user, Server &server, std::string name)
 	}
 }
 
+int		CheckChannelName(std::string name)
+{
+	if (name[0] == '#' || name[0] == '&' || name[0] == '+' || name[0] == '!')
+		return 1;
+	return 0;
+}
+
 void	add_to_channel(Commands cmd, Socket *client, Server &server)
 {
 	User *current_user;
@@ -41,10 +48,12 @@ void	add_to_channel(Commands cmd, Socket *client, Server &server)
 	current_user = check_user(server.getClients(), client);
 	if(!channel_exist(cmd[1], server))
 	{
-//		Channel temp(cmd[1], current_user);
-		res = new Channel(cmd[1], current_user);
-		server.addChannel(res);
-		current_user->ActiveChannel(res);
+		if (CheckChannelName(cmd[1]))
+		{
+			res = new Channel(cmd[1], current_user);
+			server.addChannel(res);
+			current_user->ActiveChannel(res);
+		}
 	}
 	else
 		add_member(current_user, server, cmd[1]);
