@@ -15,6 +15,9 @@ class User
 		User();
 		User(Socket *client, Commands cmd);
 		~User();
+
+		bool	operator==(const User &);
+
 		Socket *	getSocketPtr() const;
 		int			getStatus() const;
 		std::string	getNickname() const;
@@ -31,17 +34,19 @@ class User
 
 	protected:
 	private:
-		std::string	nickname;
 		void		setNICK(std::string str);
 		void		setPASS(std::string str);
 		void		setUSER(Commands cmd);
-		std::vector	<Channel *> current_channel;
+
+		std::string	nickname;
+		std::vector<Channel *> current_channel;
 		std::string	user;
 		std::string	mode;
-		int status;
+		int 			status;
 		std::string	realname;
 		std::string	password;
 		Socket		*self;
 };
+
 
 #endif

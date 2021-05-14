@@ -47,14 +47,22 @@ struct WrongPortFormat : public se::ServerException
 	WrongPortFormat() : ServerException("Wrong Port format") {};
 };
 
+struct ErrorOpeningFile : public se::ServerException
+{
+	ErrorOpeningFile() : ServerException("Failed to open file") {};
+};
+
+struct WrongConfigFileFormat : public se::ServerException
+{
+	WrongConfigFileFormat() : ServerException("Wrong config file format") {};
+};
+
 struct host_info
 {
 	Addr	host;
 	std::string			pass;
 };
 
-
-host_info					parse_info(int ac, char **av, int &port, std::string &pass);
-
+host_info	parse_info(int ac, char **av, int &port, std::string &pass);
 
 #endif

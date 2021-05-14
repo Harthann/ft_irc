@@ -1,10 +1,30 @@
 #include "Server.hpp"
 
 Server::Server(int const &master_port, std::string pass)
-: pending_clients(), server_password(pass), state(1)
+:	pending_clients(), socket_list(), servers(), users(), channels(),
+	server_name(), server_message(), server_password(pass), state(1)
 {
-	std::cout << "Server password set as : " << server_password << std::endl;
+	std::fstream	config_file;
+	std::string		block;
+
+	config_file.open("server.config", std::fstream::in);
+	if (config_file.fail())
+		throw ErrorOpeningFile();
+	do
+	{
+		try {
+			block = __extract_block(config_file);
+		} catch (se::ServerException &e) {
+			throw e;
+		}
+		if (!block.compare(0, block.find(' '), "me"))
+			__process_block_me(block);
+	} while (!config_file.eof());
+	
 	this->irc_log.open("irc_log", std::ios::out);
+	std::cout << "Server password set as : " << server_password << std::endl;
+	std::cout << "Server name is : " << this->server_name << std::endl;
+	std::cout << "Server message is : " << this->server_message << std::endl;
 	std::cout << "Constructing Server on port : " << master_port << "\n";
 	this->master = new Socket(master_port);
 	std::cout << "Master socket created with fd : " << this->master->getSocket() << std::endl;
@@ -15,6 +35,7 @@ Server::Server(int const &master_port, std::string pass)
 	FD_ZERO(&this->writefds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 	this->socket_list.push_back(this->master);
+
 }
 
 Server::Server(Server const &x)
@@ -25,254 +46,45 @@ Server::Server(Server const &x)
 	this->max_fd = x.max_fd;
 }
 
-//	Assignement constructor not defined yet
-//	as it is probably useless or misleading on
-//	server manipulation
-
-// Server	&Server::operator=(Server const &x)
-// {
-// 	this->readfds = x.readfds;
-// 	this->clients = x.clients;
-// 	this->servers = x.servers;
-// 	this->server_password = x.server_password;
-// 	this->max_fd = x.max_fd;
-// 	return (*this);
-// }
+/*
+**	Assignement constructor not defined yet
+**	as it is probably useless or misleading on
+**	server manipulation
+*/
+Server	&Server::operator=(Server const &x)
+{
+	this->readfds = x.readfds;
+	// this->clients = x.clients;
+	this->servers = x.servers;
+	this->server_password = x.server_password;
+	this->max_fd = x.max_fd;
+	return (*this);
+}
 
 Server::~Server()
 {
-	// for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
-	// 	delete (*it);
 	for (client_it it = socket_list.begin(); it != socket_list.end(); ++it)
 		delete (*it);
-	// for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-	// 	delete (*it).getSocketPtr();
-	// delete master;
 }
 
-//	Add a server to connect to base on info inside host_info structure
-//	This server is added to the proxy list and is handle like one
-//	We just need to redirect command to the sergver to propagate
-//	the information and just indicate wich server as redirect the command
-//	and the hopcount from the client.
-
-void	Server::setHost(host_info &host)
+void		Server::Stop()
 {
-	Socket *mem;
-	try {
-		std::string ret;
-		mem = new Socket(host);
-		std::cout << "Host socket connection is : ";
-		std::cout << mem->getSocket() << std::endl;
-		this->servers.push_back(mem);
-		this->socket_list.push_back(mem);
-
-		ret += "SERVER ftirc.test.42 1 :";
-		if (mem->Connect())
-			throw se::ConnectionFailed(mem->getInfo());
-		ret.append(mem->getHostName());
-		ret.append("Experimental server\r\n");
-		// mem->bufferize("C:chat.freenode.net::::2::\r\n");
-		// mem->bufferize("N:chat.freenode.net:password::1:2::\r\n");
-		mem->bufferize(ret);
-		std::cout << "Server command has been bufferized" << std::endl;
-		// mem->bufferize("PING irc.ircnet.com\r\n");
-	} catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
-		throw e;
-	}
+	this->state = 0;
 }
 
-//	Verify if a client is lready register as server or user
-bool	Server::isRegister(Socket *client)
+void	Server::redirect(Commands &cmd, Socket *client)
 {
+	std::string datas = cmd.as_string();
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-		if (client == (*it).getSocketPtr())
-			return true;
-	for (user_it it = users.begin(); it != users.end(); ++it)
-		if (client == (*it)->getSocketPtr())
-			return true;
-	return false;
-}
-
-//	Add a server to proxy list if he succeed identification
-void	Server::setProxy(Commands &datas, Socket *client)
-{
-	int		hopcount;
-	std::string name;
-
-	if (datas.length() < 4) {
-		client->bufferize("ERRROR :SERVER Wrong command format\r\n");
-		return ;
-	}
-	for (Server::proxy_it it = servers.begin(); it != servers.end(); ++it)
-		if ((*it).getSocketPtr() == client)
-			return ;
-	for (Server::client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
-		if (*it == client) {
-			std::cout << "Socket password : " << client->getPassword() << std::endl;
-			if (client->getPassword() == this->server_password) {
-				pending_clients.erase(it);
-			}
-			else {
-				client->bufferize("Connection refused");
-				this->remove(*it);
-				return ;
-			}
-			break ;
-		}
-	name = datas.getCmdParam(1);
-	hopcount = utils::stoi(datas.getCmdParam(2));
-	Proxy tmp(client, hopcount, name);
-	this->servers.push_back(tmp);
-	// this->socket_list.push_back(tmp.getSocketPtr());
-	std::cout << "Added server to network" << std::endl;
-}
-
-//	Add a user to the users list if he succeed identification
-
-void				Server::addUser(User *x)
-{
-	Socket *client = x->getSocketPtr();
-
-	// for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-	// {
-	// 	if (x.getSocketPtr() == (*it).getSocketPtr()) {
-	// 		if (client->getPassword() == this->server_password)
-	// 			(*it).addUser(x);
-	// 		else
-	// 			client->bufferize("Connection refused");
-	// 		return ;
-	// 	}
-	// }
-	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 	{
-		if (*it == client) {
-			std::cout << "Socket password : " << client->getPassword() << std::endl;
-			std::cout << "Server password : " << this->server_password << std::endl;
-			if (client->getPassword() == this->server_password) {
-				pending_clients.erase(it);
-				users.push_back(x);
-				// socket_list.push_back(client);
-			}
-			else {
-				client->bufferize("Connection refused");
-				this->remove(*it);
-				return ;
-			}
-			break ;
-		}
-	}
-	x->getSocketPtr()->bufferize("001 RPL_WELCOME " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
-	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
-	x->displayinfo();
-	std::cout << "  ###############################" << std::endl;
-}
-
-//	Detect activity on any clients connected to the server
-//	Allow as well to identify if a server is ready to receive
-//	datas by updating constantly writefds that contains
-//	all writeable fds
-
-Server::clients_vector &Server::Select()
-{
-	int				activity;
-	clients_vector	ret;
-
-	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, NULL);
-	if (activity < 0)
-		throw se::SelectFailed();
-	// if (this->readable(master)) {
-	// 	this->irc_log << "Activity detected on master socket : " << master->getSocket() << "\n";
-	// 	ret.push_back(master);
-	// }
-	return this->socket_list;
-	// for (Server::client_it it = this->pending_clients.begin(); it != pending_clients.end(); ++it) {
-	// 	if (this->readable(*it) || this->writeable(*it)) {
-	// 		ret.push_back(*it);
-	// 	}
-	// }
-	// for (Server::proxy_it it = this->servers.begin(); it != servers.end(); ++it) {
-	// 	if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
-	// 		ret.push_back((*it).getSocketPtr());
-	// 	}
-	// }
-	// for (Server::user_it it = this->users.begin(); it != users.end(); ++it) {
-	// 	if (this->readable((*it).getSocketPtr()) || this->writeable((*it).getSocketPtr())) {
-	// 		ret.push_back((*it).getSocketPtr());
-	// 	}
-	// }
-	// return ret;
-}
-
-void	Server::add(Socket *x)
-{
-	std::string datas;
-
-	pending_clients.push_back(x);
-	socket_list.push_back(x);
-	std::cout << "Socket : " << x->getSocket() << " has been added" << std::endl;
-	if (x->getSocket() > max_fd)
-		max_fd = x->getSocket();
-	FD_SET(x->getSocket(), &this->readfds);
-	FD_SET(x->getSocket(), &this->writefds);
-}
-
-void	Server::removeSocket(Socket *x)
-{
-	FD_CLR(x->getSocket(), &this->readfds);
-	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it) {
-		if ((*it) == x)
+		// reedit commands part
+		if ((*it).getSocketPtr() != client)
 		{
-			// std::cout << "Closing connection on socket : " << (*it)->getSocket() << std::endl;
-			// delete (*it);
-			pending_clients.erase(it);
-			break ;
+			std::cout << "Redirect message to socket : ";
+			std::cout << (*it).getSocket() << std::endl;
+			(*it).getSocketPtr()->bufferize(datas);
 		}
 	}
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
-		if ((*it).getSocketPtr() == x) {
-			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
-			// delete (*it).getSocketPtr();
-			servers.erase(it);
-			break ;
-		}
-	}
-	for (user_it it = users.begin(); it != users.end(); ++it)
-	{
-		if ((*it)->getSocketPtr() == x) {
-			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
-			// delete (*it).getSocketPtr();
-			users.erase(it);
-			break ;
-		}
-	}
-	for (client_it it = socket_list.begin(); it != socket_list.end(); ++it) {
-		if ((*it) == x)
-		{
-			std::cout << "Closing connection on socket : " << (*it)->getSocket() << std::endl;
-			delete (*it);
-			socket_list.erase(it);
-			return ;
-		}
-	}
-}
-
-void	Server::remove(Socket *x)
-{
-	Addr	tmp;
-	int		tmp_addr_len = tmp.addrlen();
-	std::string	buffer;
-
-	buffer = x->flush();
-	this->irc_log << buffer << std::endl;
-	std::cout << buffer <<std::endl;
-	getpeername(x->getSocket(), tmp.as_sockaddr(),
-									reinterpret_cast<socklen_t*>(&tmp_addr_len));
-	std::cout << "User left : " << tmp.getIP();
-	std::cout << " : " << tmp.getPort() << std::endl;
-	removeSocket(x);
-	this->update();
 }
 
 void	Server::flushClient()
@@ -283,8 +95,49 @@ void	Server::flushClient()
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
 		if (writeable((*it).getSocketPtr()))
 			(*it).getSocketPtr()->flushWrite();
-	// for ()
 
+}
+
+/****************************************************************/
+/*					logs function to keep a trace of events		*/
+/****************************************************************/
+std::fstream	&Server::logStream()
+{
+	return (this->irc_log);
+}
+
+void			Server::logString(std::string to_log)
+{
+	this->irc_log << to_log << std::endl;
+}
+
+/****************************************************************/
+/*				Select linked function							*/
+/****************************************************************/
+/*
+**	Detect activity on any clients connected to the server
+**	Allow as well to identify if a server is ready to receive
+**	datas by updating constantly writefds that contains
+**	all writeable fds
+*/
+Server::clients_vector &Server::Select()
+{
+	int				activity;
+	clients_vector	ret;
+
+	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, NULL);
+	if (activity < 0)
+		throw se::SelectFailed();
+	return this->socket_list;
+}
+
+void	Server::update()
+{
+	FD_ZERO(&this->readfds);
+	FD_ZERO(&this->writefds);
+	FD_SET(this->master->getSocket(), &this->readfds);
+	max_fd = this->master->getSocket();
+	fdSet(socket_list);
 }
 
 void	Server::fdSet(clients_vector &clients)
@@ -345,40 +198,209 @@ void	Server::fdSet(user_vector &)
 	}
 }
 
-//	Update fds that are connected to server
-//	before using select
-void	Server::update()
+bool		Server::readable(Socket *x) const
 {
-	FD_ZERO(&this->readfds);
-	FD_ZERO(&this->writefds);
-	FD_SET(this->master->getSocket(), &this->readfds);
-	max_fd = this->master->getSocket();
-	fdSet(socket_list);
-	// fdSet(this->pending_clients);
-	// fdSet(this->servers);
-	// fdSet(this->users);
+	return FD_ISSET(x->getSocket(), &this->readfds);
 }
 
-bool	Server::timedOut(Socket *x)
+bool		Server::writeable(Socket *x) const
 {
-	if (!x)
-		return true;
-	if (!SET_TIMEOUT)
-		return false;
-	return (difftime(time(NULL), x->getTime()) > TIME_LIMIT);
+	return FD_ISSET(x->getSocket(), &this->writefds);
 }
 
-void	Server::redirect(Commands &cmd, Socket *client)
+/****************************************************************/
+/*			Controls Socket flows inside server					*/
+/****************************************************************/
+void	Server::add(Socket *x)
 {
-	std::string datas = cmd.as_string();
+	std::string datas;
+
+	pending_clients.push_back(x);
+	socket_list.push_back(x);
+	std::cout << "Socket : " << x->getSocket() << " has been added" << std::endl;
+	if (x->getSocket() > max_fd)
+		max_fd = x->getSocket();
+	FD_SET(x->getSocket(), &this->readfds);
+	FD_SET(x->getSocket(), &this->writefds);
+}
+
+void				Server::addUser(User *x)
+{
+	Socket *client = x->getSocketPtr();
+
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
 	{
-		// reedit commands part
-		if ((*it).getSocketPtr() != client)
+		if (x->getSocketPtr() == (*it).getSocketPtr()) {
+			if (client->getPassword() == this->server_password)
+				users.push_back(x);
+			else {
+				client->bufferize("Connection refused");
+				return ;
+			}
+		}
+	}
+	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
+	{
+		if (*it == client) {
+			std::cout << "Socket password : " << client->getPassword() << std::endl;
+			std::cout << "Server password : " << this->server_password << std::endl;
+			if (client->getPassword() == this->server_password) {
+				pending_clients.erase(it);
+				users.push_back(x);
+			}
+			else {
+				client->bufferize("Connection refused");
+				this->remove(*it);
+				return ;
+			}
+			break ;
+		}
+	}
+	x->getSocketPtr()->bufferize("001 RPL_WELCOME " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
+	x->displayinfo();
+	std::cout << "  ###############################" << std::endl;
+}
+
+/*
+**	Add a server to connect to base on info inside host_info structure
+**	This server is added to the proxy list and is handle like one
+**	We just need to redirect command to the sergver to propagate
+**	the information and just indicate wich server as redirect the command
+**	and the hopcount from the client.
+*/
+void	Server::setHost(host_info &host)
+{
+	Socket *mem;
+	try {
+		std::string ret;
+		mem = new Socket(host);
+		std::cout << "Host socket connection is : ";
+		std::cout << mem->getSocket() << std::endl;
+		this->servers.push_back(mem);
+		this->socket_list.push_back(mem);
+
+		ret += "SERVER " + this->server_name + " 1 :";
+		if (mem->Connect())
+			throw se::ConnectionFailed(mem->getInfo());
+		ret.append(mem->getHostName());
+		ret.append("Experimental server\r\n");
+		mem->bufferize(ret);
+	} catch (std::exception &e) {
+		std::cout << e.what() << std::endl;
+		throw e;
+	}
+}
+
+/*	Add a server to proxy list if he succeed identification */
+void	Server::setProxy(Commands &datas, Socket *client)
+{
+	int		hopcount;
+	std::string name;
+
+	if (datas.length() < 4) {
+		client->bufferize("ERRROR :SERVER Wrong command format\r\n");
+		return ;
+	}
+	for (Server::proxy_it it = servers.begin(); it != servers.end(); ++it)
+	{
+		if ((*it).getName() == datas[1])
 		{
-			std::cout << "Redirect message to socket : ";
-			std::cout << (*it).getSocket() << std::endl;
-			(*it).getSocketPtr()->bufferize(datas);
+			client->bufferize("462	ERR_ALREADYREGISTRED :You may not reregister");
+			return ;
+		}
+	}
+	for (Server::client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
+	{
+		if (*it == client) {
+			std::cout << "Socket password : " << client->getPassword() << std::endl;
+			if (client->getPassword() == this->server_password) {
+				pending_clients.erase(it);
+			}
+			else {
+				client->bufferize("Connection refused");
+				this->remove(*it);
+				return ;
+			}
+			break ;
+		}
+	}
+	name = datas.getCmdParam(1);
+	hopcount = utils::stoi(datas.getCmdParam(2));
+	Proxy tmp(client, hopcount, name);
+	this->servers.push_back(tmp);
+	std::cout << "Added server to network" << std::endl;
+}
+
+void			Server::addChannel(Channel *Ch)
+{
+	this->channels.push_back(Ch);
+}
+
+void	Server::remove(Socket *x)
+{
+	Addr	tmp;
+	int		tmp_addr_len = tmp.addrlen();
+	std::string	buffer;
+
+	buffer = x->flush();
+	this->irc_log << buffer << std::endl;
+	std::cout << buffer <<std::endl;
+	getpeername(x->getSocket(), tmp.as_sockaddr(),
+				reinterpret_cast<socklen_t*>(&tmp_addr_len));
+	std::cout << "User left : " << tmp.getIP();
+	std::cout << " : " << tmp.getPort() << std::endl;
+	// for each user, create cmd leave to send to every server
+	removeSocket(x);
+	this->update();
+}
+
+void	Server::removeSocket(Socket *x)
+{
+	FD_CLR(x->getSocket(), &this->readfds);
+	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it) {
+		if ((*it) == x)
+		{
+			pending_clients.erase(it);
+			break ;
+		}
+	}
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
+		if ((*it).getSocketPtr() == x) {
+			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
+			// delete (*it).getSocketPtr();
+			servers.erase(it);
+			break ;
+		}
+	}
+	for (user_it it = users.begin(); it != users.end(); ++it)
+	{
+		if ((*it)->getSocketPtr() == x) {
+			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
+			// delete (*it).getSocketPtr();
+			users.erase(it);
+			break ;
+		}
+	}
+	for (client_it it = socket_list.begin(); it != socket_list.end(); ++it) {
+		if ((*it) == x)
+		{
+			std::cout << "Closing connection on socket : " << (*it)->getSocket() << std::endl;
+			delete (*it);
+			socket_list.erase(it);
+			return ;
+		}
+	}
+}
+
+void	Server::removeServer(Socket *x)
+{
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
+	{
+		//	Will need to change condition to use server name instead
+		if (x == (*it).getSocketPtr()) {
+			std::cout << "Server " << (*it).getSocket() << " left" << std::endl;
+			it = servers.erase(it);
 		}
 	}
 }
@@ -388,19 +410,26 @@ std::vector<User *>	&Server::getClients()
 	return this->users;
 }
 
+User 	&Server::getUserByName(std::string name)
+{
+	for (user_it it = users.begin(); it != users.end(); ++it)
+	{
+		if ((*it)->getNickname() == name)
+			return (**it);
+	}
+}
+
 std::vector<Channel *>	& Server::getChannels()
 {
 	return this->channels;
 }
 
+/****************************************************************/
+/*					Information function						*/
+/****************************************************************/
 std::string		Server::IP() const
 {
 	return (this->master->IP());
-}
-
-void		Server::Stop()
-{
-	this->state = 0;
 }
 
 bool	Server::IsMaster(Socket*x)
@@ -413,29 +442,77 @@ bool		Server::IsRunning() const
 	return this->state;
 }
 
-bool		Server::readable(Socket *x) const
+bool	Server::isRegister(Socket *client)
 {
-	return FD_ISSET(x->getSocket(), &this->readfds);
+	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
+		if (client == (*it).getSocketPtr())
+			return true;
+	for (user_it it = users.begin(); it != users.end(); ++it)
+		if (client == (*it)->getSocketPtr())
+			return true;
+	return false;
 }
 
-bool		Server::writeable(Socket *x) const
+bool	Server::timedOut(Socket *x)
 {
-	return FD_ISSET(x->getSocket(), &this->writefds);
+	if (!x)
+		return true;
+	if (!SET_TIMEOUT)
+		return false;
+	return (difftime(time(NULL), x->getTime()) > TIME_LIMIT);
 }
 
-std::fstream	&Server::logStream()
+/****************************************************************/
+/*						Block parser							*/
+/****************************************************************/
+std::string		Server::__extract_block(std::fstream &fs)
 {
-	return (this->irc_log);
+	std::string ret;
+	std::string buffer;
+
+	do
+	{
+		getline(fs, buffer);
+	} while (buffer.empty() && !fs.eof());
+	if (buffer.empty())
+		return buffer;
+	ret += buffer;
+	do
+	{
+		getline(fs, buffer);
+		if ((buffer[buffer.size() - 1] != '{' && buffer[buffer.size() - 1] != '}' && buffer[buffer.size() - 1] != ';')
+			|| (buffer[buffer.size()] == '{' && buffer[buffer.size() - 2] != ' '))
+			throw (WrongConfigFileFormat());
+ 		ret += buffer;
+	} while (buffer[buffer.size() - 1] != '}' && !fs.eof());
+	return ret;
 }
 
-void			Server::addChannel(Channel *Ch)
+void		Server::__process_block_me(std::string &str)
 {
-	this->channels.push_back(Ch);
-}
+	size_t	pos;
+	size_t	second_pos;
 
-void			Server::logString(std::string to_log)
-{
-	this->irc_log << to_log << std::endl;
+	pos = str.find('{');
+	while (pos != std::string::npos && str[pos] != '}')
+	{
+		while (!std::isalpha(str[pos]))
+			++pos;
+		second_pos = str.find(' ', pos);
+		if (!str.compare(pos, second_pos - pos, "name"))
+		{
+			pos = str.find('"', pos);
+			second_pos = str.find('"', pos + 1);
+			server_name = str.substr(pos + 1, second_pos - pos - 1);
+		}
+		if (!str.compare(pos, second_pos - pos, "info"))
+		{
+			pos = str.find('"', pos);
+			second_pos = str.find('"', pos + 1);
+			server_message = str.substr(pos + 1, second_pos - pos - 1);
+		}
+		pos = str.find(';', pos) + 1;
+	}
 }
 
 void			Server::delete_user(User *user, std::string msg1)

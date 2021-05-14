@@ -57,6 +57,7 @@ void	add_to_channel(Commands cmd, Socket *client, Server &server)
 	}
 	else
 		add_member(current_user, server, cmd[1]);
+	cmd.setFrom(current_user->getNickname());
 }
 
 void	part_from_channel(Commands cmd, Socket *client, Server &server)

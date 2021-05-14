@@ -75,6 +75,8 @@ void	User::displayinfo()
 	std::cout << "mode : " << mode << std::endl;
 	std::cout << "status : " << status << std::endl;
 	std::cout << "realname : " << realname << std::endl;
+	std::cout << "Socketptr : " << this->getSocketPtr() << std::endl;
+	std::cout << "Socket : " << this->getSocket() << std::endl;
 }
 
 void	User::ActiveChannel(Channel *ch)

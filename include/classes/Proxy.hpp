@@ -15,6 +15,7 @@ class Proxy
 		time_t	getTime() const;
 		int		getSocket() const;
 		Socket	*getSocketPtr();
+		const std::string &getName() const;
 		
 	protected:
 	private:

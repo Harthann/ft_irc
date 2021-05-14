@@ -36,6 +36,11 @@ int		Proxy::getSocket() const
 	return (socket->getSocket());
 }
 
+const std::string	&Proxy::getName() const
+{
+	return this->name;
+}
+
 Socket		*Proxy::getSocketPtr()
 {
 	return (socket);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel_Registration.hpp                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: stbaleba <stbaleba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nieyraud <nieyraud@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/25 18:08:42 by stbaleba          #+#    #+#             */
-/*   Updated: 2021/05/07 14:20:05 by stbaleba         ###   ########.fr       */
+/*   Updated: 2021/05/14 12:01:40 by nieyraud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

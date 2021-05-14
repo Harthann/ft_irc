@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/socket.h>
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -75,6 +76,7 @@ class Socket
 		std::string				password;
 		std::vector<Commands>	cmd_buffer;
 		bool					writable;
+		int						usage;
 };
 
 #endif

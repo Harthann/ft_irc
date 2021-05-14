@@ -122,7 +122,6 @@ Socket	*Socket::Accept()
 //	Receive and Send actually use read/write but will probably switch
 //	to Receive and Send respectively for an extra argument that set
 //	a timeout option in case of error
-
 void	Socket::Send(std::string message, int type)
 {
 	send(this->socketfd, message.c_str(), message.length(), type * MSG_CONFIRM);

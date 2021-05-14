@@ -22,7 +22,8 @@ class Commands
 		std::string as_string();
 		std::string name();
 		std::string from();
-		size_t length();
+		void		setFrom(std::string);
+		size_t 		length();
 		std::string &getCmdParam(size_t);
 		size_t		length() const;
 		bool		isValid();
