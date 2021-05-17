@@ -5,7 +5,7 @@ Channel::Channel()
 
 }
 
-Channel::Channel(std::string Name, User *C_operator) : name(Name), topic(""), server_name("servernet")
+Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name), topic(""), server_name(server_name)
 {
 	this->channel_operator = C_operator;
 	this->active_users.push_back(C_operator);
@@ -60,6 +60,16 @@ std::string			Channel::user_list()
 std::string			Channel::getName()
 {
 	return this->name;
+}
+
+std::string			Channel::getTopic() const
+{
+	return this->topic;
+}
+
+std::string			&Channel::getServerName()
+{
+	return this->server_name;
 }
 
 void				Channel::part(Socket *user)
