@@ -35,7 +35,9 @@ void				Channel::addUser(User *user)
 
 	std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 	std::string msg = temp + " JOIN :"+ this->name + "\n";
-	user->getSocketPtr()->bufferize(msg);
+//	user->getSocketPtr()->bufferize(msg);
+	for(unsigned int i = 0; i < this->active_users.size(); ++i)
+		this->active_users[i]->getSocketPtr()->bufferize(msg);
 	if (this->topic != "")
 	{
 		msg = ":" + server_name + " 332 " + user->getUser() + " " + this->name + " :" + this->topic + "\n";
