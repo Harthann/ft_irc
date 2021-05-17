@@ -13,7 +13,7 @@
 #include "Registration.hpp"
 #include "Channel_Registration.hpp"
 #include "mode.hpp"
-
+#include "commands_prototypes.hpp"
 #include <limits.h>
 #include <float.h>
 
@@ -58,6 +58,10 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 	}
 }
 
+/****************************************************/
+/**					HELLLOOOOOOOOOOO		 		*/
+/****************************************************/
+
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
 {
 	Commands cmd(datas);
@@ -71,8 +75,16 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	}
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
+	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
+		exit_server(cmd, client, server);
+	else if(cmd.name() == "QUIT")
+		quit_server(client, server, cmd);
+	else if (!server.isRegister(client))
+		client->bufferize(":" + server.getServerName() + " " + utils::itos(ERR_NOTREGISTERED) + " *" + ":You have not registered");
 	else if(cmd.name() == "JOIN")
 		add_to_channel(cmd, client, server);
+	else if(cmd.name() == "TOPIC")
+		topic_command(cmd, client, server);
 	else if(cmd.name() == "PART")
 		part_from_channel(cmd, client, server);
 	else if(cmd.name() == "QUIT")

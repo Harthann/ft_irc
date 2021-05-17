@@ -1,0 +1,8 @@
+#ifndef NUMERIC_REPLIES_HPP
+#define NUMERIC_REPLIES_HPP
+
+#define RPL_TOPIC 332
+#define RPL_NOTOPIC 331
+#define ERR_NOTREGISTERED 451
+
+#endif

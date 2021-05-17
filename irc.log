@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CAP LS 302
 
 NICK user4
@@ -24,5 +25,13 @@ QUIT :Leaving
 
 
 QUIT :WeeChat 1.9.1
+=======
+JOIN #PROUTE
+
+DIE
+
+DIE
+>>>>>>> 22a1b946eda6617dc15421b32d388e16e50ad7da
+
 
 

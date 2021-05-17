@@ -10,11 +10,13 @@ class Channel
 {
 	public:
 		Channel();
-		Channel(std::string Name, User *channel_operator);
+		Channel(std::string Name, User *channel_operator, std::string server_name);
 		std::string			getName();
 		void				addUser(User *user);
 		void				part(Socket *user);
 		int					NumberOfUsers();
+		std::string			getTopic() const;
+		std::string			&getServerName();
 		~Channel();
 		typedef	std::vector<User *>		user_vector;
 		typedef	std::vector<std::string>		string_vector;
