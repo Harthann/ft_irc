@@ -11,14 +11,14 @@ User	*check_user(std::vector<User *>server_users, Socket *client)
 	return temp;
 }
 
-int		channel_exist(std::string name, Server &server)
+Channel		*channel_exist(std::string name, Server &server)
 {
 	for (unsigned long i = 0; i < server.getChannels().size(); i++)
 	{
 		if(server.getChannels()[i]->getName() == name)
-			return 1;
+			return server.getChannels()[i];
 	}
-	return 0;
+	return NULL;
 }
 
 void	add_member(User *user, Server &server, std::string name)
@@ -42,7 +42,7 @@ void	add_to_channel(Commands cmd, Socket *client, Server &server)
 	if(!channel_exist(cmd[1], server))
 	{
 //		Channel temp(cmd[1], current_user);
-		res = new Channel(cmd[1], current_user);
+		res = new Channel(cmd[1], current_user, server.getServerName());
 		server.addChannel(res);
 		current_user->ActiveChannel(res);
 	}
