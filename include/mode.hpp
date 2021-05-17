@@ -8,5 +8,7 @@
 # include <vector>
 # include <iostream>
 
+void	mode_parser(Command &cmd, Socket *client, Server &server);
+
 #endif
 

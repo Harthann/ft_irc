@@ -12,6 +12,7 @@
 #include "Addr.hpp"
 #include "Registration.hpp"
 #include "Channel_Registration.hpp"
+#include "mode.hpp"
 
 #include <limits.h>
 #include <float.h>
@@ -76,6 +77,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		part_from_channel(cmd, client, server);
 	else if(cmd.name() == "QUIT")
 		quit_server(client, server, cmd);
+	else if(cmd.name() == "MODE")
+		mode_parser(cmd, client, server);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
 }

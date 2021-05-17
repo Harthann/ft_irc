@@ -35,7 +35,6 @@ void				Channel::addUser(User *user)
 
 	std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 	std::string msg = temp + " JOIN :"+ this->name + "\n";
-//	user->getSocketPtr()->bufferize(msg);
 	for(unsigned int i = 0; i < this->active_users.size(); ++i)
 		this->active_users[i]->getSocketPtr()->bufferize(msg);
 	if (this->topic != "")
@@ -81,7 +80,6 @@ void				Channel::part(Socket *user)
 			msg = ":" + temp->getUser() + "!~" + temp->getUser() + "@127.0.0.1 PART " + this->name + "\n";
 			for(unsigned int i = 0; i < this->active_users.size(); ++i)
 				this->active_users[i]->getSocketPtr()->bufferize(msg);
-//			temp->getSocketPtr()->bufferize(msg);
 			active_users.erase(active_users.begin() + i);
 			list_all_users.erase(list_all_users.begin() + i);
 		}
