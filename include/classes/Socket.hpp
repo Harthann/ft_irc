@@ -29,35 +29,41 @@ class Socket
 		Socket &operator=(Socket const&);
 		~Socket();
 
-		const int &		getSocket() const;
-		Addr			getInfo() const;
+		void			setPassword(std::string &);
 		
-		//	Socket control operators
-
+		/****************************************************************/
+		/*					Socket action/role control					*/
+		/****************************************************************/
 		bool			Bind();
 		bool			Connect();
 		bool			Listen();
-		std::string		IP() const;
-		std::string		getHostName() const;
 		Socket			*Accept();
 		
-		void			Send(std::string , int );
-		void			Confirm(std::string );
 
-		std::string		Receive();
 
-		void			setPassword(std::string &);
-		std::string 	&getPassword();
 		
-		//	Control socket timers
+		/****************************************************************/
+		/*					Getters and Info							*/
+		/****************************************************************/
+		std::string 	&getPassword();
 		time_t			getTime() const;
 		std::string		strTime() const;
+		Addr			getInfo() const;
+		const int &		getSocket() const;
+		std::string		getHostName() const;
+		std::string		IP() const;
+		bool			bufferEmpty() const;
 		
-		//		Flush respectively read buffer and write buffer
+		/****************************************************************/
+		/*					Read/write buffers control					*/
+		/****************************************************************/
+		void			Send(std::string , int );
+		void			Confirm(std::string );
+		std::string		Receive();
 		void			bufferize(Commands &, int = 0);
 		void			bufferize(std::string, int = 0);
-		std::string		flush();
 		void			flushWrite();
+		std::string		flush();
 
 		bool	operator==(Socket const& x) {
 			return (x.socketfd == this->socketfd);
@@ -74,6 +80,7 @@ class Socket
 		int						socketfd;
 		time_t					timestamp;
 		std::string				password;
+		std::string				recv_buffer;
 		std::vector<Commands>	cmd_buffer;
 		bool					writable;
 		int						usage;
