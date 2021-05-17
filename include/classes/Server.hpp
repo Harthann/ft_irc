@@ -75,6 +75,7 @@ class Server
 		std::vector<User*>		&getClients();
 		User					&getUserByName(std::string);
 		std::vector<Channel *>	&getChannels();
+		std::string				&getServerName();
 
 		/****************************************************************/
 		/*					Information function						*/

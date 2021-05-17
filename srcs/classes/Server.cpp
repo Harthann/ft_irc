@@ -426,6 +426,10 @@ void	Server::removeServer(Socket *x)
 	}
 }
 
+/****************************************************************/
+/*							Getters								*/
+/****************************************************************/
+
 std::vector<User *>	&Server::getClients()
 {
 	return this->users;
@@ -443,6 +447,10 @@ User 	&Server::getUserByName(std::string name)
 std::vector<Channel *>	& Server::getChannels()
 {
 	return this->channels;
+}
+
+std::string				&Server::getServerName() {
+	return (this->server_name);
 }
 
 /****************************************************************/
