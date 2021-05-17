@@ -17,11 +17,16 @@ Server::Server(int const &master_port, std::string pass)
 		} catch (se::ServerException &e) {
 			throw e;
 		}
-		if (!block.compare(0, block.find(' '), "me"))
-			__process_block_me(block);
+		if (!block.compare(0, block.find(' '), "me")) {
+			this->server_name = __process_block(block, "name");
+			this->server_message = __process_block(block, "info");
+		}
+		else if (!block.compare(0, block.find(' '), "log"))
+			this->irc_log.open(__process_block(block, "file").c_str(), std::ios::out);
+		// else if (!block.compare(0, block.find(' '), "set"))
+		// 	this->
 	} while (!config_file.eof());
 	
-	this->irc_log.open("irc_log", std::ios::out);
 	std::cout << "Server password set as : " << server_password << std::endl;
 	std::cout << "Server name is : " << this->server_name << std::endl;
 	std::cout << "Server message is : " << this->server_message << std::endl;
@@ -149,7 +154,8 @@ void	Server::fdSet(clients_vector &clients)
 	{
 		if ((*it)->getSocket() > 0 && !timedOut(*it)) {
 			FD_SET((*it)->getSocket(), &this->readfds);
-			FD_SET((*it)->getSocket(), &this->writefds);
+			if (!(*it)->bufferEmpty())
+				FD_SET((*it)->getSocket(), &this->writefds);
 			if ((*it)->getSocket() > max_fd)
 				max_fd = (*it)->getSocket();
 		}
@@ -393,6 +399,21 @@ void	Server::removeSocket(Socket *x)
 	}
 }
 
+void			Server::delete_user(User *user, std::string msg1)
+{
+	std::string msg;
+	for(unsigned int i = 0; i < users.size(); ++i)
+	{
+		if(user->getSocketPtr() == users[i]->getSocketPtr())
+		{
+			msg = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1 QUIT :" + msg1 + "\n";
+			user->getSocketPtr()->bufferize(msg);
+			users.erase(users.begin() + i);
+			break;
+		}
+	}
+}
+
 void	Server::removeServer(Socket *x)
 {
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
@@ -462,6 +483,21 @@ bool	Server::timedOut(Socket *x)
 	return (difftime(time(NULL), x->getTime()) > TIME_LIMIT);
 }
 
+void		Server::checkChannels()
+{
+	Channel *temp;
+	for(unsigned int i = 0; i < channels.size(); ++i)
+	{
+		if (channels[i]->NumberOfUsers() == 0)
+		{
+			temp = channels[i];
+			channels.erase(channels.begin() + i);
+			delete temp;
+		}
+	}
+}
+
+
 /****************************************************************/
 /*						Block parser							*/
 /****************************************************************/
@@ -488,10 +524,11 @@ std::string		Server::__extract_block(std::fstream &fs)
 	return ret;
 }
 
-void		Server::__process_block_me(std::string &str)
+std::string		Server::__process_block(std::string &str, std::string keyword)
 {
-	size_t	pos;
-	size_t	second_pos;
+	size_t			pos;
+	size_t			second_pos;
+	std::string		ret;
 
 	pos = str.find('{');
 	while (pos != std::string::npos && str[pos] != '}')
@@ -499,47 +536,14 @@ void		Server::__process_block_me(std::string &str)
 		while (!std::isalpha(str[pos]))
 			++pos;
 		second_pos = str.find(' ', pos);
-		if (!str.compare(pos, second_pos - pos, "name"))
+		if (!str.compare(pos, second_pos - pos, keyword))
 		{
 			pos = str.find('"', pos);
 			second_pos = str.find('"', pos + 1);
-			server_name = str.substr(pos + 1, second_pos - pos - 1);
-		}
-		if (!str.compare(pos, second_pos - pos, "info"))
-		{
-			pos = str.find('"', pos);
-			second_pos = str.find('"', pos + 1);
-			server_message = str.substr(pos + 1, second_pos - pos - 1);
+			ret = str.substr(pos + 1, second_pos - pos - 1);
+			break ;
 		}
 		pos = str.find(';', pos) + 1;
 	}
-}
-
-void			Server::delete_user(User *user, std::string msg1)
-{
-	std::string msg;
-	for(unsigned int i = 0; i < users.size(); ++i)
-	{
-		if(user->getSocketPtr() == users[i]->getSocketPtr())
-		{
-			msg = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1 QUIT :" + msg1 + "\n";
-			user->getSocketPtr()->bufferize(msg);
-			users.erase(users.begin() + i);
-			break;
-		}
-	}
-}
-
-void		Server::checkChannels()
-{
-	Channel *temp;
-	for(unsigned int i = 0; i < channels.size(); ++i)
-	{
-		if (channels[i]->NumberOfUsers() == 0)
-		{
-			temp = channels[i];
-			channels.erase(channels.begin() + i);
-			delete temp;
-		}
-	}
+	return ret;
 }

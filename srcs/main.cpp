@@ -78,7 +78,6 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		quit_server(client, server, cmd);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
-	server.redirect(cmd, client);
 }
 
 void	server_loop(int port, std::string password, host_info &host)

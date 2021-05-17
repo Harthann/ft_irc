@@ -62,13 +62,12 @@ class Server
 		void					setProxy(Commands &, Socket *);
 		void					addUser(User *);
 		void					addChannel(Channel *Ch);
-		void					checkChannels();
 
 		/*						REMOVERS								*/
 		void					remove(Socket*);
 		void					removeSocket(Socket *);
-		void					removeServer(Socket*);
 		void					delete_user(User *user, std::string msg1);
+		void					removeServer(Socket*);
 
 		/****************************************************************/
 		/*							Getters								*/
@@ -85,6 +84,7 @@ class Server
 		bool					IsRunning() const;
 		bool					isRegister(Socket *);
 		bool					timedOut(Socket *);
+		void					checkChannels();
 
 		/****************************************************************/
 		/*					Vector typedef								*/
@@ -111,7 +111,7 @@ class Server
 		/*						Block parser							*/
 		/****************************************************************/
 		std::string			__extract_block(std::fstream &);
-		void				__process_block_me(std::string &);
+		std::string			__process_block(std::string &, std::string);
 
 	protected:
 		std::fstream		irc_log;

@@ -2,7 +2,7 @@
 #include <fcntl.h>
 
 Socket::Socket(int port, std::string , std::string IP)
-: addr(), password(), cmd_buffer(), writable(false)
+: addr(), password(), recv_buffer(), cmd_buffer(), writable(false)
 {
 	time(&this->timestamp);
 	const int opt = 1;
@@ -61,10 +61,14 @@ Socket::~Socket()
 	close(socketfd);
 }
 
-const int	&Socket::getSocket() const {
-	return (this->socketfd);
+void			Socket::setPassword(std::string &x)
+{
+	this->password = x;
 }
 
+/****************************************************************/
+/*					Socket action/role control					*/
+/****************************************************************/
 bool	Socket::Bind()
 {
 	int		ret;
@@ -119,14 +123,63 @@ Socket	*Socket::Accept()
 	return (new Socket(new_fd, addr, tmp_addr_len));
 }
 
-//	Receive and Send actually use read/write but will probably switch
-//	to Receive and Send respectively for an extra argument that set
-//	a timeout option in case of error
+/****************************************************************/
+/*					Getters and Info							*/
+/****************************************************************/
+
+std::string		&Socket::getPassword()
+{
+	return (this->password);
+}
+
+time_t		Socket::getTime() const
+{
+	return (this->timestamp);
+}
+
+std::string	Socket::strTime() const
+{
+	std::string ret;
+
+	ret =   asctime(gmtime(&this->timestamp));
+	return ret;
+}
+
+Addr	Socket::getInfo() const {
+	return this->addr;
+}
+
+const int	&Socket::getSocket() const {
+	return (this->socketfd);
+}
+
+
+
+std::string	Socket::getHostName() const
+{
+	//	Probably not necessary and actually not working well
+	//	This function will eventually be deleted if no solution found
+	//	The goal is found host name base on ip address
+	//	Ex : ip = 127.0.0.1 will give "localhost" as return value
+	return ("");
+}
+
+std::string		Socket::IP() const
+{
+	return (this->addr.getIP());
+}
+
+bool		Socket::bufferEmpty() const
+{
+	return (this->cmd_buffer.empty());
+}
+
+/****************************************************************/
+/*					Read/write buffers control					*/
+/****************************************************************/
 void	Socket::Send(std::string message, int type)
 {
 	send(this->socketfd, message.c_str(), message.length(), type * MSG_CONFIRM);
-	// if (send(this->socketfd, message.c_str(), message.length(), 0) != message.length())
-	// 	std::cout << "Error sending message to client : " << this->socketfd << std::endl;
 }
 
 void	Socket::Confirm(std::string message)
@@ -134,12 +187,9 @@ void	Socket::Confirm(std::string message)
 	send(this->socketfd, message.c_str(), message.length(), MSG_CONFIRM);
 }
 
+/*	Unefficient version that work just fine for the moment */
 std::string Socket::Receive()
 {
-	//	Actually reading char one by one to avoid looking passed the command line
-	//	Can be change to a bigger read for performance but 
-	//	will need to store in buffer all extra char readed
-	//	as they can be part of the next command line
 	std::string	ret;
 	char		buffer;
 	int			readed;
@@ -151,6 +201,28 @@ std::string Socket::Receive()
 	} while (readed && *(ret.end() - 1) != '\n' && *(ret.end() - 2) != '\r');
 	return (ret);
 }
+
+/* Efficient version in theory but still don't work correctly
+std::string Socket::Receive()
+{
+	std::string	ret;
+	char		buffer[513];
+	int			readed;
+	size_t			pos;
+
+	readed = read(this->socketfd, buffer, 512);
+	buffer[readed] = '\0';
+	if (readed > 0)
+		this->recv_buffer += buffer;
+	pos = this->recv_buffer.find("\r\n", 0);
+	if (pos == std::string::npos)
+		pos = this->recv_buffer.size() - 2;
+	pos += 2;
+	ret = this->recv_buffer.substr(0, pos);
+	this->recv_buffer.erase(0, pos);
+	return (ret);
+}
+*/
 
 void			Socket::bufferize(Commands &cmd, int type)
 {
@@ -172,46 +244,6 @@ void			Socket::flushWrite()
 	}
 }
 
-void			Socket::setPassword(std::string &x)
-{
-	this->password = x;
-}
-
-std::string		&Socket::getPassword()
-{
-	return (this->password);
-}
-
-std::string		Socket::IP() const
-{
-	return (this->addr.getIP());
-}
-
-Addr	Socket::getInfo() const {
-	return this->addr;
-}
-
-std::string	Socket::getHostName() const
-{
-	//	Probably not necessary and actually not working well
-	//	This function will eventually be deleted if no solution found
-	//	The goal is found host name base on ip address
-	//	Ex : ip = 127.0.0.1 will give "localhost" as return value
-	return ("");
-}
-
-time_t		Socket::getTime() const
-{
-	return (this->timestamp);
-}
-
-std::string	Socket::strTime() const
-{
-	std::string ret;
-
-	ret =   asctime(gmtime(&this->timestamp));
-	return ret;
-}
 
 std::string Socket::flush()
 {
