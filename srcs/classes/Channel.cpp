@@ -73,13 +73,15 @@ void				Channel::part(Socket *user)
 	std::string msg;
 	User *temp;
 
-	for(unsigned int i = 0; i < active_users.size(); ++i)
+	for(unsigned int i = 0; i < this->active_users.size(); ++i)
 	{
-		if(active_users[i]->getSocketPtr() == user)
+		if(this->active_users[i]->getSocketPtr() == user)
 		{
 			temp = active_users[i];
 			msg = ":" + temp->getUser() + "!~" + temp->getUser() + "@127.0.0.1 PART " + this->name + "\n";
-			temp->getSocketPtr()->bufferize(msg);
+			for(unsigned int i = 0; i < this->active_users.size(); ++i)
+				this->active_users[i]->getSocketPtr()->bufferize(msg);
+//			temp->getSocketPtr()->bufferize(msg);
 			active_users.erase(active_users.begin() + i);
 			list_all_users.erase(list_all_users.begin() + i);
 		}

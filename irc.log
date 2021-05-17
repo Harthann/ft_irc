@@ -18,11 +18,11 @@ MODE #test
 
 WHO #test
 
-PING 127.0.0.1
+PART #test :Leaving
 
 QUIT :Leaving
 
-QUIT :WeeChat 1.9.1
 
+QUIT :WeeChat 1.9.1
 
 
