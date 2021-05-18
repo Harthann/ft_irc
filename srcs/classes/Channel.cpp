@@ -5,11 +5,16 @@ Channel::Channel()
 
 }
 
-Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name), topic(""), server_name(server_name)
+Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name),
+topic(""),
+server_name(server_name),
+PrivateFlag(false),
+SecretFlag(false),
+channel_type(Name[0])
 {
 
 	this->active_users.push_back(C_operator);
-	this->channel_type = Name[0];
+//	this->channel_type = Name[0];
 	if (channel_type != '+')
 		this->channel_operators.push_back(C_operator);
 	else
@@ -158,6 +163,58 @@ void		Channel::SendMsgToAll(std::string msg)
 		this->active_users[i]->getSocketPtr()->bufferize(msg);
 }
 
+bool		Channel::IsPrivate()
+{
+	return this->PrivateFlag;
+}
+
+bool		Channel::IsSecret()
+{
+	return this->SecretFlag;
+}
+
+void		Channel::setPrivate(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +p \n";
+			this->PrivateFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -p \n";
+			this->PrivateFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setSecret(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +s \n";
+			this->SecretFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -s \n";
+			this->SecretFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+
+}
 Channel::~Channel()
 {
 

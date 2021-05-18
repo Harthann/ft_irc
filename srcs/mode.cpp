@@ -7,6 +7,10 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 	{
 		if (mode[i] == 'o')
 			channel->Privilege(0, user, cmd);
+		else if(mode[i] == 's')
+			channel->setSecret(0, user);
+		else if(mode[i] == 'p')
+			channel->setPrivate(0, user);
 	}
 }
 
@@ -17,6 +21,10 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 	{
 		if (mode[i] == 'o')
 			channel->Privilege(1, user, cmd);
+		else if(mode[i] == 's' && !channel->IsPrivate())
+			channel->setSecret(1, user);
+		else if(mode[i] == 'p' && !channel->IsSecret())
+			channel->setPrivate(1, user);
 	}
 }
 
