@@ -2,10 +2,6 @@ NICK user42
 
 USER user42 0 * :user42
 
-JOIN #test
-
-MODE #test
-
 CAP LS 302
 
 NICK user4
@@ -16,23 +12,35 @@ JOIN #test
 
 MODE #test
 
-WHO #test
+JOIN #test
 
-MODE #test +o user4
+MODE #test
+
+WHO #test
 
 PING 127.0.0.1
 
-MODE #test -o user4
-
 MODE #test +o user4
 
-PART #test :WeeChat 1.9.1
+MODE #test -o user4
 
 PART #test :Leaving
 
-QUIT :Leaving
+PRIVMSG #test :dfdfggfgffgfgf
+
+PRIVMSG #test :fgggffg
+
+PRIVMSG #test :fggfgf
+
+PRIVMSG #test :fgfggf
+
+PRIVMSG #test :trrttr
+
+PRIVMSG #test :rtrttr
 
 QUIT :WeeChat 1.9.1
 
+
+QUIT :Leaving
 
 

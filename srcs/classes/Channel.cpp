@@ -127,7 +127,8 @@ void			Channel::Privilege(int n, User *user, Commands &cmd)
 				msg = temp + " MODE "+ this->name + " -o " + Receiver->getNickname() + "\n";
 			else
 				msg = temp + " MODE "+ this->name + " +o " + Receiver->getNickname() + "\n";
-			user->getSocketPtr()->bufferize(msg);
+			for (unsigned int i = 0; i < this->active_users.size(); ++i)
+				this->active_users[i]->getSocketPtr()->bufferize(msg);
 		}
 	}
 
