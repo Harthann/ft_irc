@@ -22,6 +22,6 @@ void	display_topic(Commands &cmd, Socket *client, Server &server) {
 void	topic_command(Commands &cmd, Socket *client, Server &server) {
 	if (cmd.length() == 2)
 		display_topic(cmd, client, server);
-	else if (cmd.length() == 3)
-		set_topic(cmd, client, server);
+//	else if (cmd.length() == 3)
+//		set_topic(cmd, client, server);
 }

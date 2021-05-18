@@ -101,6 +101,38 @@ int				Channel::NumberOfUsers()
 	return active_users.size();
 }
 
+User			*Channel::getUserByName(std::string name)
+{
+	for(size_t i = 0; i < this->active_users.size(); ++i)
+	{
+		if(this->active_users[i]->getNickname() == name)
+			return this->active_users[i];
+	}
+	return NULL;
+}
+
+void			Channel::Privilege(int n, User *user, Commands &cmd)
+{
+
+	User *Receiver = NULL;
+	std::string	msg;
+
+	if (cmd.length() == 4)
+	{
+		Receiver = this->getUserByName(cmd[3]);
+		if (Receiver != NULL)
+		{
+			std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+			if(n == 0)
+				msg = temp + " MODE "+ this->name + " -o " + Receiver->getNickname() + "\n";
+			else
+				msg = temp + " MODE "+ this->name + " +o " + Receiver->getNickname() + "\n";
+			user->getSocketPtr()->bufferize(msg);
+		}
+	}
+
+}
+
 Channel::~Channel()
 {
 

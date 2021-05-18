@@ -17,6 +17,7 @@ class Channel
 		int					NumberOfUsers();
 		std::string			getTopic() const;
 		std::string			&getServerName();
+		void				Privilege(int n, User *user, Commands &cmd);
 		~Channel();
 		typedef	std::vector<User *>		user_vector;
 		typedef	std::vector<std::string>		string_vector;
@@ -29,6 +30,7 @@ class Channel
 		User					*channel_operator;
 		string_vector 			list_all_users;
 		std::string				user_list();
+		User					*getUserByName(std::string name);
 		std::string				server_name;
 };
 
