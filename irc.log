@@ -18,29 +18,24 @@ MODE #test
 
 WHO #test
 
-PING 127.0.0.1
+MODE #test -o user42
 
 MODE #test +o user4
+
+PING 127.0.0.1
+
+MODE #test -o user42
+
+MODE #test -o user4
+
+MODE #test +o user42
 
 MODE #test -o user4
 
 PART #test :Leaving
 
-PRIVMSG #test :dfdfggfgffgfgf
-
-PRIVMSG #test :fgggffg
-
-PRIVMSG #test :fggfgf
-
-PRIVMSG #test :fgfggf
-
-PRIVMSG #test :trrttr
-
-PRIVMSG #test :rtrttr
+PART #test :WeeChat 1.9.1
 
 QUIT :WeeChat 1.9.1
-
-
-QUIT :Leaving
 
 

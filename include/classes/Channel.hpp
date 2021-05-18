@@ -27,11 +27,13 @@ class Channel
 		std::string				topic;
 		char					channel_type;
 		user_vector				active_users;
-		User					*channel_operator;
+		user_vector				channel_operators;
 		string_vector 			list_all_users;
 		std::string				user_list();
 		User					*getUserByName(std::string name);
+		bool					CheckIfChannelOperator(User *user);
 		std::string				server_name;
+		void					SendMsgToAll(std::string msg);
 };
 
 #endif

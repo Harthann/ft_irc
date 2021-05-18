@@ -7,11 +7,11 @@ Channel::Channel()
 
 Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name), topic(""), server_name(server_name)
 {
-	this->channel_operator = C_operator;
+
 	this->active_users.push_back(C_operator);
 	this->channel_type = Name[0];
 	if (channel_type != '+')
-		this->list_all_users.push_back("@" + C_operator->getNickname());
+		this->channel_operators.push_back(C_operator);
 	else
 		this->list_all_users.push_back(C_operator->getNickname());
 	std::string temp = ":" + C_operator->getUser() + "!~" + C_operator->getUser() + "@127.0.0.1";
@@ -31,12 +31,10 @@ Channel::Channel(std::string Name, User *C_operator, std::string server_name) : 
 void				Channel::addUser(User *user)
 {
 	this->active_users.push_back(user);
-	this->list_all_users.push_back(user->getNickname());
 
 	std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 	std::string msg = temp + " JOIN :"+ this->name + "\n";
-	for(unsigned int i = 0; i < this->active_users.size(); ++i)
-		this->active_users[i]->getSocketPtr()->bufferize(msg);
+	this->SendMsgToAll(msg);
 	if (this->topic != "")
 	{
 		msg = ":" + server_name + " 332 " + user->getUser() + " " + this->name + " :" + this->topic + "\n";
@@ -51,13 +49,18 @@ void				Channel::addUser(User *user)
 std::string			Channel::user_list()
 {
 	std::string res;
+	std::string temp;
 
-	for (unsigned int i = 0; i < list_all_users.size(); ++i)
+	for (unsigned int i = 0; i < this->active_users.size(); ++i)
 	{
-		if(i == 0)
-			res += list_all_users[i];
+		if(this->CheckIfChannelOperator(this->active_users[i]))
+			temp = "@" + this->active_users[i]->getNickname();
 		else
-			res += ", " + list_all_users[i];
+			temp = this->active_users[i]->getNickname();
+		if(i == 0)
+			res += temp;
+		else
+			res += ", " + temp;
 	}
 	return res;
 }
@@ -88,10 +91,8 @@ void				Channel::part(Socket *user)
 		{
 			temp = active_users[i];
 			msg = ":" + temp->getUser() + "!~" + temp->getUser() + "@127.0.0.1 PART " + this->name + "\n";
-			for(unsigned int i = 0; i < this->active_users.size(); ++i)
-				this->active_users[i]->getSocketPtr()->bufferize(msg);
+			this->SendMsgToAll(msg);
 			active_users.erase(active_users.begin() + i);
-			list_all_users.erase(list_all_users.begin() + i);
 		}
 	}
 }
@@ -113,25 +114,48 @@ User			*Channel::getUserByName(std::string name)
 
 void			Channel::Privilege(int n, User *user, Commands &cmd)
 {
-
 	User *Receiver = NULL;
 	std::string	msg;
 
-	if (cmd.length() == 4)
+	if (cmd.length() == 4 && CheckIfChannelOperator(user))
 	{
 		Receiver = this->getUserByName(cmd[3]);
 		if (Receiver != NULL)
 		{
 			std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 			if(n == 0)
+			{
 				msg = temp + " MODE "+ this->name + " -o " + Receiver->getNickname() + "\n";
+				for (size_t i = 0; i < this->channel_operators.size(); ++i)
+				{
+					if (Receiver->getNickname() == this->channel_operators[i]->getNickname())
+						channel_operators.erase(channel_operators.begin() + i);
+				}
+			}
 			else
+			{
 				msg = temp + " MODE "+ this->name + " +o " + Receiver->getNickname() + "\n";
-			for (unsigned int i = 0; i < this->active_users.size(); ++i)
-				this->active_users[i]->getSocketPtr()->bufferize(msg);
+				this->channel_operators.push_back(Receiver);
+			}
+			this->SendMsgToAll(msg);
 		}
 	}
+}
 
+bool			Channel::CheckIfChannelOperator(User *user)
+{
+	for (size_t i = 0; i < this->channel_operators.size(); ++i)
+	{
+		if(this->channel_operators[i]->getNickname() == user->getNickname())
+			return true;
+	}
+	return false;
+}
+
+void		Channel::SendMsgToAll(std::string msg)
+{
+	for (unsigned int i = 0; i < this->active_users.size(); ++i)
+		this->active_users[i]->getSocketPtr()->bufferize(msg);
 }
 
 Channel::~Channel()
