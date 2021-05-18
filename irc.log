@@ -1,6 +1,6 @@
- ldldl
+ NICK user42
 
- JOIN #tt
+ USER user42 0 * :user42
 
  DIE
 

@@ -54,4 +54,12 @@ namespace utils {
 		return ret;
 	}
 
+	std::string						trim(std::string &str, char c) {
+		while (*str.begin() == c)
+			str.erase(str.begin());
+		while ((*str.end() - 1) == c)
+			str.erase(str.end() - 1);
+		return (str);
+	}
+
 }

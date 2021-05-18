@@ -10,5 +10,6 @@ namespace utils {
 	int							stoi(std::string &str);
 	std::string					itos(int i);
 	std::vector<std::string>	split(std::string str, char delimiter);
+	std::string					trim(std::string &str, char c);
 }
 #endif

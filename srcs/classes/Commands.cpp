@@ -3,9 +3,11 @@
 Commands::Commands(std::string &datas, int type)
 : valid(true), type(type)
 {
-	size_t	tmp = 0;
-	size_t	tmp2 = 0;
-	int		length;
+	size_t						tmp = 0;
+	size_t						tmp2 = 0;
+	int							length;
+	std::vector<std::string>	split;
+	std::vector<std::string>	spaces;
 
 	if (datas.find("\n", 0) != std::string::npos)
 	{
@@ -23,18 +25,22 @@ Commands::Commands(std::string &datas, int type)
 		this->prefix = datas.substr(tmp, tmp2);
 		datas.erase(tmp, tmp2 + 1);
 	}
-	// do {
-	// 	tmp2 = datas.find(' ', tmp);
-	// 	if (tmp2 == std::string::npos)
-	// 		tmp2 = datas.length();
-	// 	length = tmp2 - tmp;
-	// 	this->cmd.push_back(datas.substr(tmp, length));
-	// 	tmp = tmp2 + 1;
-	// } while (tmp2 != datas.length());
-	this->cmd = utils::split(datas, ':');
-	std::cout << "Prefix = " << this->prefix << std::endl;
-	for (size_t i = 0; i < cmd.size(); i++)
-		std::cout << "cmd[" << i << "] = " << cmd[i] << std::endl;
+	split = utils::split(datas, ':');
+	for (std::vector<std::string>::iterator it = split.begin(); it != split.end(); ++it)
+	{
+		if ((*it)[0] == ':')
+			this->cmd.push_back(*it);
+		else
+		{
+			spaces = utils::split((*it), ' ');
+			for (std::vector<std::string>::iterator ite = spaces.begin(); ite != spaces.end(); ++ite)
+			{
+				utils::trim(*ite, ' ');
+				if (!(*ite).empty())
+					this->cmd.push_back(*ite);
+			}
+		}
+	}
 }
 
 Commands::Commands(const Commands &x)
@@ -47,6 +53,7 @@ Commands	&Commands::operator=(const Commands &x)
 	this->cmd = x.cmd;
 	this->valid = x.valid;
 	this->type = x.type;
+	this->prefix = x.prefix;
 	return *this;
 }
 
