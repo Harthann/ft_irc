@@ -29,6 +29,7 @@ class User
 		int			getSocket() const;
 		void		partChannel(std::string ch);
 		void		partChannels();
+		std::string	getID() const;
 
 		bool		operator == (User *u2);
 

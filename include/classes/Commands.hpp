@@ -40,6 +40,7 @@ class Commands
 		};
 	private:
 
+		std::string					prefix;
 		std::vector<std::string>	cmd;
 		bool						valid;
 		int							type;

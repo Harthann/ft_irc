@@ -72,6 +72,10 @@ std::string			&Channel::getServerName()
 	return this->server_name;
 }
 
+void				Channel::setTopic(std::string const &topic) {
+	this->topic = topic;
+}
+
 void				Channel::part(Socket *user)
 {
 	std::string msg;

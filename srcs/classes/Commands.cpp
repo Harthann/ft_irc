@@ -15,14 +15,26 @@ Commands::Commands(std::string &datas, int type)
 	}
 	else
 		this->valid = false;
-	do {
+	if (datas[0] == ':')
+	{
 		tmp2 = datas.find(' ', tmp);
 		if (tmp2 == std::string::npos)
 			tmp2 = datas.length();
-		length = tmp2 - tmp;
-		this->cmd.push_back(datas.substr(tmp, length));
-		tmp = tmp2 + 1;
-	} while (tmp2 != datas.length());
+		this->prefix = datas.substr(tmp, tmp2);
+		datas.erase(tmp, tmp2 + 1);
+	}
+	// do {
+	// 	tmp2 = datas.find(' ', tmp);
+	// 	if (tmp2 == std::string::npos)
+	// 		tmp2 = datas.length();
+	// 	length = tmp2 - tmp;
+	// 	this->cmd.push_back(datas.substr(tmp, length));
+	// 	tmp = tmp2 + 1;
+	// } while (tmp2 != datas.length());
+	this->cmd = utils::split(datas, ':');
+	std::cout << "Prefix = " << this->prefix << std::endl;
+	for (size_t i = 0; i < cmd.size(); i++)
+		std::cout << "cmd[" << i << "] = " << cmd[i] << std::endl;
 }
 
 Commands::Commands(const Commands &x)
@@ -46,6 +58,8 @@ Commands::~Commands()
 std::string		Commands::as_string()
 {
 	std::string ret;
+
+	ret.append(this->prefix + " ");
 	for (std::vector<std::string>::iterator it = this->cmd.begin(); it != this->cmd.end(); ++it) {
 		ret += *it;
 		if (it + 1 != this->cmd.end())
@@ -67,31 +81,20 @@ void	Commands::add(std::string x)
 
 std::string		Commands::from()
 {
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[0]);
-	return ("");
+	return (this->prefix);
 }
 
-void			Commands::setFrom(std::string str)
-{
-	if (this->cmd[0].find(':') == 0)
-		this->cmd[0] = str;
-	else
-		this->cmd.insert(this->cmd.begin(), str);
-
+void			Commands::setFrom(std::string str) {
+	this->prefix = str;
 }
 
 std::string		Commands::name()
 {
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[1]);
 	return (this->cmd[0]);
 }
 
 size_t			Commands::length() const
 {
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd.size() - 1);
 	return (this->cmd.size());
 }
 
@@ -99,8 +102,6 @@ std::string		&Commands::getCmdParam(size_t i)
 {
 	if (i > this->cmd.size())
 		throw Commands::out_of_range();
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[i + 1]);
 	return (this->cmd[i]);
 }
 
@@ -108,8 +109,6 @@ std::string	&Commands::operator[](size_t i)
 {
 	if (i > this->cmd.size())
 		throw Commands::out_of_range();
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[i + 1]);
 	return (this->cmd[i]);
 }
 

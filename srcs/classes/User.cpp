@@ -113,6 +113,15 @@ void	User::partChannels()
 	}
 }
 
+std::string		User::getID() const {
+	std::string ret;
+
+	ret.append(":" + this->getNickname() +
+				"!~" + this->getNickname() +
+				"@" + this->getSocketPtr()->IP());
+	return (ret);
+}
+
 bool	User::operator == (User *u2)
 {
 	if (this->nickname.compare(u2->getNickname()) == 0)

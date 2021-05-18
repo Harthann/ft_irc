@@ -17,6 +17,7 @@ class Channel
 		int					NumberOfUsers();
 		std::string			getTopic() const;
 		std::string			&getServerName();
+		void				setTopic(std::string const &topic);
 		~Channel();
 		typedef	std::vector<User *>		user_vector;
 		typedef	std::vector<std::string>		string_vector;
