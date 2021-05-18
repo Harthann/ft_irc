@@ -2,22 +2,6 @@ NICK user42
 
 USER user42 0 * :user42
 
-JOIN #test
-
-MODE #test
-
-MODE #test +s
-
-MODE #test -s
-
-MODE #test +p
-
-MODE #test -p
-
-MODE p
-
-PING 127.0.0.1
-
 QUIT :WeeChat 1.9.1
 
 

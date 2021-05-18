@@ -33,7 +33,8 @@ void	quit_server(Socket *client, Server &server, Commands &cmd)
 	User *temp = check_user(server.getClients(), client);
 
 	temp->partChannels();
-	server.delete_user(temp, cmd[1]);
+	if(cmd.length() > 1)
+		server.delete_user(temp, cmd[1]);
 	delete temp;
 }
 
