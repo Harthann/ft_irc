@@ -22,6 +22,9 @@ class Channel
 		~Channel();
 		typedef	std::vector<User *>		user_vector;
 		typedef	std::vector<std::string>		string_vector;
+		bool				CheckIfChannelOperator(User *user);
+		User				*getUserByName(std::string name);
+		std::string				user_list();
 
 	protected:
 		std::string				name;
@@ -30,9 +33,6 @@ class Channel
 		user_vector				active_users;
 		user_vector				channel_operators;
 		string_vector 			list_all_users;
-		std::string				user_list();
-		User					*getUserByName(std::string name);
-		bool					CheckIfChannelOperator(User *user);
 		std::string				server_name;
 		void					SendMsgToAll(std::string msg);
 };

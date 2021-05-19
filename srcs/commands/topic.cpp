@@ -9,14 +9,7 @@ void	set_topic(Commands &cmd, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(cmd[1], server)))
 		return ;
-	for (size_t i = 2; i < cmd.length(); ++i)
-	{
-		if (i == 2 && cmd[i][0] == ':')
-			cmd[i].erase(cmd[i].begin());
-		topic.append(cmd[i]);
-		if (i != cmd.length() - 1)
-			topic.append(" ");
-	}
+	topic.append(cmd[2]);
 	chan->setTopic(topic);
 	response.append(current_user->getID() + " TOPIC " + cmd[1] + " :" + topic);
 	client->bufferize(response);

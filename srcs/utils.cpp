@@ -62,4 +62,17 @@ namespace utils {
 		return (str);
 	}
 
+	std::string						&delete_char(std::string &str, char c) {
+		size_t	i = 0;
+
+		while (i < str.length())
+		{
+			if (str[i] == c)
+				str.erase(i, 1);
+			else
+				++i;
+		}
+		return (str);
+	}
+
 }

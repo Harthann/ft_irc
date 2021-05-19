@@ -1,45 +1,30 @@
  NICK user42
 
  USER user42 0 * :user42
-NICK user42
 
-USER user42 0 * :user42
+ JOIN #test
 
-CAP LS 302
+ MODE #test
 
-NICK user4
+ JOIN #test
 
-USER user4 user4 localhost :realname
+ MODE #test
 
-JOIN #test
+ JOIN #tt
 
-MODE #test
+ MODE #tt
 
-JOIN #test
+ NICK stavo
 
-MODE #test
+ USER stavo * 0 :stavo
 
-WHO #test
+ JOIN #tt
 
-MODE #test -o user42
+ NAMES
 
-MODE #test +o user4
+ NAMES #tt
 
-PING 127.0.0.1
-
-MODE #test -o user42
-
-MODE #test -o user4
-
-MODE #test +o user42
-
-MODE #test -o user4
-
-PART #test :Leaving
-
-PART #test :WeeChat 1.9.1
-
-QUIT :WeeChat 1.9.1
+ PING localhost
 
  DIE
 
