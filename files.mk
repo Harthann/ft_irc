@@ -1,4 +1,5 @@
-SRC_FILE= topic.cpp \
+SRC_FILE= names.cpp \
+topic.cpp \
 utils.cpp \
 server_info.cpp \
 main.cpp \
