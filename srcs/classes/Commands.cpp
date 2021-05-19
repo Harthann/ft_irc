@@ -3,9 +3,11 @@
 Commands::Commands(std::string &datas, int type)
 : valid(true), type(type)
 {
-	size_t	tmp = 0;
-	size_t	tmp2 = 0;
-	int		length;
+	size_t						tmp = 0;
+	size_t						tmp2 = 0;
+	int							length;
+	std::vector<std::string>	split;
+	std::vector<std::string>	spaces;
 
 	if (datas.find("\n", 0) != std::string::npos)
 	{
@@ -15,14 +17,30 @@ Commands::Commands(std::string &datas, int type)
 	}
 	else
 		this->valid = false;
-	do {
+	if (datas[0] == ':')
+	{
 		tmp2 = datas.find(' ', tmp);
 		if (tmp2 == std::string::npos)
 			tmp2 = datas.length();
-		length = tmp2 - tmp;
-		this->cmd.push_back(datas.substr(tmp, length));
-		tmp = tmp2 + 1;
-	} while (tmp2 != datas.length());
+		this->prefix = datas.substr(tmp, tmp2);
+		datas.erase(tmp, tmp2 + 1);
+	}
+	split = utils::split(datas, ':');
+	for (std::vector<std::string>::iterator it = split.begin(); it != split.end(); ++it)
+	{
+		if ((*it)[0] == ':')
+			this->cmd.push_back(*it);
+		else
+		{
+			spaces = utils::split((*it), ' ');
+			for (std::vector<std::string>::iterator ite = spaces.begin(); ite != spaces.end(); ++ite)
+			{
+				utils::trim(*ite, ' ');
+				if (!(*ite).empty())
+					this->cmd.push_back(*ite);
+			}
+		}
+	}
 }
 
 Commands::Commands(const Commands &x)
@@ -35,6 +53,7 @@ Commands	&Commands::operator=(const Commands &x)
 	this->cmd = x.cmd;
 	this->valid = x.valid;
 	this->type = x.type;
+	this->prefix = x.prefix;
 	return *this;
 }
 
@@ -46,6 +65,8 @@ Commands::~Commands()
 std::string		Commands::as_string()
 {
 	std::string ret;
+
+	ret.append(this->prefix + " ");
 	for (std::vector<std::string>::iterator it = this->cmd.begin(); it != this->cmd.end(); ++it) {
 		ret += *it;
 		if (it + 1 != this->cmd.end())
@@ -67,31 +88,20 @@ void	Commands::add(std::string x)
 
 std::string		Commands::from()
 {
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[0]);
-	return ("");
+	return (this->prefix);
 }
 
-void			Commands::setFrom(std::string str)
-{
-	if (this->cmd[0].find(':') == 0)
-		this->cmd[0] = str;
-	else
-		this->cmd.insert(this->cmd.begin(), str);
-
+void			Commands::setFrom(std::string str) {
+	this->prefix = str;
 }
 
 std::string		Commands::name()
 {
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[1]);
 	return (this->cmd[0]);
 }
 
 size_t			Commands::length() const
 {
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd.size() - 1);
 	return (this->cmd.size());
 }
 
@@ -99,8 +109,6 @@ std::string		&Commands::getCmdParam(size_t i)
 {
 	if (i > this->cmd.size())
 		throw Commands::out_of_range();
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[i + 1]);
 	return (this->cmd[i]);
 }
 
@@ -108,8 +116,6 @@ std::string	&Commands::operator[](size_t i)
 {
 	if (i > this->cmd.size())
 		throw Commands::out_of_range();
-	if (this->cmd[0].find(':') == 0)
-		return (this->cmd[i + 1]);
 	return (this->cmd[i]);
 }
 

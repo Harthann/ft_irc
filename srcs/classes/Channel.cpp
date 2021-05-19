@@ -31,6 +31,7 @@ channel_type(Name[0])
 	C_operator->getSocketPtr()->bufferize(msg);
 	msg = ":" + server_name + " 366 " + C_operator->getUser() + " " + this->name + " :End of NAMES list.\n";
 	C_operator->getSocketPtr()->bufferize(msg);
+	std::cout << "msg = " << msg << std::endl;
 }
 
 void				Channel::addUser(User *user)
@@ -83,6 +84,10 @@ std::string			Channel::getTopic() const
 std::string			&Channel::getServerName()
 {
 	return this->server_name;
+}
+
+void				Channel::setTopic(std::string const &topic) {
+	this->topic = topic;
 }
 
 void				Channel::part(Socket *user)

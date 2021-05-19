@@ -4,5 +4,6 @@
 #define RPL_TOPIC 332
 #define RPL_NOTOPIC 331
 #define ERR_NOTREGISTERED 451
+#define ERR_NEEDMOREPARAMS 461
 
 #endif

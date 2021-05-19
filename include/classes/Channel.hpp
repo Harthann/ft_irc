@@ -21,6 +21,7 @@ class Channel
 		int					NumberOfUsers();
 		std::string			getTopic() const;
 		std::string			&getServerName();
+		void				setTopic(std::string const &topic);
 		void				Privilege(int n, User *user, Commands &cmd);
 		~Channel();
 		typedef	std::vector<User *>		user_vector;
