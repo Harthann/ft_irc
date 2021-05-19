@@ -106,13 +106,13 @@ void	Server::flushClient()
 
 void	Server::ping()
 {
-	std::cout << difftime(time(NULL), this->last_ping) << std::endl;
 	if (difftime(time(NULL), this->last_ping) >= 30)
 	{
 		for (user_it it = users.begin(); it != users.end(); ++it)
 		{
 			(*it)->getSocketPtr()->bufferize(":" + this->server_name + " PING " + (*it)->getNickname());
 			(*it)->getSocketPtr()->setPinged(time(NULL));
+			std::cout << "Pinged user : " << (*it)->getNickname() << std::endl;
 		}
 		time(&this->last_ping);
 	}
@@ -144,7 +144,7 @@ Server::clients_vector &Server::Select()
 {
 	int				activity;
 	clients_vector	ret;
-	struct timeval tv = {30, 0};
+	struct timeval tv = {10, 0};
 
 	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, &tv);
 	if (activity < 0)
@@ -154,13 +154,30 @@ Server::clients_vector &Server::Select()
 
 void	Server::update()
 {
+	Addr	tmp;
+	int		tmp_addr_len = tmp.addrlen();
+	
 	FD_ZERO(&this->readfds);
 	FD_ZERO(&this->writefds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 	max_fd = this->master->getSocket();
-	// fdSet(socket_list);
-	fdSet(pending_clients);
-	fdSet(this->users);
+
+	for (user_it it = users.begin(); it != users.end(); ++it)
+	{
+		if (timedOut((*it)->getSocketPtr())) {
+			getpeername((*it)->getSocket(), tmp.as_sockaddr(),
+									reinterpret_cast<socklen_t*>(&tmp_addr_len));
+			std::cout << "Connection timeout : " << tmp.getIP();
+			std::cout << ":" << tmp.getPort() << std::endl;
+			// delete ((*it)->getSocketPtr());
+			it = users.erase(it);
+			this->removeSocket((*it)->getSocketPtr());
+			--it;
+		}
+	}
+	fdSet(socket_list);
+	// fdSet(pending_clients);
+	// fdSet(this->users);
 }
 
 void	Server::fdSet(clients_vector &clients)
@@ -382,7 +399,6 @@ void	Server::remove(Socket *x)
 				reinterpret_cast<socklen_t*>(&tmp_addr_len));
 	std::cout << "User left : " << tmp.getIP();
 	std::cout << " : " << tmp.getPort() << std::endl;
-	// for each user, create cmd leave to send to every server
 	removeSocket(x);
 	this->update();
 }
@@ -399,8 +415,6 @@ void	Server::removeSocket(Socket *x)
 	}
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
 		if ((*it).getSocketPtr() == x) {
-			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
-			// delete (*it).getSocketPtr();
 			servers.erase(it);
 			break ;
 		}
@@ -408,8 +422,6 @@ void	Server::removeSocket(Socket *x)
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
 		if ((*it)->getSocketPtr() == x) {
-			// std::cout << "Closing connection on socket : " << (*it).getSocket() << std::endl;
-			// delete (*it).getSocketPtr();
 			users.erase(it);
 			break ;
 		}
@@ -452,6 +464,10 @@ void	Server::removeServer(Socket *x)
 	}
 }
 
+/****************************************************************/
+/*							Getters								*/
+/****************************************************************/
+
 std::vector<User *>	&Server::getClients()
 {
 	return this->users;
@@ -469,6 +485,10 @@ User 	&Server::getUserByName(std::string name)
 std::vector<Channel *>	& Server::getChannels()
 {
 	return this->channels;
+}
+
+std::string				&Server::getServerName() {
+	return (this->server_name);
 }
 
 /****************************************************************/

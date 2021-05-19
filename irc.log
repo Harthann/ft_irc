@@ -1,8 +1,11 @@
-NICK user42
+ NICK user42
 
-USER user42 * 0 :user42
+ USER user42 0 * :user42
 
-NICK user42
+ PONG :PING
 
-USER user42 0 * :user42
+ PONG :PING
+
+ QUIT :WeeChat 1.9.1
+
 
