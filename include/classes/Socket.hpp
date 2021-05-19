@@ -29,7 +29,7 @@ class Socket
 		Socket &operator=(Socket const&);
 		~Socket();
 
-		void			setPassword(std::string &);
+
 		
 		/****************************************************************/
 		/*					Socket action/role control					*/
@@ -40,14 +40,19 @@ class Socket
 		Socket			*Accept();
 		
 
-
+		/****************************************************************/
+		/*							Setters								*/
+		/****************************************************************/
+		void			setPassword(std::string &);
+		void			setPinged(time_t = 0);
 		
 		/****************************************************************/
 		/*					Getters and Info							*/
 		/****************************************************************/
-		std::string 	&getPassword();
+		const std::string 	&getPassword() const;
 		time_t			getTime() const;
 		std::string		strTime() const;
+		time_t			getPingedTime() const;
 		Addr			getInfo() const;
 		const int &		getSocket() const;
 		std::string		getHostName() const;
@@ -79,6 +84,7 @@ class Socket
 		Addr					addr;
 		int						socketfd;
 		time_t					timestamp;
+		time_t					ping_ts;
 		std::string				password;
 		std::string				recv_buffer;
 		std::vector<Commands>	cmd_buffer;

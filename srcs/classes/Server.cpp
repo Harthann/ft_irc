@@ -2,7 +2,8 @@
 
 Server::Server(int const &master_port, std::string pass)
 :	pending_clients(), socket_list(), servers(), users(), channels(),
-	server_name(), server_message(), server_password(pass), state(1)
+	server_name(), server_message(), server_password(pass), state(1),
+	timeout(0), last_ping(time(NULL))
 {
 	std::fstream	config_file;
 	std::string		block;
@@ -23,14 +24,15 @@ Server::Server(int const &master_port, std::string pass)
 		}
 		else if (!block.compare(0, block.find(' '), "log"))
 			this->irc_log.open(__process_block(block, "file").c_str(), std::ios::out);
-		// else if (!block.compare(0, block.find(' '), "set"))
-		// 	this->
+		else if (!block.compare(0, block.find(' '), "set"))
+			this->timeout = utils::stoi(__process_block(block, "timeout"));
 	} while (!config_file.eof());
 	
 	std::cout << "Server password set as : " << server_password << std::endl;
 	std::cout << "Server name is : " << this->server_name << std::endl;
 	std::cout << "Server message is : " << this->server_message << std::endl;
 	std::cout << "Constructing Server on port : " << master_port << "\n";
+	std::cout << "Timeout server set to : " << this->timeout << std::endl;
 	this->master = new Socket(master_port);
 	std::cout << "Master socket created with fd : " << this->master->getSocket() << std::endl;
 	this->master->Listen();
@@ -40,7 +42,6 @@ Server::Server(int const &master_port, std::string pass)
 	FD_ZERO(&this->writefds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 	this->socket_list.push_back(this->master);
-
 }
 
 Server::Server(Server const &x)
@@ -103,6 +104,20 @@ void	Server::flushClient()
 
 }
 
+void	Server::ping()
+{
+	std::cout << difftime(time(NULL), this->last_ping) << std::endl;
+	if (difftime(time(NULL), this->last_ping) >= 30)
+	{
+		for (user_it it = users.begin(); it != users.end(); ++it)
+		{
+			(*it)->getSocketPtr()->bufferize(":" + this->server_name + " PING " + (*it)->getNickname());
+			(*it)->getSocketPtr()->setPinged(time(NULL));
+		}
+		time(&this->last_ping);
+	}
+}
+
 /****************************************************************/
 /*					logs function to keep a trace of events		*/
 /****************************************************************/
@@ -129,8 +144,9 @@ Server::clients_vector &Server::Select()
 {
 	int				activity;
 	clients_vector	ret;
+	struct timeval tv = {30, 0};
 
-	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, NULL);
+	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, &tv);
 	if (activity < 0)
 		throw se::SelectFailed();
 	return this->socket_list;
@@ -142,7 +158,9 @@ void	Server::update()
 	FD_ZERO(&this->writefds);
 	FD_SET(this->master->getSocket(), &this->readfds);
 	max_fd = this->master->getSocket();
-	fdSet(socket_list);
+	// fdSet(socket_list);
+	fdSet(pending_clients);
+	fdSet(this->users);
 }
 
 void	Server::fdSet(clients_vector &clients)
@@ -152,7 +170,7 @@ void	Server::fdSet(clients_vector &clients)
 
 	for (client_it it = clients.begin(); it != clients.end(); ++it)
 	{
-		if ((*it)->getSocket() > 0 && !timedOut(*it)) {
+		if ((*it)->getSocket() > 0) {
 			FD_SET((*it)->getSocket(), &this->readfds);
 			if (!(*it)->bufferEmpty())
 				FD_SET((*it)->getSocket(), &this->writefds);
@@ -189,17 +207,25 @@ void	Server::fdSet(proxy_vector &)
 
 void	Server::fdSet(user_vector &)
 {
+	Addr	tmp;
+	int		tmp_addr_len = tmp.addrlen();
+
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
-		if ((*it)->getSocket() > 0) {
+		if ((*it)->getSocket() > 0 && !timedOut((*it)->getSocketPtr())) {
 			FD_SET((*it)->getSocket(), &this->readfds);
 			FD_SET((*it)->getSocket(), &this->writefds);
 			if ((*it)->getSocket() > max_fd)
 				max_fd = (*it)->getSocket();
 		}
 		else {
-			delete ((*it)->getSocketPtr());
-			users.erase(it);
+			getpeername((*it)->getSocket(), tmp.as_sockaddr(),
+									reinterpret_cast<socklen_t*>(&tmp_addr_len));
+			std::cout << "Connection timeout : " << tmp.getIP();
+			std::cout << ":" << tmp.getPort() << std::endl;
+			// delete ((*it)->getSocketPtr());
+			it = users.erase(it);
+			--it;
 		}
 	}
 }
@@ -478,9 +504,9 @@ bool	Server::timedOut(Socket *x)
 {
 	if (!x)
 		return true;
-	if (!SET_TIMEOUT)
+	if (!this->timeout || !x->getPingedTime())
 		return false;
-	return (difftime(time(NULL), x->getTime()) > TIME_LIMIT);
+	return (difftime(time(NULL), x->getPingedTime()) > this->timeout);
 }
 
 void		Server::checkChannels()
@@ -536,6 +562,8 @@ std::string		Server::__process_block(std::string &str, std::string keyword)
 		while (!std::isalpha(str[pos]))
 			++pos;
 		second_pos = str.find(' ', pos);
+		// if (keyword == "timeout")
+		// 	std::cout << "Timeout found" << std::endl;
 		if (!str.compare(pos, second_pos - pos, keyword))
 		{
 			pos = str.find('"', pos);
