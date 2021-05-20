@@ -34,6 +34,7 @@ class Channel
 		bool					PrivateFlag;
 		bool					SecretFlag;
 		bool					InviteFlag;
+		string_vector			invited_users;
 		std::string				topic;
 		char					channel_type;
 		user_vector				active_users;
