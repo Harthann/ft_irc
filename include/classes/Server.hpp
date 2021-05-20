@@ -17,8 +17,9 @@
 //	chat.freeenode.net
 //	irc.ircnet.com
 
-# define TIME_LIMIT 10.0
-# define SET_TIMEOUT false
+# define PING_FREQUENCY 240
+# define SELECT_TIMEOUT 10
+
 class Channel;
 
 class Server

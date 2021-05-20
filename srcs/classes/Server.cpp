@@ -106,7 +106,7 @@ void	Server::flushClient()
 
 void	Server::ping()
 {
-	if (difftime(time(NULL), this->last_ping) >= 30)
+	if (difftime(time(NULL), this->last_ping) >= PING_FREQUENCY)
 	{
 		for (user_it it = users.begin(); it != users.end(); ++it)
 		{
@@ -144,7 +144,7 @@ Server::clients_vector &Server::Select()
 {
 	int				activity;
 	clients_vector	ret;
-	struct timeval tv = {10, 0};
+	struct timeval tv = {SELECT_TIMEOUT, 0};
 
 	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, &tv);
 	if (activity < 0)

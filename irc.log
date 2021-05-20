@@ -2,10 +2,47 @@
 
  USER user42 0 * :user42
 
- PONG :PING
+ JOIN #tt
 
- PONG :PING
+ MODE #tt
+
+ NICK harthann
+
+ USER harthann 0 * :harthann
+
+ JOIN #tt
+
+ MODE #tt
+
+ PRIVMSG #tt :Hello
+
+ PRIVMSG #tt :fuck you
+
+ PRIVMSG Harthann :connard
+
+ PRIVMSG harthann :connard
+
+ PING localhost
+
+ PING localhost
+
+ PRIVMSG harthann :connard
+
+ PRIVMSG user42 :va te faire foutre
+
+ PART #tt :WeeChat 1.9.1
+
+ PART #tt :WeeChat 1.9.1
 
  QUIT :WeeChat 1.9.1
 
+
+ QUIT :WeeChat 1.9.1
+
+
+ NICK user42
+
+ USER user42 0 * :user42
+
+ DIE
 
