@@ -34,6 +34,7 @@ class Server
 		void					Stop();
 		void					redirect(Commands &, Socket *);
 		void					flushClient();
+		void					ping();
 		
 		/****************************************************************/
 		/*				logs function to keep a trace of events			*/
@@ -73,7 +74,7 @@ class Server
 		/*							Getters								*/
 		/****************************************************************/
 		std::vector<User*>		&getClients();
-		User					&getUserByName(std::string);
+		User					*getUserByName(std::string);
 		std::vector<Channel *>	&getChannels();
 		std::string				&getServerName();
 
@@ -142,6 +143,8 @@ class Server
 		std::string			server_message;
 		std::string			server_password;
 		bool				state;
+		int					timeout;
+		time_t				last_ping;
 };
 
 #endif

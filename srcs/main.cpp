@@ -93,6 +93,13 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		quit_server(client, server, cmd);
 	else if(cmd.name() == "MODE")
 		mode_parser(cmd, client, server);
+	else if (cmd.name() == "PRIVMSG")
+		messages_command(cmd, client, server);
+	else if (cmd.name() == "PONG")
+	{
+		client->setPinged();
+		std::cout << "Pong received" << std::endl;
+	}
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
 		exit_server(cmd, client, server);
 }
@@ -131,6 +138,7 @@ void	server_loop(int port, std::string password, host_info &host)
 					(*it)->flushWrite();
 			}
 			server.checkChannels();
+			server.ping();
 		}
 	}
 	catch (se::ServerException &e) {

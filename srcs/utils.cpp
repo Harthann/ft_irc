@@ -3,7 +3,7 @@
 
 namespace utils {
 
-	int			stoi(std::string &str)
+	int			stoi(std::string str)
 	{
 		int i = 0;
 

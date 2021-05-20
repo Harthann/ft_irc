@@ -2,29 +2,10 @@
 
  USER user42 0 * :user42
 
- JOIN #test
+ PONG :PING
 
- MODE #test
+ PONG :PING
 
- JOIN #test
+ QUIT :WeeChat 1.9.1
 
- MODE #test
-
- JOIN #tt
-
- MODE #tt
-
- NICK stavo
-
- USER stavo * 0 :stavo
-
- JOIN #tt
-
- NAMES
-
- NAMES #tt
-
- PING localhost
-
- DIE
 

@@ -19,6 +19,7 @@ class Channel
 		std::string			&getServerName();
 		void				setTopic(std::string const &topic);
 		void				Privilege(int n, User *user, Commands &cmd);
+		void				SendMsgToAll(std::string msg, User * = NULL);
 		~Channel();
 		typedef	std::vector<User *>		user_vector;
 		typedef	std::vector<std::string>		string_vector;
@@ -34,7 +35,6 @@ class Channel
 		user_vector				channel_operators;
 		string_vector 			list_all_users;
 		std::string				server_name;
-		void					SendMsgToAll(std::string msg);
 };
 
 #endif

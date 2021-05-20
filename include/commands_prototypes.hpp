@@ -10,5 +10,6 @@
 
 void	topic_command(Commands &cmd, Socket *client, Server &server);
 void	names_command(Commands &cmd, Socket *client, Server &server);
+void	messages_command(Commands &cmd, Socket *client, Server &server);
 
 #endif
