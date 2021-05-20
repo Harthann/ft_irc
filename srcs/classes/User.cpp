@@ -57,6 +57,10 @@ std::string	User::getUser() const
 	return this->user;
 }
 
+std::vector<Channel *>	&User::getChannels() {
+	return (this->current_channel);
+}
+
 void	User::setDatas(Commands cmd)
 {
 	if(cmd[0].compare("NICK") == 0)

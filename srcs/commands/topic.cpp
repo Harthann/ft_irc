@@ -1,5 +1,21 @@
 #include "commands_prototypes.hpp"
 
+void	clear_topic(Commands &cmd, Socket *client, Server &server) {
+	std::string	response;
+	User		*current_user;
+	Channel		*chan;
+
+	current_user = check_user(server.getClients(), client);
+	if (!(chan = channel_exist(cmd[1], server)))
+		response.append(cmd[1] + ":No such channel");
+	else
+	{
+		chan->setTopic(std::string());
+		response.append(":" + chan->getServerName() + " " + utils::itos(RPL_NOTOPIC) + " " + current_user->getNickname() + " " + chan->getName() + " :No topic is set");
+	}
+	client->bufferize(response);
+}
+
 void	set_topic(Commands &cmd, Socket *client, Server &server) {
 	std::string	topic;
 	std::string	response;
@@ -8,10 +24,13 @@ void	set_topic(Commands &cmd, Socket *client, Server &server) {
 
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(cmd[1], server)))
-		return ;
-	topic.append(cmd[2]);
-	chan->setTopic(topic);
-	response.append(current_user->getID() + " TOPIC " + cmd[1] + " :" + topic);
+		response.append(cmd[1] + ":No such channel");
+	else
+	{
+		topic.append(cmd[2]);
+		chan->setTopic(topic);
+		response.append(current_user->getID() + " TOPIC " + cmd[1] + " :" + topic);
+	}
 	client->bufferize(response);
 }
 
@@ -23,7 +42,7 @@ void	display_topic(Commands &cmd, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	chan = channel_exist(cmd[1], server);
 	if (!chan)
-		response.append(chan->getName() + ":No such channel");
+		response.append(cmd[1] + ":No such channel");
 	else
 	{
 		if (!(chan->getTopic().empty()))
@@ -40,6 +59,8 @@ void	topic_command(Commands &cmd, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (cmd.length() == 2)
 		display_topic(cmd, client, server);
+	else if (cmd.length() == 3 && cmd[2].length() == 1 && cmd[2][0] == ':')
+		clear_topic(cmd, client, server);
 	else if (cmd.length() >= 3)
 		set_topic(cmd, client, server);
 	else
