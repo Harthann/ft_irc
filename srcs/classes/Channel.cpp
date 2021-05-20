@@ -42,6 +42,8 @@ void				Channel::addUser(User *user)
 	std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 	std::string msg = temp + " JOIN :"+ this->name + "\n";
 	this->SendMsgToAll(msg);
+	if (CheckIfInvited(user))
+		delete_from_invited(user);
 	if (this->topic != "")
 	{
 		msg = ":" + server_name + " 332 " + user->getUser() + " " + this->name + " :" + this->topic + "\n";
@@ -244,6 +246,39 @@ void		Channel::setInviteOnly(int n, User *user)
 			this->InviteFlag = false;
 		}
 		this->SendMsgToAll(msg);
+	}
+}
+
+void	Channel::AddToInvitedUser(User * Member, User *Guest)
+{
+	std::string temp;
+	std::string msg;
+	this->invited_users.push_back(Guest);
+
+	temp = ":" + Member->getUser() + "!~" + Member->getUser() + "@127.0.0.1";
+	msg = temp + " INVITE " + Guest->getNickname() + " " + this->name + "\n";
+	Guest->getSocketPtr()->bufferize(msg);
+}
+
+bool	Channel::CheckIfInvited(User *user)
+{
+	for (size_t i = 0; i < this->invited_users.size(); ++i)
+	{
+		if(user == this->invited_users[i])
+			return true;
+	}
+	return false;
+}
+
+void	Channel::delete_from_invited(User *user)
+{
+	for (size_t i = 0; i < this->invited_users.size(); ++i)
+	{
+		if(user == this->invited_users[i])
+		{
+			this->invited_users.erase(this->invited_users.begin() + i);
+			break;
+		}
 	}
 }
 

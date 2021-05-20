@@ -30,7 +30,7 @@ void	add_member(User *user, Server &server, std::string name)
 		if(server.getChannels()[i]->getName() == name)
 		{
 			temp = server.getChannels()[i];
-			if (!temp->IsInviteOnly())
+			if ((!temp->IsInviteOnly()) || (temp->IsInviteOnly() && temp->CheckIfInvited(user)))
 			{
 				temp->addUser(user);
 				user->ActiveChannel(temp);
@@ -68,9 +68,9 @@ void	add_to_channel(Commands cmd, Socket *client, Server &server)
 	{
 		if (CheckChannelName(cmd[1]))
 		{
-		res = new Channel(cmd[1], current_user, server.getServerName());
-		server.addChannel(res);
-		current_user->ActiveChannel(res);
+			res = new Channel(cmd[1], current_user, server.getServerName());
+			server.addChannel(res);
+			current_user->ActiveChannel(res);
 		}
 	}
 	else
@@ -84,5 +84,4 @@ void	part_from_channel(Commands cmd, Socket *client, Server &server)
 	current_user = check_user(server.getClients(), client);
 	if(channel_exist(cmd[1], server))
 		current_user->partChannel(cmd[1]);
-
 }

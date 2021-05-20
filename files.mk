@@ -6,7 +6,8 @@ server_info.cpp \
 main.cpp \
 Registration.cpp \
 Channel_Registration.cpp \
-mode.cpp
+mode.cpp \
+invite.cpp
 
 CLASSES= Server \
 Addr \
