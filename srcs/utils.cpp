@@ -3,7 +3,7 @@
 
 namespace utils {
 
-	int			stoi(std::string &str)
+	int			stoi(std::string str)
 	{
 		int i = 0;
 
@@ -59,6 +59,19 @@ namespace utils {
 			str.erase(str.begin());
 		while ((*str.end() - 1) == c)
 			str.erase(str.end() - 1);
+		return (str);
+	}
+
+	std::string						&delete_char(std::string &str, char c) {
+		size_t	i = 0;
+
+		while (i < str.length())
+		{
+			if (str[i] == c)
+				str.erase(i, 1);
+			else
+				++i;
+		}
 		return (str);
 	}
 

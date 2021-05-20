@@ -22,6 +22,7 @@ class User
 		int			getStatus() const;
 		std::string	getNickname() const;
 		std::string	getUser() const;
+		std::vector<Channel *>	&getChannels();
 
 		void		displayinfo();
 		void		setDatas(Commands cmd);

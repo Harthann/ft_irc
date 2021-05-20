@@ -163,10 +163,13 @@ bool			Channel::CheckIfChannelOperator(User *user)
 	return false;
 }
 
-void		Channel::SendMsgToAll(std::string msg)
+void		Channel::SendMsgToAll(std::string msg, User *x)
 {
 	for (unsigned int i = 0; i < this->active_users.size(); ++i)
-		this->active_users[i]->getSocketPtr()->bufferize(msg);
+	{
+		if (!x || x != this->active_users[i])
+			this->active_users[i]->getSocketPtr()->bufferize(msg);
+	}
 }
 
 bool		Channel::IsPrivate()
