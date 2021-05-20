@@ -24,12 +24,22 @@ Channel		*channel_exist(std::string name, Server &server)
 
 void	add_member(User *user, Server &server, std::string name)
 {
+	Channel *temp;
 	for (unsigned long i = 0; i < server.getChannels().size(); i++)
 	{
 		if(server.getChannels()[i]->getName() == name)
 		{
-			server.getChannels()[i]->addUser(user);
-			user->ActiveChannel(server.getChannels()[i]);
+			temp = server.getChannels()[i];
+			if (!temp->IsInviteOnly())
+			{
+				temp->addUser(user);
+				user->ActiveChannel(temp);
+			}
+			else
+			{
+				std::string msg = ":" + temp->getServerName() + ERR_INVITEONLYCHAN + user->getUser() + " " + temp->getName() + "\n";
+				user->getSocketPtr()->bufferize(msg);
+			}
 		}
 	}
 }

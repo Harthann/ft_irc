@@ -14,8 +14,10 @@ class Channel
 		std::string			getName();
 		bool				IsPrivate();
 		bool				IsSecret();
+		bool				IsInviteOnly();
 		void				setPrivate(int n, User *user);
 		void				setSecret(int n, User *user);
+		void				setInviteOnly(int n, User *user);
 		void				addUser(User *user);
 		void				part(Socket *user);
 		int					NumberOfUsers();
@@ -31,6 +33,7 @@ class Channel
 		std::string				name;
 		bool					PrivateFlag;
 		bool					SecretFlag;
+		bool					InviteFlag;
 		std::string				topic;
 		char					channel_type;
 		user_vector				active_users;

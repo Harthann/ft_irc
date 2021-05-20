@@ -11,6 +11,9 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 			channel->setSecret(0, user);
 		else if(mode[i] == 'p')
 			channel->setPrivate(0, user);
+		else if(mode[i] == 'i')
+			channel->setInviteOnly(0, user);
+
 	}
 }
 
@@ -25,6 +28,8 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 			channel->setSecret(1, user);
 		else if(mode[i] == 'p' && !channel->IsSecret())
 			channel->setPrivate(1, user);
+		else if(mode[i] == 'i')
+			channel->setInviteOnly(1, user);
 	}
 }
 

@@ -10,6 +10,7 @@ topic(""),
 server_name(server_name),
 PrivateFlag(false),
 SecretFlag(false),
+InviteFlag(false),
 channel_type(Name[0])
 {
 
@@ -178,13 +179,17 @@ bool		Channel::IsSecret()
 	return this->SecretFlag;
 }
 
+bool		Channel::IsInviteOnly()
+{
+	return this->InviteFlag;
+}
+
 void		Channel::setPrivate(int n, User *user)
 {
 	std::string msg;
 	if(CheckIfChannelOperator(user))
 	{
 		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-
 		if(n)
 		{
 			msg = temp + " MODE "+ this->name + " +p \n";
@@ -205,7 +210,6 @@ void		Channel::setSecret(int n, User *user)
 	if(CheckIfChannelOperator(user))
 	{
 		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-
 		if(n)
 		{
 			msg = temp + " MODE "+ this->name + " +s \n";
@@ -218,8 +222,28 @@ void		Channel::setSecret(int n, User *user)
 		}
 		this->SendMsgToAll(msg);
 	}
-
 }
+
+void		Channel::setInviteOnly(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +i \n";
+			this->InviteFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -i \n";
+			this->InviteFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
 Channel::~Channel()
 {
 
