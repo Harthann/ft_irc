@@ -91,6 +91,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		quit_server(client, server, cmd);
 	else if(cmd.name() == "MODE")
 		mode_parser(cmd, client, server);
+	else if (cmd.name() == "PRIVMSG")
+		messages_command(cmd, client, server);
 	else if (cmd.name() == "PONG")
 	{
 		client->setPinged();

@@ -29,7 +29,7 @@ Socket::Socket(host_info &host)
 	if (!this->socketfd)
 		throw se::SocketFailed();
 	this->addr = host.host;
-	std::cout << "Addrsss : " << this->addr.getIP() << std::endl;
+	std::cout << "Address : " << this->addr.getIP() << std::endl;
 	std::cout << "Port : " << this->addr.getPort() << std::endl;
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));

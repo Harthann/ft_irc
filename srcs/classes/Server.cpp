@@ -473,13 +473,14 @@ std::vector<User *>	&Server::getClients()
 	return this->users;
 }
 
-User 	&Server::getUserByName(std::string name)
+User 	*Server::getUserByName(std::string name)
 {
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
 		if ((*it)->getNickname() == name)
-			return (**it);
+			return (*it);
 	}
+	return (NULL);
 }
 
 std::vector<Channel *>	& Server::getChannels()
