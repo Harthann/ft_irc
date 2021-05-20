@@ -5,6 +5,7 @@ Socket::Socket(int port, std::string , std::string IP)
 : addr(), password(), recv_buffer(), cmd_buffer(), writable(false)
 {
 	time(&this->timestamp);
+	ping_ts = 0;
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (!this->socketfd)
@@ -28,7 +29,7 @@ Socket::Socket(host_info &host)
 	if (!this->socketfd)
 		throw se::SocketFailed();
 	this->addr = host.host;
-	std::cout << "Addrsss : " << this->addr.getIP() << std::endl;
+	std::cout << "Address : " << this->addr.getIP() << std::endl;
 	std::cout << "Port : " << this->addr.getPort() << std::endl;
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
@@ -61,10 +62,6 @@ Socket::~Socket()
 	close(socketfd);
 }
 
-void			Socket::setPassword(std::string &x)
-{
-	this->password = x;
-}
 
 /****************************************************************/
 /*					Socket action/role control					*/
@@ -124,10 +121,23 @@ Socket	*Socket::Accept()
 }
 
 /****************************************************************/
+/*							Setters								*/
+/****************************************************************/
+void			Socket::setPassword(std::string &x)
+{
+	this->password = x;
+}
+
+void			Socket::setPinged(time_t ts)
+{
+	this->ping_ts = ts;
+}
+
+/****************************************************************/
 /*					Getters and Info							*/
 /****************************************************************/
 
-std::string		&Socket::getPassword()
+const std::string		&Socket::getPassword() const
 {
 	return (this->password);
 }
@@ -143,6 +153,11 @@ std::string	Socket::strTime() const
 
 	ret =   asctime(gmtime(&this->timestamp));
 	return ret;
+}
+
+time_t		Socket::getPingedTime() const
+{
+	return this->ping_ts;
 }
 
 Addr	Socket::getInfo() const {

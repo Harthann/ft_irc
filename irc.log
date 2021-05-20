@@ -1,45 +1,11 @@
  NICK user42
 
  USER user42 0 * :user42
-NICK user42
 
-USER user42 0 * :user42
+ PONG :PING
 
-CAP LS 302
+ PONG :PING
 
-NICK user4
+ QUIT :WeeChat 1.9.1
 
-USER user4 user4 localhost :realname
-
-JOIN #test
-
-MODE #test
-
-JOIN #test
-
-MODE #test
-
-WHO #test
-
-MODE #test -o user42
-
-MODE #test +o user4
-
-PING 127.0.0.1
-
-MODE #test -o user42
-
-MODE #test -o user4
-
-MODE #test +o user42
-
-MODE #test -o user4
-
-PART #test :Leaving
-
-PART #test :WeeChat 1.9.1
-
-QUIT :WeeChat 1.9.1
-
- DIE
 
