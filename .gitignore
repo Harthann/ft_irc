@@ -3,4 +3,4 @@ ircserv
 bircd
 bircd.tar.gz
 .vscode
-irc.log
+*.log
