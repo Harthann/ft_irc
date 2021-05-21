@@ -32,12 +32,14 @@ class Channel
 		typedef	std::vector<User *>		user_vector;
 		typedef	std::vector<std::string>		string_vector;
 		bool				CheckIfChannelOperator(User *user);
+		bool				CheckIfVoiceUser(User *user);
 		bool				CheckIfInvited(User *user);
 		User				*getUserByName(std::string name);
 		std::string			user_list();
 		void				AddToInvitedUser(User * Member, User * Guest);
 		void				delete_from_invited(User *user);
-
+		void				AddVoiceUsers(User *Ch_operator, User *user);
+		void				DelVoiceUsers(User *Ch_operator, User *user);
 	protected:
 		std::string				name;
 		bool					PrivateFlag;
@@ -48,6 +50,7 @@ class Channel
 		std::string				topic;
 		char					channel_type;
 		user_vector				active_users;
+		user_vector				voice_users;
 		user_vector				channel_operators;
 		string_vector 			list_all_users;
 		std::string				server_name;

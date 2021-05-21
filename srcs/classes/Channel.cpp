@@ -65,6 +65,8 @@ std::string			Channel::user_list()
 	{
 		if(this->CheckIfChannelOperator(this->active_users[i]))
 			temp = "@" + this->active_users[i]->getNickname();
+		else if(this->IsModerate() && this->CheckIfVoiceUser(this->active_users[i]))
+			temp = "+" + this->active_users[i]->getNickname();
 		else
 			temp = this->active_users[i]->getNickname();
 		if(i == 0)
@@ -161,6 +163,16 @@ bool			Channel::CheckIfChannelOperator(User *user)
 	for (size_t i = 0; i < this->channel_operators.size(); ++i)
 	{
 		if(this->channel_operators[i]->getNickname() == user->getNickname())
+			return true;
+	}
+	return false;
+}
+
+bool			Channel::CheckIfVoiceUser(User *user)
+{
+	for (size_t i = 0; i < this->voice_users.size(); ++i)
+	{
+		if(this->voice_users[i]->getNickname() == user->getNickname())
 			return true;
 	}
 	return false;
@@ -304,6 +316,37 @@ void	Channel::delete_from_invited(User *user)
 		{
 			this->invited_users.erase(this->invited_users.begin() + i);
 			break;
+		}
+	}
+}
+
+void	Channel::AddVoiceUsers(User *Ch_operator, User *user)
+{
+	std::string msg;
+	if (!this->CheckIfChannelOperator(user))
+	{
+		this->voice_users.push_back(user);
+		std::string temp = ":" + Ch_operator->getUser() + "!~" + Ch_operator->getUser() + "@127.0.0.1";
+		msg = temp + " MODE " + this->name + " +v " + user->getNickname() +"\n";
+		this->SendMsgToAll(msg);
+	}
+}
+
+void	Channel::DelVoiceUsers(User *Ch_operator, User *user)
+{
+	std::string msg;
+	if (!this->CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + Ch_operator->getUser() + "!~" + Ch_operator->getUser() + "@127.0.0.1";
+		msg = temp + " MODE " + this->name + " -v " + user->getNickname() +"\n";
+		this->SendMsgToAll(msg);
+		for (size_t i = 0; i < this->voice_users.size(); ++i)
+		{
+			if(user == this->voice_users[i])
+			{
+				this->voice_users.erase(this->voice_users.begin() + i);
+				break;
+			}
 		}
 	}
 }
