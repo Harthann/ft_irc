@@ -32,9 +32,10 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 			channel->setInviteOnly(0, user);
 		else if(mode[i] == 'm')
 			channel->setModerate(0, user);
+		else if(mode[i] == 'n')
+			channel->setNoMessageOutside(0, user);
 		else if(mode[i] == 'v')
 			VoiceUserCheck(cmd, channel, user, 0);
-
 	}
 }
 
@@ -53,8 +54,8 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 			channel->setInviteOnly(1, user);
 		else if(mode[i] == 'm')
 			channel->setModerate(1, user);
-		else if(mode[i] == 'm')
-			channel->setModerate(1, user);
+		else if(mode[i] == 'n')
+			channel->setNoMessageOutside(1, user);
 		else if(mode[i] == 'v')
 			VoiceUserCheck(cmd, channel, user, 1);
 	}
