@@ -11,6 +11,7 @@ server_name(server_name),
 PrivateFlag(false),
 SecretFlag(false),
 InviteFlag(false),
+ModerateFlag(false),
 channel_type(Name[0])
 {
 
@@ -189,6 +190,11 @@ bool		Channel::IsInviteOnly()
 	return this->InviteFlag;
 }
 
+bool		Channel::IsModerate()
+{
+	return this->ModerateFlag;
+}
+
 void		Channel::setPrivate(int n, User *user)
 {
 	std::string msg;
@@ -244,6 +250,26 @@ void		Channel::setInviteOnly(int n, User *user)
 		{
 			msg = temp + " MODE "+ this->name + " -i \n";
 			this->InviteFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setModerate(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +m \n";
+			this->ModerateFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -m \n";
+			this->ModerateFlag = false;
 		}
 		this->SendMsgToAll(msg);
 	}

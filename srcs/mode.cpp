@@ -13,7 +13,8 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 			channel->setPrivate(0, user);
 		else if(mode[i] == 'i')
 			channel->setInviteOnly(0, user);
-
+		else if(mode[i] == 'm')
+			channel->setModerate(0, user);
 	}
 }
 
@@ -30,6 +31,8 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 			channel->setPrivate(1, user);
 		else if(mode[i] == 'i')
 			channel->setInviteOnly(1, user);
+		else if(mode[i] == 'm')
+			channel->setModerate(1, user);
 	}
 }
 
