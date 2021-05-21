@@ -7,5 +7,10 @@
 #define RPL_ENDOFNAMES "366"
 #define ERR_NOTREGISTERED 451
 #define ERR_NEEDMOREPARAMS 461
+#define ERR_TOOMANYMATCHES
+#define ERR_NOSUCHSERVER
+#define RPL_LISTSTART " 321 "
+#define RPL_LIST " 322 "
+#define RPL_LISTEND " 323 "
 
 #endif
