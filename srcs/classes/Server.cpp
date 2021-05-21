@@ -305,7 +305,7 @@ void				Server::addUser(User *x)
 			break ;
 		}
 	}
-	x->getSocketPtr()->bufferize("001 RPL_WELCOME " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+	x->getSocketPtr()->bufferize(":" + this->server_name + " " + RPL_WELCOME + " " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
 	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
 	x->displayinfo();
 	std::cout << "  ###############################" << std::endl;

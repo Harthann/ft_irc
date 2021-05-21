@@ -12,6 +12,7 @@
 #include "server_except.hpp"
 #include <fstream>
 #include <string>
+#include "numeric_replies.hpp"
 
 //  irc.rizon.no
 //	chat.freeenode.net
@@ -80,7 +81,7 @@ class Server
 		std::string				&getServerName();
 
 		/****************************************************************/
-		/*					Information function						*/
+		/*						Information function					*/
 		/****************************************************************/
 		std::string				IP() const;
 		bool					IsMaster(Socket*);
@@ -90,24 +91,24 @@ class Server
 		void					checkChannels();
 
 		/****************************************************************/
-		/*					Vector typedef								*/
+		/*						Vector typedef							*/
 		/****************************************************************/
-		typedef	std::vector<Socket*>					clients_vector;
-		typedef	std::vector<User *>						user_vector;
-		typedef	std::vector<Channel *>					channel_vector;
-		typedef	std::vector<Proxy>						proxy_vector;
+		typedef	std::vector<Socket*>			clients_vector;
+		typedef	std::vector<User *>				user_vector;
+		typedef	std::vector<Channel *>			channel_vector;
+		typedef	std::vector<Proxy>				proxy_vector;
 	
 		/****************************************************************/
-		/*					Iterator typedef							*/
+		/*						Iterator typedef						*/
 		/****************************************************************/
-		typedef clients_vector::iterator				client_it;
-		typedef clients_vector::const_iterator			const_client_it;
-		typedef proxy_vector::iterator					proxy_it;
-		typedef proxy_vector::const_iterator			const_proxy_it;
-		typedef user_vector::iterator					user_it;
-		typedef user_vector::const_iterator				const_user_it;
-		typedef channel_vector::iterator				channel_it;
-		typedef channel_vector::const_iterator			const_channel_it;
+		typedef clients_vector::iterator		client_it;
+		typedef clients_vector::const_iterator	const_client_it;
+		typedef proxy_vector::iterator			proxy_it;
+		typedef proxy_vector::const_iterator	const_proxy_it;
+		typedef user_vector::iterator			user_it;
+		typedef user_vector::const_iterator		const_user_it;
+		typedef channel_vector::iterator		channel_it;
+		typedef channel_vector::const_iterator	const_channel_it;
 	
 	private:
 		/****************************************************************/

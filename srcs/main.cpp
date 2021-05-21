@@ -19,8 +19,8 @@
 
 void	pong_response(Commands &, Socket *client, Server &server)
 {
-	client->bufferize("PONG " + server.IP() + "\r\n");
 	std::cout << "PONG RESPONS SEND" << std::endl;
+	client->bufferize("PONG " + server.IP() + "\r\n");
 }
 
 void	exit_server(Commands &, Socket *, Server &server)
@@ -95,6 +95,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		mode_parser(cmd, client, server);
 	else if (cmd.name() == "PRIVMSG")
 		messages_command(cmd, client, server);
+	else if (cmd.name() == "AWAY")
+		away_command(cmd, client, server);
 	else if (cmd.name() == "PONG")
 	{
 		client->setPinged();

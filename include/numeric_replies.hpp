@@ -1,6 +1,10 @@
 #ifndef NUMERIC_REPLIES_HPP
 #define NUMERIC_REPLIES_HPP
 
+#define RPL_WELCOME				"001"
+#define	RPL_UNAWAY				"305"
+#define RPL_AWAY				"301"
+#define RPL_NOWAWAY				"306"
 #define RPL_NOTOPIC				331
 #define RPL_TOPIC				332
 #define RPL_NAMREPLY			"353"
@@ -12,5 +16,6 @@
 #define ERR_NOTEXTTOSEND		"412"
 #define ERR_NOTREGISTERED		451
 #define ERR_NEEDMOREPARAMS		461
+
 
 #endif
