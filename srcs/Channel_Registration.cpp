@@ -30,12 +30,12 @@ void	add_member(User *user, Server &server, std::string name)
 		if(server.getChannels()[i]->getName() == name)
 		{
 			temp = server.getChannels()[i];
-			if ((!temp->IsInviteOnly()) || (temp->IsInviteOnly() && temp->CheckIfInvited(user)))
+			if ((!temp->IsInviteOnly() && !temp->getUserByName(user->getNickname())) || (temp->IsInviteOnly() && temp->CheckIfInvited(user)))
 			{
 				temp->addUser(user);
 				user->ActiveChannel(temp);
 			}
-			else
+			else if((temp->IsInviteOnly() && !temp->CheckIfInvited(user)))
 			{
 				std::string msg = ":" + temp->getServerName() + ERR_INVITEONLYCHAN + user->getUser() + " " + temp->getName() + "\n";
 				user->getSocketPtr()->bufferize(msg);
