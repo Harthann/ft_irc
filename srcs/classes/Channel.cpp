@@ -207,6 +207,11 @@ bool		Channel::IsModerate()
 	return this->ModerateFlag;
 }
 
+bool		Channel::IsAnonymous()
+{
+	return this->AnonymousFlag;
+}
+
 bool		Channel::NoMessageOutside()
 {
 	return this->MessageOutsideFlag;
@@ -307,6 +312,26 @@ void		Channel::setNoMessageOutside(int n, User *user)
 		{
 			msg = temp + " MODE "+ this->name + " -n \n";
 			this->MessageOutsideFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setAnonymous(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +a \n";
+			this->AnonymousFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -a \n";
+			this->AnonymousFlag = false;
 		}
 		this->SendMsgToAll(msg);
 	}

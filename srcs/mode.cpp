@@ -36,6 +36,9 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 			channel->setNoMessageOutside(0, user);
 		else if(mode[i] == 'v')
 			VoiceUserCheck(cmd, channel, user, 0);
+		else if(mode[i] == 'a')
+			channel->setAnonymous(0, user);
+
 	}
 }
 
@@ -58,6 +61,9 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 			channel->setNoMessageOutside(1, user);
 		else if(mode[i] == 'v')
 			VoiceUserCheck(cmd, channel, user, 1);
+		else if(mode[i] == 'a')
+			channel->setAnonymous(1, user);
+
 	}
 }
 

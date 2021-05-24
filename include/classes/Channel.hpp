@@ -16,11 +16,13 @@ class Channel
 		bool				IsSecret();
 		bool				IsInviteOnly();
 		bool				IsModerate();
+		bool				IsAnonymous();
 		bool				NoMessageOutside();
 		void				setPrivate(int n, User *user);
 		void				setSecret(int n, User *user);
 		void				setInviteOnly(int n, User *user);
 		void				setModerate(int n, User *user);
+		void				setAnonymous(int n, User *user);
 		void				setNoMessageOutside(int n, User *user);
 		void				addUser(User *user);
 		void				part(Socket *user);
@@ -48,6 +50,7 @@ class Channel
 		bool					SecretFlag;
 		bool					InviteFlag;
 		bool					ModerateFlag;
+		bool					AnonymousFlag;
 		bool					MessageOutsideFlag;
 		user_vector				invited_users;
 		std::string				topic;
