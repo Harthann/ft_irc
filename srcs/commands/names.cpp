@@ -40,8 +40,19 @@ void	list_all(Commands &cmd, Socket *client, Server &server) {
 }
 
 void	names_command(Commands &cmd, Socket *client, Server &server) {
+	std::vector<std::string>	params;
+
 	if (cmd.length() == 1)
 		list_all(cmd, client, server);
+	else if (cmd.length() == 2 && (utils::split(cmd[1], ',').size()) > 1)
+	{
+		params = utils::split(cmd[1], ',');
+		for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it) {
+			utils::trim(*it, ',');
+			std::cout << "*it = " << *it << std::endl;
+			list_users_in_chan(*it, client, server);
+		}
+	}
 	else
 	{
 		for (size_t i = 1; i < cmd.length(); ++i)
