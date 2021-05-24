@@ -14,7 +14,7 @@ void	validation(std::vector<User> &temp_user, Socket *client)
 	}
 }
 
-void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd)
+void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd, Server &server)
 {
 	unsigned long i;
 	int n = 0;
@@ -27,9 +27,9 @@ void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd)
 		}
 	}
 	if(n == 1 && !temp_user[i].getStatus())
-		temp_user[i].setDatas(cmd);
+		temp_user[i].setDatas(cmd, server.getServerName());
 	else if(n == 0)
-		temp_user.push_back(User(client, cmd));
+		temp_user.push_back(User(client, cmd, server.getServerName()));
 //	client->Send("001 RPL_WELCOME [USER_NAME] Welcome to the server\n");
 //	client->Confirm("001 WELCOME_MSG [USER_NAME] Welcome to the server");
 	validation(temp_user, client);

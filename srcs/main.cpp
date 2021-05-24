@@ -54,7 +54,7 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 	ret = already_register(client, server);
 	if(!ret)
 	{
-		add_user(client, temp_users, cmd);
+		add_user(client, temp_users, cmd, server);
 		update_server_user(temp_users, server);
 	}
 }

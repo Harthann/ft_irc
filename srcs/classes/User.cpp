@@ -4,17 +4,26 @@ User::User()
 {
 }
 
-User::User(Socket *client, Commands cmd)
+User::User(Socket *client, Commands cmd, std::string server_name)
 {
 	this->self = client;
 	this->status = 0;
 
-	if(cmd[0].compare("PASS") == 0)
-		this->setPASS(cmd[1]);
-	else if(cmd[0].compare("NICK") == 0)
-		this->setNICK(cmd[1]);
-	else if(cmd[0].compare("USER") == 0)
-		this->setUSER(cmd);
+	if(cmd.length() > 1)
+	{
+		if(cmd[0].compare("PASS") == 0)
+			this->setPASS(cmd[1]);
+		else if(cmd[0].compare("NICK") == 0)
+			this->setNICK(cmd[1]);
+		else if(cmd[0].compare("USER") == 0)
+			this->setUSER(cmd, server_name);
+	}
+	else
+	{
+		std::string msg = ":" + server_name + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		this->self->bufferize(msg);
+	}
+
 }
 
 
@@ -28,13 +37,21 @@ void	User::setNICK(std::string str)
 	nickname.assign(str);
 }
 
-void	User::setUSER(Commands cmd)
+void	User::setUSER(Commands cmd, std::string server_name)
 {
-	this->user = cmd[1];
-	this->mode = cmd[2];
-	std::string res = cmd[4].substr(1, cmd[4].length());
-	realname.assign(res);
-	this->status = 1;
+	if (cmd.length() > 3)
+	{
+		this->user = cmd[1];
+		this->mode = cmd[2];
+		std::string res = cmd[4].substr(1, cmd[4].length());
+		realname.assign(res);
+		this->status = 1;
+	}
+	else
+	{
+		std::string msg = ":" + server_name + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		this->self->bufferize(msg);
+	}
 }
 
 Socket * User::getSocketPtr() const
@@ -61,14 +78,22 @@ std::vector<Channel *>	&User::getChannels() {
 	return (this->current_channel);
 }
 
-void	User::setDatas(Commands cmd)
+void	User::setDatas(Commands cmd, std::string server_name)
 {
-	if(cmd[0].compare("NICK") == 0)
+	if (cmd.length() > 1)
 	{
-		this->setNICK(cmd[1]);
+		if(cmd[0].compare("NICK") == 0)
+		{
+			this->setNICK(cmd[1]);
+		}
+		else if(cmd[0].compare("USER") == 0)
+			this->setUSER(cmd, server_name);
 	}
-	else if(cmd[0].compare("USER") == 0)
-		this->setUSER(cmd);
+	else
+	{
+		std::string msg = ":" + server_name + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		this->self->bufferize(msg);
+	}
 }
 
 void	User::displayinfo()
