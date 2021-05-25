@@ -14,6 +14,7 @@ InviteFlag(false),
 ModerateFlag(false),
 TopicSettableFlag(false),
 KeyFlag(false),
+LimitFlag(false),
 channel_type(Name[0])
 {
 
@@ -229,6 +230,11 @@ bool		Channel::KeyIsSet()
 	return this->KeyFlag;
 }
 
+bool		Channel::LimitUserSet()
+{
+	return this->LimitFlag;
+}
+
 void		Channel::setPrivate(int n, User *user)
 {
 	std::string msg;
@@ -393,6 +399,30 @@ void		Channel::setKey(int n, Commands &cmd, User *user)
 	}
 }
 
+void		Channel::setLimitUser(int n, Commands &cmd, User *user)
+{
+	std::string msg;
+	if(cmd.length() == 4 || (cmd.length() == 3 && cmd[2][0] == '-'))
+	{
+		if(CheckIfChannelOperator(user))
+		{
+			std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+			if(n)
+			{
+				this->limit = atoi(cmd[3].c_str());
+				msg = temp + " MODE "+ this->name + " +l " + cmd[3] + "\n";
+				this->LimitFlag = true;
+			}
+			else
+			{
+				msg = temp + " MODE "+ this->name + " -l \n";
+				this->LimitFlag = false;
+			}
+			this->SendMsgToAll(msg);
+		}
+	}
+}
+
 void	Channel::AddToInvitedUser(User * Member, User *Guest)
 {
 	std::string temp;
@@ -457,9 +487,23 @@ void	Channel::DelVoiceUsers(User *Ch_operator, User *user)
 	}
 }
 
+bool			Channel::LimitCheck(User *user)
+{
+	if(this->limit > active_users.size())
+		return false;
+	std::string msg = ":" + this->getServerName() + ERR_CHANNELISFULL + user->getUser() + " " + this->getName() + " :Cannot join channel (+l) \n";
+	user->getSocketPtr()->bufferize(msg);
+	return true;
+}
+
 std::string		& Channel::getKey()
 {
 	return this->key;
+}
+
+unsigned long	Channel::getLimit()
+{
+	return this->limit;
 }
 
 Channel::~Channel()

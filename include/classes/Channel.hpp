@@ -3,6 +3,8 @@
 
 # include <vector>
 # include "User.hpp"
+# include <stdlib.h>
+
 
 class User;
 
@@ -18,6 +20,7 @@ class Channel
 		bool				IsModerate();
 		bool				IsAnonymous();
 		bool				KeyIsSet();
+		bool				LimitUserSet();
 		bool				NoMessageOutside();
 		bool				TopicIsSettable();
 		void				setPrivate(int n, User *user);
@@ -28,6 +31,7 @@ class Channel
 		void				setNoMessageOutside(int n, User *user);
 		void				setTopicFlag(int n, User *user);
 		void				setKey(int n, Commands &cmd, User *user);
+		void				setLimitUser(int n, Commands &cmd, User *user);
 		void				addUser(User *user);
 		void				part(Socket *user);
 		int					NumberOfUsers();
@@ -44,13 +48,16 @@ class Channel
 		bool				CheckIfInvited(User *user);
 		User				*getUserByName(std::string name);
 		std::string 		&getKey();
+		unsigned long		getLimit();
 		std::string			user_list();
 		void				AddToInvitedUser(User * Member, User * Guest);
 		void				delete_from_invited(User *user);
 		void				AddVoiceUsers(User *Ch_operator, User *user);
 		void				DelVoiceUsers(User *Ch_operator, User *user);
+		bool				LimitCheck(User *user);
 	protected:
 		std::string				name;
+		unsigned long			limit;
 		bool					PrivateFlag;
 		bool					SecretFlag;
 		bool					InviteFlag;
@@ -59,6 +66,7 @@ class Channel
 		bool					MessageOutsideFlag;
 		bool					TopicSettableFlag;
 		bool					KeyFlag;
+		bool					LimitFlag;
 		std::string				key;
 		user_vector				invited_users;
 		std::string				topic;

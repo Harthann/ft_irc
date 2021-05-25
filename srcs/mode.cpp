@@ -42,6 +42,9 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 			channel->setTopicFlag(0, user);
 		else if(mode[i] == 'k')
 			channel->setKey(0, cmd, user);
+		else if(mode[i] == 'l')
+			channel->setLimitUser(0, cmd, user);
+
 	}
 }
 
@@ -70,6 +73,9 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 			channel->setTopicFlag(1, user);
 		else if(mode[i] == 'k')
 			channel->setKey(1, cmd, user);
+		else if(mode[i] == 'l')
+			channel->setLimitUser(1, cmd, user);
+
 	}
 }
 

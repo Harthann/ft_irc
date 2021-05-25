@@ -41,6 +41,8 @@ void	add_member(User *user, Server &server, Commands &cmd)
 		if(server.getChannels()[i]->getName() == cmd[1])
 		{
 			temp = server.getChannels()[i];
+			if(temp->LimitUserSet() && temp->LimitCheck(user))
+				break;
 			if ((!temp->IsInviteOnly() && !temp->getUserByName(user->getNickname()) && !temp->KeyIsSet()) || (temp->IsInviteOnly() && temp->CheckIfInvited(user)) || (temp->KeyIsSet() && CheckKey(cmd, temp, user)))
 			{
 				temp->addUser(user);
