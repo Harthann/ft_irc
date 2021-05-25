@@ -5,6 +5,7 @@ User::User()
 }
 
 User::User(Socket *client, Commands cmd, std::string server_name)
+: away_message()
 {
 	this->self = client;
 	this->status = 0;
@@ -37,6 +38,11 @@ void	User::setNICK(std::string str)
 	nickname.assign(str);
 }
 
+void	User::setAwayMessage(std::string str)
+{
+	this->away_message = str;
+}
+
 void	User::setUSER(Commands cmd, std::string server_name)
 {
 	if (cmd.length() > 3)
@@ -67,6 +73,11 @@ int 	User::getStatus() const
 std::string	User::getNickname() const
 {
 	return this->nickname;
+}
+
+const std::string	&User::getAwayMessage() const
+{
+	return this->away_message;
 }
 
 std::string	User::getUser() const

@@ -2,10 +2,9 @@
 #include <fcntl.h>
 
 Socket::Socket(int port, std::string , std::string IP)
-: addr(), password(), recv_buffer(), cmd_buffer(), writable(false)
+: addr(), ping_ts(0), password(), recv_buffer(), cmd_buffer(),  writable(false)
 {
 	time(&this->timestamp);
-	ping_ts = 0;
 	const int opt = 1;
 	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (!this->socketfd)
@@ -21,7 +20,7 @@ Socket::Socket(int port, std::string , std::string IP)
 }
 
 Socket::Socket(host_info &host)
-: password(), cmd_buffer(), writable(false)
+: ping_ts(0), password(), recv_buffer(), cmd_buffer(),  writable(false)
 {
 	const int opt = 1;
 	time(&this->timestamp);
@@ -37,6 +36,7 @@ Socket::Socket(host_info &host)
 }
 
 Socket::Socket(int fd, Addr ad, int length)
+: ping_ts(0), password(), recv_buffer(), cmd_buffer(),  writable(false)
 {
 	time(&this->timestamp);
 	this->socketfd = fd;
@@ -115,8 +115,6 @@ Socket	*Socket::Accept()
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
 	if (new_fd < 0)
 		throw se::InvalidAccept();
-	std::cout << "New clients detected : " << addr.getIP();
-	std::cout << " port : " << addr.getPort() << std::endl;
 	return (new Socket(new_fd, addr, tmp_addr_len));
 }
 
@@ -155,7 +153,7 @@ std::string	Socket::strTime() const
 	return ret;
 }
 
-time_t		Socket::getPingedTime() const
+const time_t		&Socket::getPingedTime() const
 {
 	return this->ping_ts;
 }

@@ -63,6 +63,11 @@ const char*		Addr::getIP() const
 	return (inet_ntoa((this->sin_addr)));
 }
 
+std::string		Addr::strIP()
+{
+	return (inet_ntoa((this->sin_addr)));
+}
+
 int				Addr::getPort() const
 {
 	return (ntohs(this->sin_port));
