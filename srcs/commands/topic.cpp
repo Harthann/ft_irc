@@ -25,6 +25,14 @@ void	set_topic(Commands &cmd, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(cmd[1], server)))
 		response.append(cmd[1] + ":No such channel");
+	else if (!chan->TopicIsSettable())
+	{
+		response.append(":" + server.getServerName()
+							+ " " ERR_CHANOPRIVSNEEDED " "
+							+ current_user->getNickname() + " "
+							+ chan->getName()
+							+ " :You are not channel operator");
+	}
 	else
 	{
 		topic.append(cmd[2]);
