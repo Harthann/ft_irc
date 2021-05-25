@@ -18,7 +18,7 @@
 //	chat.freeenode.net
 //	irc.ircnet.com
 
-# define PING_FREQUENCY 240
+# define PING_FREQUENCY 20
 # define SELECT_TIMEOUT 10
 
 class Channel;
@@ -30,8 +30,6 @@ class Server
 		Server(Server const &);
 		Server &operator=(Server const&);
 		~Server();
-
-
 
 		void					Stop();
 		void					redirect(Commands &, Socket *);
@@ -48,8 +46,8 @@ class Server
 		/****************************************************************/
 		/*				Select linked function							*/
 		/****************************************************************/
-		std::vector<Socket*>	&Select();					
-		void					update();					
+		int						Select();
+		void					update();
 		void					fdSet(std::vector<Socket*> &);
 		void					fdSet(std::vector<Proxy> &);
 		void					fdSet(std::vector<User*> &);
@@ -75,10 +73,11 @@ class Server
 		/****************************************************************/
 		/*							Getters								*/
 		/****************************************************************/
-		std::vector<User*>		&getClients();
-		User					*getUserByName(std::string);
-		std::vector<Channel *>	&getChannels();
-		std::string				&getServerName();
+		std::vector<User*>			&getClients();
+		User						*getUserByName(std::string);
+		std::vector<Channel *>		&getChannels();
+		std::string					&getServerName();
+		std::vector<Socket *>		&getSocketList();
 
 		/****************************************************************/
 		/*						Information function					*/
@@ -89,6 +88,7 @@ class Server
 		bool					isRegister(Socket *);
 		bool					timedOut(Socket *);
 		void					checkChannels();
+		time_t					timer() const;
 
 		/****************************************************************/
 		/*						Vector typedef							*/
@@ -147,6 +147,13 @@ class Server
 		bool				state;
 		int					timeout;
 		time_t				last_ping;
+		time_t				launched_time;
+
+/****************************************************************/
+/*						Private function						*/
+/****************************************************************/
+		std::string			__header();
+
 };
 
 #endif

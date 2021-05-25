@@ -1,12 +1,6 @@
-#include <iostream>
 #include "ft_irc.hpp"
 #include "Socket.hpp"
-#include <sstream>
 #include "utils.hpp"
-#include <errno.h>
-#include <string.h>
-#include <vector>
-#include <sys/time.h>
 #include "User.hpp"
 #include "Commands.hpp"
 #include "Addr.hpp"
@@ -14,8 +8,9 @@
 #include "Channel_Registration.hpp"
 #include "mode.hpp"
 #include "commands_prototypes.hpp"
-#include <limits.h>
-#include <float.h>
+#include "Server.hpp"
+
+Server *server_addr;
 
 void	pong_response(Commands &, Socket *client, Server &server)
 {
@@ -23,7 +18,7 @@ void	pong_response(Commands &, Socket *client, Server &server)
 	client->bufferize("PONG " + server.IP() + "\r\n");
 }
 
-void	exit_server(Commands &, Socket *, Server &server)
+void	exit_server(Server &server)
 {
 	server.Stop();
 }
@@ -68,7 +63,7 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	std::string	cmd_name;
 
 	server.logString(cmd.as_string());
-	std::cout << cmd.as_string() << std::endl;
+	// std::cout << cmd.as_string() << std::endl;
 	if (!cmd.isValid()) {
 		std::cout << "Command format invalid" << std::endl;
 		client->bufferize("Command format invalid");
@@ -76,7 +71,7 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
-		exit_server(cmd, client, server);
+		exit_server(server);
 	else if(cmd.name() == "QUIT")
 		quit_server(client, server, cmd);
 	else if (!server.isRegister(client))
@@ -95,57 +90,79 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		mode_parser(cmd, client, server);
 	else if (cmd.name() == "PRIVMSG")
 		messages_command(cmd, client, server);
+	else if (cmd.name() == "NOTICE")
+		notice_command(cmd, client, server);
 	else if (cmd.name() == "AWAY")
 		away_command(cmd, client, server);
 	else if (cmd.name() == "PONG")
 	{
 		client->setPinged();
-		std::cout << "Pong received" << std::endl;
+		server.logString("Pong received");
 	}
 	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
-		exit_server(cmd, client, server);
+		exit_server(server);
 }
 
 void	server_loop(int port, std::string password, host_info &host)
 {	
-	try {
-		Server					server(port, password);
-		Server::clients_vector	client_list;
-		std::string				datas;
-		std::vector<User> 		temp_users;
+	Server					*server = NULL;
+	Server::clients_vector	client_list;
+	std::string				datas;
+	std::vector<User> 		temp_users;
 
+	try {
+		server = new Server(port, password);
+		server_addr = server;
 		if (host.host.sin_zero[0] == 'h')
-			server.setHost(host);
-		std::cout << "Server construction done" << std::endl;
-		while (server.IsRunning()) {
-				server.update();
-			client_list = server.Select();
+			server->setHost(host);
+		server->logString("Server construction done");
+		while (server->IsRunning()) {
+				server->update();
+			// client_list = server->Select();
+			if (server->Select() < 0)
+				break ;
+			client_list = server->getSocketList();
 			for (Server::client_it it = client_list.begin(); it != client_list.end(); ++ it)
 			{
-				if (server.readable(*it)) {
-					std::cout << "Read signal received on socket : " << (*it) << std::endl;
-					if (server.IsMaster(*it))
-						server.add((*it)->Accept());
+				if (server->readable(*it)) {
+					if (server->IsMaster(*it))
+						server->add((*it)->Accept());
 					else {
 						datas = (*it)->Receive();
 						if (!datas.length()) {
-							server.remove(*it);
+							server->remove(*it);
 							break ;
 						}
 						else
-							command_dispatcher(datas, *it, server, temp_users);
+							command_dispatcher(datas, *it, *server, temp_users);
 					}
 				}
-				if (server.writeable(*it))
+				if (server->writeable(*it))
 					(*it)->flushWrite();
 			}
-			server.checkChannels();
-			server.ping();
+			server->checkChannels();
+			server->ping();
 		}
+		server->logString("Closing server");
+		// std::cout << server->timer() << "\tClosing server" << std::endl;
+		delete server;
 	}
 	catch (se::ServerException &e) {
+		if (server)
+			delete server;
 		throw e;
 	}
+}
+
+static void	set_signals()
+{
+	signal(SIGINT, signal_handler);
+	signal(SIGTERM, signal_handler);
+	signal(SIGSEGV, signal_handler);
+	signal(SIGILL, signal_handler);
+	signal(SIGABRT, signal_handler);
+	signal(SIGFPE, signal_handler);
+	signal(SIGQUIT, signal_handler);
 }
 
 int main(int ac, char **av)
@@ -154,7 +171,10 @@ int main(int ac, char **av)
 	std::string 		pass;
 	host_info			host;
 
+
 	try {
+		server_addr = NULL;
+		set_signals();
 		host = parse_info(ac, av, port, pass);
 		server_loop(port, pass, host);
 	}

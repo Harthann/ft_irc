@@ -43,6 +43,12 @@ void	messages_command(Commands &cmd, Socket *client, Server &server)
 		client->bufferize(":" + server.getServerName() + " " + ERR_NOSUCHNICK + cmd[1] + " :No such nick/channel");
 }
 
+void	notice_command(Commands &cmd, Socket *client, Server &server)
+{
+	cmd.setFrom(check_user(server.getClients(), client)->getID());
+	if (cmd.length() == 3 && server.getUserByName(cmd[1]))
+		server.getUserByName(cmd[1])->getSocketPtr()->bufferize(cmd);
+}
 
 void	away_command(Commands &cmd, Socket *client, Server &server)
 {
@@ -57,7 +63,7 @@ void	away_command(Commands &cmd, Socket *client, Server &server)
 	else if (tmp)
 	{
 		tmp->setAwayMessage(cmd[1].substr(1, cmd[1].length()));
-		std::cout << "Away messgae ste to : " << tmp->getAwayMessage() << std::endl;
+		std::cout << "Away message sent to : " << tmp->getAwayMessage() << std::endl;
 		tmp->getSocketPtr()->bufferize(":" + server.getServerName() + " " + RPL_NOWAWAY + " " + tmp->getNickname() + ":You have been marked as being away");
 	}
 }

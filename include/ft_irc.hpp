@@ -1,35 +1,41 @@
+#ifndef nullptr
+# define nullptr 0
+#endif
+
+
 #ifndef FT_IRC_HPP
 #define FT_IRC_HPP
 
-//	Socket headers
+/*	Socket headers	*/
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/select.h>
-//	Net header
+
+/*	Net header		*/
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <ctime>
 
 #include <sys/time.h>
-// IO header
+/* 	IO header		*/
 #include <iostream>
 #include <unistd.h>
 
-// Other
+/*		 Other		*/
 #include <string.h>
 #include <exception>
+#include <signal.h>
 
-// STL header
+/*	 STL header		*/
 #include <vector>
 
-//	Illegal header
+/*	Illegal header	*/
 #include <errno.h>
 
-#ifndef nullptr
-# define nullptr 0
-#endif
-
+/************************************/
+/*			SERVER EXCEPTION		*/
+/************************************/
 #include "server_except.hpp"
 
 struct WrongArgumentNumber : public se::ServerException
@@ -57,6 +63,13 @@ struct WrongConfigFileFormat : public se::ServerException
 	WrongConfigFileFormat() : ServerException("Wrong config file format") {};
 };
 
+/************************************/
+/*			DECLARATIONS			*/
+/************************************/
+
+class Server;
+extern Server *server_addr;
+
 struct host_info
 {
 	Addr	host;
@@ -64,5 +77,7 @@ struct host_info
 };
 
 host_info	parse_info(int ac, char **av, int &port, std::string &pass);
+void		exit_server(Server &server);
+void		signal_handler(int signal);
 
 #endif
