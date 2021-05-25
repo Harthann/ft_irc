@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 SRC_FILE= version.cpp \
 list.cpp \
+=======
+SRC_FILE= signal_handle.cpp \
+>>>>>>> 44b796b961da4fab43e193a38f1793ecc1377b56
 names.cpp \
 messages.cpp \
 topic.cpp \
@@ -8,7 +12,8 @@ server_info.cpp \
 main.cpp \
 Registration.cpp \
 Channel_Registration.cpp \
-mode.cpp
+mode.cpp \
+invite.cpp
 
 CLASSES= Server \
 Addr \

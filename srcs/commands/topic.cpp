@@ -64,5 +64,5 @@ void	topic_command(Commands &cmd, Socket *client, Server &server) {
 	else if (cmd.length() >= 3)
 		set_topic(cmd, client, server);
 	else
-		client->bufferize(":" + server.getServerName() + " " + utils::itos(ERR_NEEDMOREPARAMS) + " " + current_user->getNickname() + " TOPIC :Not enough parameters");
+		client->bufferize(":" + server.getServerName() +  ERR_NEEDMOREPARAMS + current_user->getNickname() + " TOPIC :Not enough parameters");
 }

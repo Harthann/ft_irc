@@ -1,6 +1,7 @@
 #ifndef NUMERIC_REPLIES_HPP
 #define NUMERIC_REPLIES_HPP
 
+<<<<<<< HEAD
 #define RPL_TOPIC 332
 #define RPL_NOTOPIC 331
 #define RPL_NAMREPLY "353"
@@ -13,5 +14,26 @@
 #define RPL_LISTEND " 323 "
 #define RPL_VERSION " 351 "
 #define ERR_NOSUCHSERVER " 402 "
+=======
+#define RPL_WELCOME				"001"
+#define	RPL_UNAWAY				"305"
+#define RPL_AWAY				"301"
+#define RPL_NOWAWAY				"306"
+#define RPL_NOTOPIC				331
+#define RPL_TOPIC				332
+#define RPL_NAMREPLY			"353"
+#define RPL_ENDOFNAMES			"366"
+#define ERR_NOSUCHNICK			"401"
+#define ERR_CANNOTSENDTOCHAN	"404"
+#define ERR_TOOMANYTARGETS		"407"
+#define ERR_NORECIPIENT			"411"
+#define ERR_NOTEXTTOSEND		"412"
+#define ERR_NOTONCHANNEL		" 442 "
+#define ERR_USERONCHANNEL		" 443 "
+#define ERR_NOTREGISTERED		451
+#define ERR_NEEDMOREPARAMS		" 461 "
+#define ERR_INVITEONLYCHAN		" 473 "
+#define ERR_BADCHANNELKEY		" 475 "
+>>>>>>> 44b796b961da4fab43e193a38f1793ecc1377b56
 
 #endif

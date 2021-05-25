@@ -19,7 +19,7 @@
 # include <vector>
 # include <iostream>
 
-void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd);
+void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd, Server &server);
 int		already_register(Socket *client, Server &server);
 void	update_server_user(std::vector<User> &temp_user, Server &server);
 

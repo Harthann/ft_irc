@@ -5,11 +5,20 @@ Channel::Channel()
 
 }
 
-Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name), topic(""), server_name(server_name)
+Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name),
+topic(""),
+server_name(server_name),
+PrivateFlag(false),
+SecretFlag(false),
+InviteFlag(false),
+ModerateFlag(false),
+TopicSettableFlag(false),
+KeyFlag(false),
+channel_type(Name[0])
 {
 
 	this->active_users.push_back(C_operator);
-	this->channel_type = Name[0];
+//	this->channel_type = Name[0];
 	if (channel_type != '+')
 		this->channel_operators.push_back(C_operator);
 	else
@@ -36,6 +45,8 @@ void				Channel::addUser(User *user)
 	std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 	std::string msg = temp + " JOIN :"+ this->name + "\n";
 	this->SendMsgToAll(msg);
+	if (CheckIfInvited(user))
+		delete_from_invited(user);
 	if (this->topic != "")
 	{
 		msg = ":" + server_name + " 332 " + user->getUser() + " " + this->name + " :" + this->topic + "\n";
@@ -56,6 +67,8 @@ std::string			Channel::user_list()
 	{
 		if(this->CheckIfChannelOperator(this->active_users[i]))
 			temp = "@" + this->active_users[i]->getNickname();
+		else if(this->IsModerate() && this->CheckIfVoiceUser(this->active_users[i]))
+			temp = "+" + this->active_users[i]->getNickname();
 		else
 			temp = this->active_users[i]->getNickname();
 		if(i == 0)
@@ -157,6 +170,16 @@ bool			Channel::CheckIfChannelOperator(User *user)
 	return false;
 }
 
+bool			Channel::CheckIfVoiceUser(User *user)
+{
+	for (size_t i = 0; i < this->voice_users.size(); ++i)
+	{
+		if(this->voice_users[i]->getNickname() == user->getNickname())
+			return true;
+	}
+	return false;
+}
+
 void		Channel::SendMsgToAll(std::string msg, User *x)
 {
 	for (unsigned int i = 0; i < this->active_users.size(); ++i)
@@ -164,6 +187,279 @@ void		Channel::SendMsgToAll(std::string msg, User *x)
 		if (!x || x != this->active_users[i])
 			this->active_users[i]->getSocketPtr()->bufferize(msg);
 	}
+}
+
+bool		Channel::IsPrivate()
+{
+	return this->PrivateFlag;
+}
+
+bool		Channel::IsSecret()
+{
+	return this->SecretFlag;
+}
+
+bool		Channel::IsInviteOnly()
+{
+	return this->InviteFlag;
+}
+
+bool		Channel::IsModerate()
+{
+	return this->ModerateFlag;
+}
+
+bool		Channel::IsAnonymous()
+{
+	return this->AnonymousFlag;
+}
+
+bool		Channel::NoMessageOutside()
+{
+	return this->MessageOutsideFlag;
+}
+
+bool		Channel::TopicIsSettable()
+{
+	return this->TopicSettableFlag;
+}
+
+bool		Channel::KeyIsSet()
+{
+	return this->KeyFlag;
+}
+
+void		Channel::setPrivate(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +p \n";
+			this->PrivateFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -p \n";
+			this->PrivateFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setSecret(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +s \n";
+			this->SecretFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -s \n";
+			this->SecretFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setInviteOnly(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +i \n";
+			this->InviteFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -i \n";
+			this->InviteFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setModerate(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +m \n";
+			this->ModerateFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -m \n";
+			this->ModerateFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setNoMessageOutside(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +n \n";
+			this->MessageOutsideFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -n \n";
+			this->MessageOutsideFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setAnonymous(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +a \n";
+			this->AnonymousFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -a \n";
+			this->AnonymousFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setTopicFlag(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +t \n";
+			this->TopicSettableFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -t \n";
+			this->TopicSettableFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setKey(int n, Commands &cmd, User *user)
+{
+	std::string msg;
+	if(cmd.length() == 4 || (cmd.length() == 3 && cmd[2][0] == '-'))
+	{
+		if(CheckIfChannelOperator(user))
+		{
+			std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+			if(n)
+			{
+				this->key = cmd[3];
+				msg = temp + " MODE "+ this->name + " +k " + this->key + "\n";
+				this->KeyFlag = true;
+			}
+			else
+			{
+				msg = temp + " MODE "+ this->name + " -k \n";
+				this->KeyFlag = false;
+			}
+			this->SendMsgToAll(msg);
+		}
+	}
+}
+
+void	Channel::AddToInvitedUser(User * Member, User *Guest)
+{
+	std::string temp;
+	std::string msg;
+	this->invited_users.push_back(Guest);
+
+	temp = ":" + Member->getUser() + "!~" + Member->getUser() + "@127.0.0.1";
+	msg = temp + " INVITE " + Guest->getNickname() + " " + this->name + "\n";
+	Guest->getSocketPtr()->bufferize(msg);
+}
+
+bool	Channel::CheckIfInvited(User *user)
+{
+	for (size_t i = 0; i < this->invited_users.size(); ++i)
+	{
+		if(user == this->invited_users[i])
+			return true;
+	}
+	return false;
+}
+
+void	Channel::delete_from_invited(User *user)
+{
+	for (size_t i = 0; i < this->invited_users.size(); ++i)
+	{
+		if(user == this->invited_users[i])
+		{
+			this->invited_users.erase(this->invited_users.begin() + i);
+			break;
+		}
+	}
+}
+
+void	Channel::AddVoiceUsers(User *Ch_operator, User *user)
+{
+	std::string msg;
+	if (!this->CheckIfChannelOperator(user))
+	{
+		this->voice_users.push_back(user);
+		std::string temp = ":" + Ch_operator->getUser() + "!~" + Ch_operator->getUser() + "@127.0.0.1";
+		msg = temp + " MODE " + this->name + " +v " + user->getNickname() +"\n";
+		this->SendMsgToAll(msg);
+	}
+}
+
+void	Channel::DelVoiceUsers(User *Ch_operator, User *user)
+{
+	std::string msg;
+	if (!this->CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + Ch_operator->getUser() + "!~" + Ch_operator->getUser() + "@127.0.0.1";
+		msg = temp + " MODE " + this->name + " -v " + user->getNickname() +"\n";
+		this->SendMsgToAll(msg);
+		for (size_t i = 0; i < this->voice_users.size(); ++i)
+		{
+			if(user == this->voice_users[i])
+			{
+				this->voice_users.erase(this->voice_users.begin() + i);
+				break;
+			}
+		}
+	}
+}
+
+std::string		& Channel::getKey()
+{
+	return this->key;
 }
 
 Channel::~Channel()
