@@ -50,14 +50,14 @@ class Socket
 		/*					Getters and Info							*/
 		/****************************************************************/
 		const std::string 	&getPassword() const;
-		time_t			getTime() const;
-		std::string		strTime() const;
-		time_t			getPingedTime() const;
-		Addr			getInfo() const;
-		const int &		getSocket() const;
-		std::string		getHostName() const;
-		std::string		IP() const;
-		bool			bufferEmpty() const;
+		time_t				getTime() const;
+		std::string			strTime() const;
+		const time_t		&getPingedTime() const;
+		Addr				getInfo() const;
+		const int &			getSocket() const;
+		std::string			getHostName() const;
+		std::string			IP() const;
+		bool				bufferEmpty() const;
 		
 		/****************************************************************/
 		/*					Read/write buffers control					*/

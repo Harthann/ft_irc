@@ -28,6 +28,7 @@ class Addr : public sockaddr_in
 		void	setHost(char );
 
 		const char*	getIP() const;
+		std::string	strIP();
 		int			getPort() const;
 
 		void	setType(int);

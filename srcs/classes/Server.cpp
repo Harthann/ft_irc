@@ -9,6 +9,7 @@ Server::Server(int const &master_port, std::string pass)
 	std::string		block;
 
 	config_file.open("server.config", std::fstream::in);
+	time(&this->launched_time);
 	if (config_file.fail())
 		throw ErrorOpeningFile();
 	do
@@ -28,15 +29,15 @@ Server::Server(int const &master_port, std::string pass)
 			this->timeout = utils::stoi(__process_block(block, "timeout"));
 	} while (!config_file.eof());
 	
-	std::cout << "Server password set as : " << server_password << std::endl;
-	std::cout << "Server name is : " << this->server_name << std::endl;
-	std::cout << "Server message is : " << this->server_message << std::endl;
-	std::cout << "Constructing Server on port : " << master_port << "\n";
-	std::cout << "Timeout server set to : " << this->timeout << std::endl;
+	this->logString("Server password set as : " + server_password);
+	this->logString("Server name is : " + this->server_name);
+	this->logString("Server message is : " + this->server_message);
+	this->logString("Constructing Server on port : " + utils::itos(master_port));
+	this->logString("Timeout server set to : " + utils::itos(this->timeout));
 	this->master = new Socket(master_port);
-	std::cout << "Master socket created with fd : " << this->master->getSocket() << std::endl;
+	this->logString("Master socket created with fd : " + utils::itos(this->master->getSocket()));
 	this->master->Listen();
-	std::cout << "Master now listening" << std::endl;
+	this->logString("Master now listening");
 	this->max_fd = this->master->getSocket();
 	FD_ZERO(&this->readfds);
 	FD_ZERO(&this->writefds);
@@ -86,8 +87,7 @@ void	Server::redirect(Commands &cmd, Socket *client)
 		// reedit commands part
 		if ((*it).getSocketPtr() != client)
 		{
-			std::cout << "Redirect message to socket : ";
-			std::cout << (*it).getSocket() << std::endl;
+			this->logString("Redirect message to socket : " + utils::itos((*it).getSocket()));
 			(*it).getSocketPtr()->bufferize(datas);
 		}
 	}
@@ -106,13 +106,13 @@ void	Server::flushClient()
 
 void	Server::ping()
 {
-	if (difftime(time(NULL), this->last_ping) >= 30)
+	if (this->timer() % PING_FREQUENCY == 0)
 	{
 		for (user_it it = users.begin(); it != users.end(); ++it)
 		{
 			(*it)->getSocketPtr()->bufferize(":" + this->server_name + " PING " + (*it)->getNickname());
 			(*it)->getSocketPtr()->setPinged(time(NULL));
-			std::cout << "Pinged user : " << (*it)->getNickname() << std::endl;
+			// std::cout << "Pinged user : " << (*it)->getNickname() << std::endl;
 		}
 		time(&this->last_ping);
 	}
@@ -126,9 +126,10 @@ std::fstream	&Server::logStream()
 	return (this->irc_log);
 }
 
-void			Server::logString(std::string to_log)
+void			Server::logString(std::string	to_log)
 {
-	this->irc_log << to_log << std::endl;
+	this->irc_log << this->__header() << to_log << std::endl;
+	std::cout << this->__header() << to_log << std::endl;
 }
 
 /****************************************************************/
@@ -140,16 +141,14 @@ void			Server::logString(std::string to_log)
 **	datas by updating constantly writefds that contains
 **	all writeable fds
 */
-Server::clients_vector &Server::Select()
+int		Server::Select()
 {
 	int				activity;
 	clients_vector	ret;
-	struct timeval tv = {10, 0};
+	struct timeval tv = {SELECT_TIMEOUT, 0};
 
 	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, &tv);
-	if (activity < 0)
-		throw se::SelectFailed();
-	return this->socket_list;
+	return activity;
 }
 
 void	Server::update()
@@ -167,8 +166,7 @@ void	Server::update()
 		if (timedOut((*it)->getSocketPtr())) {
 			getpeername((*it)->getSocket(), tmp.as_sockaddr(),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
-			std::cout << "Connection timeout : " << tmp.getIP();
-			std::cout << ":" << tmp.getPort() << std::endl;
+			this->logString("Connection timeout : " + tmp.strIP() + ":" + utils::itos(tmp.getPort()));
 			// delete ((*it)->getSocketPtr());
 			it = users.erase(it);
 			this->removeSocket((*it)->getSocketPtr());
@@ -197,8 +195,7 @@ void	Server::fdSet(clients_vector &clients)
 		else {
 			getpeername((*it)->getSocket(), tmp.as_sockaddr(),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
-			std::cout << "Connection timeout : " << tmp.getIP();
-			std::cout << ":" << tmp.getPort() << std::endl;
+			this->logString("Connection timeout : " + tmp.strIP() + ":" + utils::itos(tmp.getPort()));
 			delete (*it);
 			it = clients.erase(it);
 			--it;
@@ -238,8 +235,7 @@ void	Server::fdSet(user_vector &)
 		else {
 			getpeername((*it)->getSocket(), tmp.as_sockaddr(),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
-			std::cout << "Connection timeout : " << tmp.getIP();
-			std::cout << ":" << tmp.getPort() << std::endl;
+			this->logString("Connection timeout : " + tmp.strIP() + ":" + utils::itos(tmp.getPort()));
 			// delete ((*it)->getSocketPtr());
 			it = users.erase(it);
 			--it;
@@ -266,7 +262,8 @@ void	Server::add(Socket *x)
 
 	pending_clients.push_back(x);
 	socket_list.push_back(x);
-	std::cout << "Socket : " << x->getSocket() << " has been added" << std::endl;
+	this->logString("New clients detected from : " + x->IP());
+	this->logString("Socket : " + utils::itos(x->getSocket()) + " has been added");
 	if (x->getSocket() > max_fd)
 		max_fd = x->getSocket();
 	FD_SET(x->getSocket(), &this->readfds);
@@ -291,8 +288,8 @@ void				Server::addUser(User *x)
 	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 	{
 		if (*it == client) {
-			std::cout << "Socket password : " << client->getPassword() << std::endl;
-			std::cout << "Server password : " << this->server_password << std::endl;
+			this->logString("Socket password : " + client->getPassword());
+			this->logString("Server password : " + this->server_password);
 			if (client->getPassword() == this->server_password) {
 				pending_clients.erase(it);
 				users.push_back(x);
@@ -305,10 +302,11 @@ void				Server::addUser(User *x)
 			break ;
 		}
 	}
-	x->getSocketPtr()->bufferize("001 RPL_WELCOME " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
-	std::cout << "  ########### USER " << users.size() << " ############\n" << std::endl;
-	x->displayinfo();
-	std::cout << "  ###############################" << std::endl;
+	x->getSocketPtr()->bufferize(":" + this->server_name + " " + RPL_WELCOME + " " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+	this->logString("########### USER " + utils::itos(users.size()) + " ##############");
+	this->logString("#\t" + x->getNickname() + "\t\t\t#");
+	// x->displayinfo();
+	this->logString("#################################");
 }
 
 /*
@@ -324,8 +322,7 @@ void	Server::setHost(host_info &host)
 	try {
 		std::string ret;
 		mem = new Socket(host);
-		std::cout << "Host socket connection is : ";
-		std::cout << mem->getSocket() << std::endl;
+		this->logString("Host socket connection is : " + utils::itos(mem->getSocket()));
 		this->servers.push_back(mem);
 		this->socket_list.push_back(mem);
 
@@ -362,7 +359,7 @@ void	Server::setProxy(Commands &datas, Socket *client)
 	for (Server::client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 	{
 		if (*it == client) {
-			std::cout << "Socket password : " << client->getPassword() << std::endl;
+			this->logString("Socket password : " + client->getPassword());
 			if (client->getPassword() == this->server_password) {
 				pending_clients.erase(it);
 			}
@@ -378,7 +375,7 @@ void	Server::setProxy(Commands &datas, Socket *client)
 	hopcount = utils::stoi(datas.getCmdParam(2));
 	Proxy tmp(client, hopcount, name);
 	this->servers.push_back(tmp);
-	std::cout << "Added server to network" << std::endl;
+	this->logString("Added server to network");
 }
 
 void			Server::addChannel(Channel *Ch)
@@ -394,11 +391,10 @@ void	Server::remove(Socket *x)
 
 	buffer = x->flush();
 	this->irc_log << buffer << std::endl;
-	std::cout << buffer <<std::endl;
+	this->logString(buffer);
 	getpeername(x->getSocket(), tmp.as_sockaddr(),
 				reinterpret_cast<socklen_t*>(&tmp_addr_len));
-	std::cout << "User left : " << tmp.getIP();
-	std::cout << " : " << tmp.getPort() << std::endl;
+	this->logString("User left : " + tmp.strIP() + " : " + utils::itos(tmp.getPort()));
 	removeSocket(x);
 	this->update();
 }
@@ -429,7 +425,7 @@ void	Server::removeSocket(Socket *x)
 	for (client_it it = socket_list.begin(); it != socket_list.end(); ++it) {
 		if ((*it) == x)
 		{
-			std::cout << "Closing connection on socket : " << (*it)->getSocket() << std::endl;
+			this->logString("Closing connection on socket : " + utils::itos((*it)->getSocket()));
 			delete (*it);
 			socket_list.erase(it);
 			return ;
@@ -458,7 +454,7 @@ void	Server::removeServer(Socket *x)
 	{
 		//	Will need to change condition to use server name instead
 		if (x == (*it).getSocketPtr()) {
-			std::cout << "Server " << (*it).getSocket() << " left" << std::endl;
+			this->logString("Server " + utils::itos((*it).getSocket()) + " left");
 			it = servers.erase(it);
 		}
 	}
@@ -490,6 +486,11 @@ std::vector<Channel *>	& Server::getChannels()
 
 std::string				&Server::getServerName() {
 	return (this->server_name);
+}
+
+std::vector<Socket *>	&Server::getSocketList()
+{
+	return this->socket_list;
 }
 
 /****************************************************************/
@@ -544,6 +545,11 @@ void		Server::checkChannels()
 	}
 }
 
+time_t		Server::timer() const
+{
+	return difftime(time(NULL), this->launched_time);
+}
+
 
 /****************************************************************/
 /*						Block parser							*/
@@ -594,5 +600,20 @@ std::string		Server::__process_block(std::string &str, std::string keyword)
 		}
 		pos = str.find(';', pos) + 1;
 	}
+	return ret;
+}
+
+
+/****************************************************************/
+/*						Private function						*/
+/****************************************************************/
+
+std::string Server::__header()
+{
+	std::string ret;
+
+	ret += '[';
+	ret += utils::itos(this->timer());
+	ret += "]\t\t";
 	return ret;
 }

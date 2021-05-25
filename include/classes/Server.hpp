@@ -12,13 +12,15 @@
 #include "server_except.hpp"
 #include <fstream>
 #include <string>
+#include "numeric_replies.hpp"
 
 //  irc.rizon.no
 //	chat.freeenode.net
 //	irc.ircnet.com
 
-# define TIME_LIMIT 10.0
-# define SET_TIMEOUT false
+# define PING_FREQUENCY 20
+# define SELECT_TIMEOUT 10
+
 class Channel;
 
 class Server
@@ -28,8 +30,6 @@ class Server
 		Server(Server const &);
 		Server &operator=(Server const&);
 		~Server();
-
-
 
 		void					Stop();
 		void					redirect(Commands &, Socket *);
@@ -46,8 +46,8 @@ class Server
 		/****************************************************************/
 		/*				Select linked function							*/
 		/****************************************************************/
-		std::vector<Socket*>	&Select();					
-		void					update();					
+		int						Select();
+		void					update();
 		void					fdSet(std::vector<Socket*> &);
 		void					fdSet(std::vector<Proxy> &);
 		void					fdSet(std::vector<User*> &);
@@ -73,13 +73,14 @@ class Server
 		/****************************************************************/
 		/*							Getters								*/
 		/****************************************************************/
-		std::vector<User*>		&getClients();
-		User					*getUserByName(std::string);
-		std::vector<Channel *>	&getChannels();
-		std::string				&getServerName();
+		std::vector<User*>			&getClients();
+		User						*getUserByName(std::string);
+		std::vector<Channel *>		&getChannels();
+		std::string					&getServerName();
+		std::vector<Socket *>		&getSocketList();
 
 		/****************************************************************/
-		/*					Information function						*/
+		/*						Information function					*/
 		/****************************************************************/
 		std::string				IP() const;
 		bool					IsMaster(Socket*);
@@ -87,26 +88,27 @@ class Server
 		bool					isRegister(Socket *);
 		bool					timedOut(Socket *);
 		void					checkChannels();
+		time_t					timer() const;
 
 		/****************************************************************/
-		/*					Vector typedef								*/
+		/*						Vector typedef							*/
 		/****************************************************************/
-		typedef	std::vector<Socket*>					clients_vector;
-		typedef	std::vector<User *>						user_vector;
-		typedef	std::vector<Channel *>					channel_vector;
-		typedef	std::vector<Proxy>						proxy_vector;
+		typedef	std::vector<Socket*>			clients_vector;
+		typedef	std::vector<User *>				user_vector;
+		typedef	std::vector<Channel *>			channel_vector;
+		typedef	std::vector<Proxy>				proxy_vector;
 	
 		/****************************************************************/
-		/*					Iterator typedef							*/
+		/*						Iterator typedef						*/
 		/****************************************************************/
-		typedef clients_vector::iterator				client_it;
-		typedef clients_vector::const_iterator			const_client_it;
-		typedef proxy_vector::iterator					proxy_it;
-		typedef proxy_vector::const_iterator			const_proxy_it;
-		typedef user_vector::iterator					user_it;
-		typedef user_vector::const_iterator				const_user_it;
-		typedef channel_vector::iterator				channel_it;
-		typedef channel_vector::const_iterator			const_channel_it;
+		typedef clients_vector::iterator		client_it;
+		typedef clients_vector::const_iterator	const_client_it;
+		typedef proxy_vector::iterator			proxy_it;
+		typedef proxy_vector::const_iterator	const_proxy_it;
+		typedef user_vector::iterator			user_it;
+		typedef user_vector::const_iterator		const_user_it;
+		typedef channel_vector::iterator		channel_it;
+		typedef channel_vector::const_iterator	const_channel_it;
 	
 	private:
 		/****************************************************************/
@@ -145,6 +147,13 @@ class Server
 		bool				state;
 		int					timeout;
 		time_t				last_ping;
+		time_t				launched_time;
+
+/****************************************************************/
+/*						Private function						*/
+/****************************************************************/
+		std::string			__header();
+
 };
 
 #endif

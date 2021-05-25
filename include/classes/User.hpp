@@ -19,10 +19,10 @@ class User
 
 		bool	operator==(const User &);
 
-		Socket *	getSocketPtr() const;
-		int			getStatus() const;
-		std::string	getNickname() const;
-		std::string	getUser() const;
+		Socket *				getSocketPtr() const;
+		int						getStatus() const;
+		std::string				getNickname() const;
+		std::string				getUser() const;
 		std::vector<Channel *>	&getChannels();
 
 		void		displayinfo();
@@ -33,6 +33,9 @@ class User
 		void		partChannels();
 		std::string	getID() const;
 
+		const std::string &getAwayMessage() const;
+
+		void		setAwayMessage(std::string);
 		bool		operator == (User *u2);
 
 	protected:
@@ -41,14 +44,16 @@ class User
 		void		setPASS(std::string str);
 		void		setUSER(Commands cmd, std::string server_name);
 
-		std::string	nickname;
-		std::vector<Channel *> current_channel;
-		std::string	user;
-		std::string	mode;
-		int 			status;
-		std::string	realname;
-		std::string	password;
-		Socket		*self;
+		std::string				nickname;
+		std::vector<Channel *>	current_channel;
+		std::string				user;
+		std::string				mode;
+		int 					status;
+		std::string				realname;
+		std::string				password;
+		Socket					*self;
+
+		std::string				away_message;
 };
 
 

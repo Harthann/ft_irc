@@ -12,7 +12,7 @@ void	list_users_in_chan(std::string chan_name, Socket *client, Server &server) {
 		return ;
 	users_of_channel = chan->user_list();
 	utils::delete_char(users_of_channel, ',');
-	response.append(":" + server.getServerName() + " " + RPL_NAMREPLY + " " + current_user->getNickname() + " = " + chan->getName() + " :" + users_of_channel);
+	response.append(":" + server.getServerName() + " " + RPL_NAMREPLY + " " + current_user->getNickname() + " @ = " + chan->getName() + " :" + users_of_channel);
 	client->bufferize(response);
 }
 
@@ -49,17 +49,13 @@ void	names_command(Commands &cmd, Socket *client, Server &server) {
 		params = utils::split(cmd[1], ',');
 		for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it) {
 			utils::trim(*it, ',');
-			std::cout << "*it = " << *it << std::endl;
 			list_users_in_chan(*it, client, server);
 		}
 	}
 	else
 	{
 		for (size_t i = 1; i < cmd.length(); ++i)
-		{
-			std::cout << "i = " << i << " cmd[" << i << "] = " << cmd[i] << std::endl;
 			list_users_in_chan(cmd[i], client, server);
-		}
 	}
 	client->bufferize(":" + server.getServerName() + " " + RPL_ENDOFNAMES + " * :End of /NAMES list.");
 	
