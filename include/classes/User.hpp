@@ -4,6 +4,7 @@
 #include "Socket.hpp"
 #include "Commands.hpp"
 #include "Channel.hpp"
+#include "numeric_replies.hpp"
 #include <string.h>
 #include <vector>
 
@@ -13,7 +14,7 @@ class User
 {
 	public:
 		User();
-		User(Socket *client, Commands cmd);
+		User(Socket *client, Commands cmd, std::string server_name);
 		~User();
 
 		bool	operator==(const User &);
@@ -25,7 +26,7 @@ class User
 		std::vector<Channel *>	&getChannels();
 
 		void		displayinfo();
-		void		setDatas(Commands cmd);
+		void		setDatas(Commands cmd, std::string server_name);
 		void		ActiveChannel(Channel *ch);
 		int			getSocket() const;
 		void		partChannel(std::string ch);
@@ -41,7 +42,7 @@ class User
 	private:
 		void		setNICK(std::string str);
 		void		setPASS(std::string str);
-		void		setUSER(Commands cmd);
+		void		setUSER(Commands cmd, std::string server_name);
 
 		std::string				nickname;
 		std::vector<Channel *>	current_channel;

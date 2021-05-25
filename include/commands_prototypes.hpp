@@ -13,5 +13,7 @@ void	names_command(Commands &cmd, Socket *client, Server &server);
 void	messages_command(Commands &cmd, Socket *client, Server &server);
 void	away_command(Commands &cmd, Socket *client, Server &server);
 void	notice_command(Commands &cmd, Socket *client, Server &server);
+void	InvitingUser(Commands &cmd, Socket *client, Server &server);
+
 
 #endif

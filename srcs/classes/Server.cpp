@@ -149,10 +149,6 @@ int		Server::Select()
 
 	activity = select(this->max_fd + 1, &this->readfds, &this->writefds, NULL, &tv);
 	return activity;
-	// if (activity < 0)
-	// 	this->Stop();
-	// 	// throw se::SelectFailed();
-	// return this->socket_list;
 }
 
 void	Server::update()
@@ -307,9 +303,10 @@ void				Server::addUser(User *x)
 		}
 	}
 	x->getSocketPtr()->bufferize(":" + this->server_name + " " + RPL_WELCOME + " " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
-	this->logString("  ########### USER " + utils::itos(users.size()) + " ############\n");
-	x->displayinfo();
-	this->logString("  ###############################");
+	this->logString("########### USER " + utils::itos(users.size()) + " ##############");
+	this->logString("#\t" + x->getNickname() + "\t\t\t#");
+	// x->displayinfo();
+	this->logString("#################################");
 }
 
 /*

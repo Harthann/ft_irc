@@ -28,7 +28,8 @@ void	quit_server(Socket *client, Server &server, Commands &cmd)
 	User *temp = check_user(server.getClients(), client);
 
 	temp->partChannels();
-	server.delete_user(temp, cmd[1]);
+	if(cmd.length() > 1)
+		server.delete_user(temp, cmd[1]);
 	delete temp;
 }
 
@@ -48,7 +49,7 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 	ret = already_register(client, server);
 	if(!ret)
 	{
-		add_user(client, temp_users, cmd);
+		add_user(client, temp_users, cmd, server);
 		update_server_user(temp_users, server);
 	}
 }
@@ -94,6 +95,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		notice_command(cmd, client, server);
 	else if (cmd.name() == "AWAY")
 		away_command(cmd, client, server);
+	else if (cmd.name() == "INVITE")
+		InvitingUser(cmd, client, server);
 	else if (cmd.name() == "PONG")
 	{
 		client->setPinged();
@@ -118,7 +121,6 @@ void	server_loop(int port, std::string password, host_info &host)
 		server->logString("Server construction done");
 		while (server->IsRunning()) {
 				server->update();
-			// client_list = server->Select();
 			if (server->Select() < 0)
 				break ;
 			client_list = server->getSocketList();

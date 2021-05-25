@@ -5,6 +5,7 @@
 # include "User.hpp"
 # include "Server.hpp"
 # include "Commands.hpp"
+# include "numeric_replies.hpp"
 # include <vector>
 # include <iostream>
 
