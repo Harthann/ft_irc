@@ -17,6 +17,7 @@ class Channel
 		bool				IsInviteOnly();
 		bool				IsModerate();
 		bool				IsAnonymous();
+		bool				KeyIsSet();
 		bool				NoMessageOutside();
 		bool				TopicIsSettable();
 		void				setPrivate(int n, User *user);
@@ -26,6 +27,7 @@ class Channel
 		void				setAnonymous(int n, User *user);
 		void				setNoMessageOutside(int n, User *user);
 		void				setTopicFlag(int n, User *user);
+		void				setKey(int n, Commands &cmd, User *user);
 		void				addUser(User *user);
 		void				part(Socket *user);
 		int					NumberOfUsers();
@@ -41,6 +43,7 @@ class Channel
 		bool				CheckIfVoiceUser(User *user);
 		bool				CheckIfInvited(User *user);
 		User				*getUserByName(std::string name);
+		std::string 		&getKey();
 		std::string			user_list();
 		void				AddToInvitedUser(User * Member, User * Guest);
 		void				delete_from_invited(User *user);
@@ -55,6 +58,8 @@ class Channel
 		bool					AnonymousFlag;
 		bool					MessageOutsideFlag;
 		bool					TopicSettableFlag;
+		bool					KeyFlag;
+		std::string				key;
 		user_vector				invited_users;
 		std::string				topic;
 		char					channel_type;

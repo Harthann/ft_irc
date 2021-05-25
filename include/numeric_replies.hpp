@@ -11,4 +11,5 @@
 #define ERR_NOTONCHANNEL " 442 "
 #define ERR_NOSUCHNICK " 401 "
 #define ERR_USERONCHANNEL " 443 "
+#define ERR_BADCHANNELKEY " 475 "
 #endif

@@ -21,16 +21,27 @@ Channel		*channel_exist(std::string name, Server &server)
 	}
 	return NULL;
 }
+bool	CheckKey(Commands &cmd, Channel *temp, User *user)
+{
+	if(cmd.length() == 3)
+	{
+		if(cmd[2] == temp->getKey())
+			return true;
+	}
+	std::string msg = ":" + temp->getServerName() + ERR_BADCHANNELKEY + user->getUser() + " " + temp->getName() + " :Cannot join channel (+k) \n";
+	user->getSocketPtr()->bufferize(msg);
+	return false;
+}
 
-void	add_member(User *user, Server &server, std::string name)
+void	add_member(User *user, Server &server, Commands &cmd)
 {
 	Channel *temp;
 	for (unsigned long i = 0; i < server.getChannels().size(); i++)
 	{
-		if(server.getChannels()[i]->getName() == name)
+		if(server.getChannels()[i]->getName() == cmd[1])
 		{
 			temp = server.getChannels()[i];
-			if ((!temp->IsInviteOnly() && !temp->getUserByName(user->getNickname())) || (temp->IsInviteOnly() && temp->CheckIfInvited(user)))
+			if ((!temp->IsInviteOnly() && !temp->getUserByName(user->getNickname()) && !temp->KeyIsSet()) || (temp->IsInviteOnly() && temp->CheckIfInvited(user)) || (temp->KeyIsSet() && CheckKey(cmd, temp, user)))
 			{
 				temp->addUser(user);
 				user->ActiveChannel(temp);
@@ -74,7 +85,7 @@ void	add_to_channel(Commands cmd, Socket *client, Server &server)
 		}
 	}
 	else
-		add_member(current_user, server, cmd[1]);
+		add_member(current_user, server, cmd);
 	cmd.setFrom(current_user->getNickname());
 }
 

@@ -13,6 +13,7 @@ SecretFlag(false),
 InviteFlag(false),
 ModerateFlag(false),
 TopicSettableFlag(false),
+KeyFlag(false),
 channel_type(Name[0])
 {
 
@@ -223,6 +224,11 @@ bool		Channel::TopicIsSettable()
 	return this->TopicSettableFlag;
 }
 
+bool		Channel::KeyIsSet()
+{
+	return this->KeyFlag;
+}
+
 void		Channel::setPrivate(int n, User *user)
 {
 	std::string msg;
@@ -363,6 +369,30 @@ void		Channel::setTopicFlag(int n, User *user)
 	}
 }
 
+void		Channel::setKey(int n, Commands &cmd, User *user)
+{
+	std::string msg;
+	if(cmd.length() == 4 || (cmd.length() == 3 && cmd[2][0] == '-'))
+	{
+		if(CheckIfChannelOperator(user))
+		{
+			std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+			if(n)
+			{
+				this->key = cmd[3];
+				msg = temp + " MODE "+ this->name + " +k " + this->key + "\n";
+				this->KeyFlag = true;
+			}
+			else
+			{
+				msg = temp + " MODE "+ this->name + " -k \n";
+				this->KeyFlag = false;
+			}
+			this->SendMsgToAll(msg);
+		}
+	}
+}
+
 void	Channel::AddToInvitedUser(User * Member, User *Guest)
 {
 	std::string temp;
@@ -425,6 +455,11 @@ void	Channel::DelVoiceUsers(User *Ch_operator, User *user)
 			}
 		}
 	}
+}
+
+std::string		& Channel::getKey()
+{
+	return this->key;
 }
 
 Channel::~Channel()

@@ -40,6 +40,8 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 			channel->setAnonymous(0, user);
 		else if(mode[i] == 't')
 			channel->setTopicFlag(0, user);
+		else if(mode[i] == 'k')
+			channel->setKey(0, cmd, user);
 	}
 }
 
@@ -66,6 +68,8 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 			channel->setAnonymous(1, user);
 		else if(mode[i] == 't')
 			channel->setTopicFlag(1, user);
+		else if(mode[i] == 'k')
+			channel->setKey(1, cmd, user);
 	}
 }
 
