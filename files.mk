@@ -1,4 +1,5 @@
-SRC_FILE= list.cpp \
+SRC_FILE= version.cpp \
+list.cpp \
 names.cpp \
 messages.cpp \
 topic.cpp \

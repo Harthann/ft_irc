@@ -89,6 +89,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		list_command(cmd, client, server);
 	else if(cmd.name() == "TOPIC")
 		topic_command(cmd, client, server);
+	else if(cmd.name() == "VERSION")
+		version_command(cmd, client, server);
 	else if(cmd.name() == "PART")
 		part_from_channel(cmd, client, server);
 	else if(cmd.name() == "QUIT")
