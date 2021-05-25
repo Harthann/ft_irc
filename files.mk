@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 SRC_FILE= version.cpp \
 list.cpp \
-=======
-SRC_FILE= signal_handle.cpp \
->>>>>>> 44b796b961da4fab43e193a38f1793ecc1377b56
+signal_handle.cpp \
 names.cpp \
 messages.cpp \
 topic.cpp \
