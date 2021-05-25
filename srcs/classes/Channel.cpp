@@ -12,6 +12,7 @@ PrivateFlag(false),
 SecretFlag(false),
 InviteFlag(false),
 ModerateFlag(false),
+TopicSettableFlag(false),
 channel_type(Name[0])
 {
 
@@ -217,6 +218,11 @@ bool		Channel::NoMessageOutside()
 	return this->MessageOutsideFlag;
 }
 
+bool		Channel::TopicIsSettable()
+{
+	return this->TopicSettableFlag;
+}
+
 void		Channel::setPrivate(int n, User *user)
 {
 	std::string msg;
@@ -332,6 +338,26 @@ void		Channel::setAnonymous(int n, User *user)
 		{
 			msg = temp + " MODE "+ this->name + " -a \n";
 			this->AnonymousFlag = false;
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
+void		Channel::setTopicFlag(int n, User *user)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if(n)
+		{
+			msg = temp + " MODE "+ this->name + " +t \n";
+			this->TopicSettableFlag = true;
+		}
+		else
+		{
+			msg = temp + " MODE "+ this->name + " -t \n";
+			this->TopicSettableFlag = false;
 		}
 		this->SendMsgToAll(msg);
 	}

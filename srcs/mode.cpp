@@ -38,7 +38,8 @@ void	RemoveMode(Commands &cmd, Channel *channel, User *user)
 			VoiceUserCheck(cmd, channel, user, 0);
 		else if(mode[i] == 'a')
 			channel->setAnonymous(0, user);
-
+		else if(mode[i] == 't')
+			channel->setTopicFlag(0, user);
 	}
 }
 
@@ -63,7 +64,8 @@ void	AddMode(Commands &cmd, Channel *channel, User *user)
 			VoiceUserCheck(cmd, channel, user, 1);
 		else if(mode[i] == 'a')
 			channel->setAnonymous(1, user);
-
+		else if(mode[i] == 't')
+			channel->setTopicFlag(1, user);
 	}
 }
 
