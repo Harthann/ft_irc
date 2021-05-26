@@ -106,7 +106,7 @@ void	Server::flushClient()
 
 void	Server::ping()
 {
-	if (this->timer() % PING_FREQUENCY == 0)
+	if (this->timer() % PING_FREQUENCY == 0 && this->last_ping != time(NULL))
 	{
 		for (user_it it = users.begin(); it != users.end(); ++it)
 		{

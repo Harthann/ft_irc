@@ -1,31 +1,6 @@
 #ifndef NUMERIC_REPLIES_HPP
 #define	NUMERIC_REPLIES_HPP
 
-/*
-OLD
-#define RPL_AWAY				"301"
-#define	RPL_UNAWAY				305
-#define RPL_NOWAWAY				"306"
-#define RPL_NOTOPIC				331
-#define RPL_TOPIC				332
-#define RPL_LISTSTART " 321 "
-#define RPL_LIST " 322 "
-#define RPL_LISTEND " 323 "
-#define RPL_TOPIC 332
-#define RPL_NOTOPIC 331
-#define RPL_VERSION " 351 "
-#define RPL_NAMREPLY			"353"
-#define RPL_ENDOFNAMES			"366"
-#define ERR_TOOMANYMATCHES
-#define ERR_NOSUCHNICK			"401"
-#define ERR_NOSUCHSERVER " 402 "
-#define ERR_CANNOTSENDTOCHAN	"404"
-#define ERR_TOOMANYTARGETS		"407"
-#define ERR_NORECIPIENT			"411"
-#define ERR_NOTEXTTOSEND		"412"
-
-*/
-
 /*##########################################################################################*/
 /*	 ______ _____  _____   ____  _____    _____  ______ _____  _      _____ ______  _____ 	*/
 /*	|  ____|  __ \|  __ \ / __ \|  __ \  |  __ \|  ____|  __ \| |    |_   _|  ____|/ ____|	*/
@@ -478,9 +453,9 @@ OLD
 	  RPL_NAMEREPLY messages with a RPL_ENDOFNAMES to mark
 	  the end.
 */
-#define	RPL_LINKS			364
+#define	RPL_LINKS				364
 /*	"<mask> <server> :<hopcount> <server info>"	*/
-#define	RPL_ENDOFLINKS		365
+#define	RPL_ENDOFLINKS			365
 /*
 	"<mask> :End of /LINKS list"
 
@@ -488,9 +463,9 @@ OLD
 	  replies back using the RPL_LINKS numeric and mark the
 	  end of the list using an RPL_ENDOFLINKS reply.
 */
-#define	RPL_BANLIST			367
+#define	RPL_BANLIST				367
 /*	"<channel> <banid>"	*/
-#define	RPL_ENDOFBANLIST	368
+#define	RPL_ENDOFBANLIST		368
 /*
 	"<channel> :End of channel ban list"
 
@@ -501,9 +476,9 @@ OLD
 	  banids have been listed (or if none present) a
 	  RPL_ENDOFBANLIST must be sent.
 */
-#define	RPL_INFO			371
+#define	RPL_INFO				371
 /*	":<string>"	*/
-#define	RPL_ENDOFINFO		374
+#define	RPL_ENDOFINFO			374
 /*
 	":End of /INFO list"
 
@@ -512,12 +487,10 @@ OLD
 	  with a RPL_ENDOFINFO reply to indicate the end of the
 	  replies.
 */
-#define	RPL_MOTDSTART		375
+#define	RPL_MOTDSTART			375
 /*	":- <server> Message of the day - "	*/
-#define	RPL_MOTD			372
-/*
-	":- <text>"
-*/
+#define	RPL_MOTD				372
+/*	":- <text>"	*/
 #define	RPL_ENDOFMOTD		376
 /*
 	":End of /MOTD command"
