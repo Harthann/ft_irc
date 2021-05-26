@@ -64,7 +64,6 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	std::string	cmd_name;
 
 	server.logString(cmd.as_string());
-	// std::cout << cmd.as_string() << std::endl;
 	if (!cmd.isValid()) {
 		std::cout << "Command format invalid" << std::endl;
 		client->bufferize("Command format invalid");
