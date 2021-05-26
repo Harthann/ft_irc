@@ -6,6 +6,11 @@
 
 static void	channel_messages(Commands &cmd, Socket *client, Server &server, Channel *channel)
 {
+	if (channel->NoMessageOutside() && !channel->getUserByName(check_user(server.getClients(), client)->getNickname()))
+	{
+		client->bufferize(":" + server.getServerName() + REPLY(ERR_CANNOTSENDTOCHAN) + channel->getName() + " :Cannot send to nick/channel");
+		return ;
+	}
 	channel->SendMsgToAll(cmd.as_string(), check_user(server.getClients(), client));
 }
 

@@ -1,5 +1,5 @@
 #include "commands_prototypes.hpp"
-
+// FREEEEEEEEENNNN ????!!!??
 void	clear_topic(Commands &cmd, Socket *client, Server &server) {
 	std::string	response;
 	User		*current_user;
@@ -28,7 +28,7 @@ void	set_topic(Commands &cmd, Socket *client, Server &server) {
 	else if (!chan->TopicIsSettable())
 	{
 		response.append(":" + server.getServerName()
-							+ " " ERR_CHANOPRIVSNEEDED " "
+							+ REPLY(ERR_CHANOPRIVSNEEDED)
 							+ current_user->getNickname() + " "
 							+ chan->getName()
 							+ " :You are not channel operator");

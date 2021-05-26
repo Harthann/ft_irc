@@ -183,6 +183,9 @@ void	Server::update()
 	// fdSet(this->users);
 }
 
+/****************************************************************/
+/*			Controls Socket flows inside server					*/
+/****************************************************************/
 void	Server::fdSet(clients_vector &clients)
 {
 	Addr	tmp;
