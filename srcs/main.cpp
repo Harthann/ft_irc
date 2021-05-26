@@ -42,7 +42,7 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 		if (!server.isRegister(client))
 			client->setPassword(cmd[1]);
 		else
-			client->bufferize("462 ERR_ALREADYREGISTRED Password can't be changed");
+			client->bufferize(":" + server.getServerName() + REPLY(ERR_ALREADYREGISTRED) + "Password can't be changed");
 	}
 	else if (!cmd.name().compare("SERVER"))
 		server.setProxy(cmd, client);
@@ -76,7 +76,7 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	else if(cmd.name() == "QUIT")
 		quit_server(client, server, cmd);
 	else if (!server.isRegister(client))
-		client->bufferize(":" + server.getServerName() + ERR_NOTREGISTERED + "*" + ":You have not registered");
+		client->bufferize(":" + server.getServerName() + REPLY(ERR_NOTREGISTERED) + " *" + ":You have not registered");
 	else if(cmd.name() == "JOIN")
 		add_to_channel(cmd, client, server);
 	else if (cmd.name() == "NAMES")

@@ -35,7 +35,7 @@ channel_type(Name[0])
 	C_operator->getSocketPtr()->bufferize(msg);
 	msg = ":" + server_name + " 366 " + C_operator->getUser() + " " + this->name + " :End of NAMES list.\n";
 	C_operator->getSocketPtr()->bufferize(msg);
-	std::cout << "msg = " << msg << std::endl;
+	// std::cout << "msg = " << msg << std::endl;
 }
 
 void				Channel::addUser(User *user)

@@ -21,7 +21,7 @@ User::User(Socket *client, Commands cmd, std::string server_name)
 	}
 	else
 	{
-		std::string msg = ":" + server_name + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		std::string msg = ":" + server_name + REPLY(ERR_NEEDMOREPARAMS) + cmd[0] + " :Not enough parameters\n";
 		this->self->bufferize(msg);
 	}
 
@@ -55,7 +55,7 @@ void	User::setUSER(Commands cmd, std::string server_name)
 	}
 	else
 	{
-		std::string msg = ":" + server_name + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		std::string msg = ":" + server_name + REPLY(ERR_NEEDMOREPARAMS) + cmd[0] + " :Not enough parameters\n";
 		this->self->bufferize(msg);
 	}
 }
@@ -102,7 +102,7 @@ void	User::setDatas(Commands cmd, std::string server_name)
 	}
 	else
 	{
-		std::string msg = ":" + server_name + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		std::string msg = ":" + server_name + REPLY(ERR_NEEDMOREPARAMS) + cmd[0] + " :Not enough parameters\n";
 		this->self->bufferize(msg);
 	}
 }

@@ -1,6 +1,3 @@
-#ifndef nullptr
-# define nullptr 0
-#endif
 
 
 #ifndef FT_IRC_HPP
@@ -37,6 +34,10 @@
 /*			SERVER EXCEPTION		*/
 /************************************/
 #include "server_except.hpp"
+
+#ifndef nullptr
+# define nullptr 0
+#endif
 
 struct WrongArgumentNumber : public se::ServerException
 {

@@ -14,3 +14,5 @@ void	signal_handler(int signal)
 		_exit(0);
 	}
 }
+
+
