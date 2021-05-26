@@ -22,24 +22,24 @@ void	InvitingUser(Commands &cmd, Socket *client, Server &server)
 			}
 			else if(!channel->getUserByName(ChannelMember->getNickname()))
 			{
-				msg = ":" + server.getServerName() + ERR_NOTONCHANNEL + channel->getName() + "\n";
+				msg = ":" + server.getServerName() + REPLY(ERR_NOTONCHANNEL) + channel->getName() + "\n";
 				ChannelMember->getSocketPtr()->bufferize(msg);
 			}
 			else if(channel->getUserByName(Guest->getNickname()))
 			{
-				msg = ":" + server.getServerName() + ERR_USERONCHANNEL + Guest->getNickname() + " " + channel->getName() + " :is already on channel\n";
+				msg = ":" + server.getServerName() + REPLY(ERR_USERONCHANNEL) + Guest->getNickname() + " " + channel->getName() + " :is already on channel\n";
 				ChannelMember->getSocketPtr()->bufferize(msg);
 			}
 		}
 		else if (Guest == NULL)
 		{
-			msg = ":" + server.getServerName() + ERR_NOSUCHNICK + cmd[1] + " :No such nick/channel\r\n";
+			msg = ":" + server.getServerName() + REPLY(ERR_NOSUCHNICK) + cmd[1] + " :No such nick/channel\r\n";
 			ChannelMember->getSocketPtr()->bufferize(msg);
 		}
 	}
 	else
 	{
-		msg = ":" + server.getServerName() + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		msg = ":" + server.getServerName() + REPLY(ERR_NEEDMOREPARAMS) + cmd[0] + " :Not enough parameters\n";
 		ChannelMember->getSocketPtr()->bufferize(msg);
 	}
 }

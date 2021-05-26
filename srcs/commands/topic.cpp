@@ -11,7 +11,7 @@ void	clear_topic(Commands &cmd, Socket *client, Server &server) {
 	else
 	{
 		chan->setTopic(std::string());
-		response.append(":" + chan->getServerName() + " " + utils::itos(RPL_NOTOPIC) + " " + current_user->getNickname() + " " + chan->getName() + " :No topic is set");
+		response.append(":" + chan->getServerName() + REPLY(RPL_NOTOPIC) + current_user->getNickname() + " " + chan->getName() + " :No topic is set");
 	}
 	client->bufferize(response);
 }
@@ -46,9 +46,9 @@ void	display_topic(Commands &cmd, Socket *client, Server &server) {
 	else
 	{
 		if (!(chan->getTopic().empty()))
-			response.append(":" + chan->getServerName() + " " + utils::itos(RPL_TOPIC) + " " + current_user->getNickname() + " " + chan->getName() + " :" + chan->getTopic());
+			response.append(":" + chan->getServerName() + REPLY(RPL_TOPIC) + current_user->getNickname() + " " + chan->getName() + " :" + chan->getTopic());
 		else
-			response.append(":" + chan->getServerName() + " " + utils::itos(RPL_NOTOPIC) + " " + current_user->getNickname() + " " + chan->getName() + " :No topic is set.");
+			response.append(":" + chan->getServerName() + REPLY(RPL_NOTOPIC) + current_user->getNickname() + " " + chan->getName() + " :No topic is set.");
 	}
 	client->bufferize(response);
 }
@@ -64,5 +64,5 @@ void	topic_command(Commands &cmd, Socket *client, Server &server) {
 	else if (cmd.length() >= 3)
 		set_topic(cmd, client, server);
 	else
-		client->bufferize(":" + server.getServerName() +  ERR_NEEDMOREPARAMS + current_user->getNickname() + " TOPIC :Not enough parameters");
+		client->bufferize(":" + server.getServerName() +  REPLY(ERR_NEEDMOREPARAMS) + current_user->getNickname() + " TOPIC :Not enough parameters");
 }
