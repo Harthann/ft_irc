@@ -16,6 +16,7 @@ void	version_command(Commands &cmd, Socket *client, Server &server);
 void	away_command(Commands &cmd, Socket *client, Server &server);
 void	notice_command(Commands &cmd, Socket *client, Server &server);
 void	InvitingUser(Commands &cmd, Socket *client, Server &server);
+void	KickUser(Commands &cmd, Socket *client, Server &server);
 
 
 #endif

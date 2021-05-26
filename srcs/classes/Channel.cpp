@@ -114,6 +114,39 @@ void				Channel::part(Socket *user)
 			active_users.erase(active_users.begin() + i);
 		}
 	}
+	for(unsigned int i = 0; i < this->voice_users.size(); ++i)
+	{
+		if(this->voice_users[i]->getSocketPtr() == user)
+			voice_users.erase(voice_users.begin() + i);
+	}
+	for(unsigned int i = 0; i < this->channel_operators.size(); ++i)
+	{
+		if(this->channel_operators[i]->getSocketPtr() == user)
+			channel_operators.erase(channel_operators.begin() + i);
+	}
+}
+
+void				Channel::Kick(User *ChannelOP, User *member, std::string msg)
+{
+	std::string msgg;
+
+	msgg = ":" + ChannelOP->getUser() + "!~" + ChannelOP->getUser() + "@127.0.0.1 KICK " + this->name + " " + member->getNickname() + "  "  + msg +"\n";
+	this->SendMsgToAll(msgg);
+	for(unsigned int i = 0; i < this->active_users.size(); ++i)
+	{
+		if(this->active_users[i]->getNickname() == member->getNickname())
+			active_users.erase(active_users.begin() + i);
+	}
+	for(unsigned int i = 0; i < this->voice_users.size(); ++i)
+	{
+		if(this->voice_users[i]->getNickname() == member->getNickname())
+			voice_users.erase(voice_users.begin() + i);
+	}
+	for(unsigned int i = 0; i < this->channel_operators.size(); ++i)
+	{
+		if(this->channel_operators[i]->getNickname() == member->getNickname())
+			channel_operators.erase(channel_operators.begin() + i);
+	}
 }
 
 int				Channel::NumberOfUsers()

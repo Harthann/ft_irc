@@ -34,6 +34,7 @@ class Channel
 		void				setLimitUser(int n, Commands &cmd, User *user);
 		void				addUser(User *user);
 		void				part(Socket *user);
+		void				Kick(User *ChannelOP, User *member, std::string msg = "No reason");
 		int					NumberOfUsers();
 		std::string			getTopic() const;
 		std::string			&getServerName();

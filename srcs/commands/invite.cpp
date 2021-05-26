@@ -43,3 +43,44 @@ void	InvitingUser(Commands &cmd, Socket *client, Server &server)
 		ChannelMember->getSocketPtr()->bufferize(msg);
 	}
 }
+
+void	KickUser(Commands &cmd, Socket *client, Server &server)
+{
+	User *ChannelOP;
+	User *member;
+	Channel *channel;
+	std::string msg;
+
+	ChannelOP = check_user(server.getClients(), client);
+	if(cmd.length() > 2)
+	{
+		channel = channel_exist(cmd[1], server);
+		member = server.getUserByName(cmd[2]);
+		if(member != NULL && channel != NULL)
+		{
+			if(channel->CheckIfChannelOperator(ChannelOP) && channel->getUserByName(member->getNickname()))
+			{
+				if(cmd.length() == 3)
+					channel->Kick(ChannelOP, member);
+				else
+					channel->Kick(ChannelOP, member, cmd[3]);
+			}
+			else if(!channel->getUserByName(ChannelOP->getNickname()))
+			{
+				msg = ":" + server.getServerName() + ERR_NOTONCHANNEL + channel->getName() + "\n";
+				ChannelOP->getSocketPtr()->bufferize(msg);
+			}
+		}
+		else if (member == NULL)
+		{
+			msg = ":" + server.getServerName() + ERR_NOSUCHNICK + cmd[2] + " :No such nick/channel\r\n";
+			ChannelOP->getSocketPtr()->bufferize(msg);
+		}
+	}
+	else
+	{
+		msg = ":" + server.getServerName() + ERR_NEEDMOREPARAMS + cmd[0] + " :Not enough parameters\n";
+		ChannelOP->getSocketPtr()->bufferize(msg);
+	}
+
+}
