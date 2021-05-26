@@ -63,6 +63,7 @@ class Server
 		void					setProxy(Commands &, Socket *);
 		void					addUser(User *);
 		void					addChannel(Channel *Ch);
+		void					addUnavailableNickname(std::string nick);
 
 		/*						REMOVERS								*/
 		void					remove(Socket*);
@@ -78,6 +79,7 @@ class Server
 		std::vector<Channel *>		&getChannels();
 		std::string					&getServerName();
 		std::vector<Socket *>		&getSocketList();
+		std::vector<std::string>	&getUnavailableNicknames();
 
 		/****************************************************************/
 		/*						Information function					*/
@@ -89,6 +91,7 @@ class Server
 		bool					timedOut(Socket *);
 		void					checkChannels();
 		time_t					timer() const;
+		bool					IsUserOnServer(std::string nickname);
 
 		/****************************************************************/
 		/*						Vector typedef							*/
@@ -128,6 +131,8 @@ class Server
 		clients_vector		socket_list;
 		proxy_vector		servers;
 		user_vector			users;
+
+		std::vector<std::string>	unavailable_nicknames;
 
 		channel_vector		channels;
 		
