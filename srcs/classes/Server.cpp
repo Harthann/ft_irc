@@ -277,6 +277,16 @@ void	Server::add(Socket *x)
 	FD_SET(x->getSocket(), &this->writefds);
 }
 
+bool				Server::ForbiddenNick(std::string name)
+{
+	for (size_t i = 0; i < this->unavailable_nicknames.size(); ++i)
+	{
+		if(name == this->unavailable_nicknames[i])
+			return true;
+	}
+	return false;
+}
+
 void				Server::addUser(User *x)
 {
 	Socket *client = x->getSocketPtr();
@@ -297,7 +307,7 @@ void				Server::addUser(User *x)
 		if (*it == client) {
 			this->logString("Socket password : " + client->getPassword());
 			this->logString("Server password : " + this->server_password);
-			if (client->getPassword() == this->server_password) {
+			if ((client->getPassword() == this->server_password) && !this->ForbiddenNick(x->getNickname())) {
 				pending_clients.erase(it);
 				users.push_back(x);
 			}
