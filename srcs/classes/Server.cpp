@@ -1,8 +1,8 @@
 #include "Server.hpp"
 
 Server::Server(int const &master_port, std::string pass)
-:	pending_clients(), socket_list(), servers(), users(), channels(),
-	server_name(), server_message(), server_password(pass), state(1),
+:	pending_clients(), socket_list(), servers(), users(), unavailable_nicknames(),
+	channels(), server_name(), server_message(), server_password(pass), state(1),
 	timeout(0), last_ping(time(NULL))
 {
 	std::fstream	config_file;
@@ -51,6 +51,7 @@ Server::Server(Server const &x)
 	this->pending_clients = x.pending_clients;
 	this->socket_list = x.socket_list;
 	this->max_fd = x.max_fd;
+	this->unavailable_nicknames = x.unavailable_nicknames;
 }
 
 /*
@@ -65,6 +66,7 @@ Server	&Server::operator=(Server const &x)
 	this->servers = x.servers;
 	this->server_password = x.server_password;
 	this->max_fd = x.max_fd;
+	this->unavailable_nicknames = x.unavailable_nicknames;
 	return (*this);
 }
 
@@ -390,6 +392,10 @@ void			Server::addChannel(Channel *Ch)
 	this->channels.push_back(Ch);
 }
 
+void			Server::addUnavailableNickname(std::string nick) {
+	this->unavailable_nicknames.push_back(nick);
+}
+
 void	Server::remove(Socket *x)
 {
 	Addr	tmp;
@@ -500,6 +506,10 @@ std::vector<Socket *>	&Server::getSocketList()
 	return this->socket_list;
 }
 
+std::vector<std::string>	&Server::getUnavailableNicknames() {
+	return (this->unavailable_nicknames);
+}
+
 /****************************************************************/
 /*					Information function						*/
 /****************************************************************/
@@ -557,6 +567,13 @@ time_t		Server::timer() const
 	return difftime(time(NULL), this->launched_time);
 }
 
+bool		Server::IsUserOnServer(std::string nickname) {
+	for (user_vector::iterator it = this->getClients().begin(); it != this->getClients().end(); ++it) {
+		if ((*it)->getNickname() == nickname)
+			return (true);
+	}
+	return (false);
+}
 
 /****************************************************************/
 /*						Block parser							*/

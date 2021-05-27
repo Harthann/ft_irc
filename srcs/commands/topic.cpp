@@ -25,7 +25,7 @@ void	set_topic(Commands &cmd, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(cmd[1], server)))
 		response.append(cmd[1] + ":No such channel");
-	else if (!chan->TopicIsSettable())
+	else if (!chan->TopicIsSettable() && !chan->CheckIfChannelOperator(current_user))
 	{
 		response.append(":" + server.getServerName()
 							+ REPLY(ERR_CHANOPRIVSNEEDED)
@@ -72,5 +72,5 @@ void	topic_command(Commands &cmd, Socket *client, Server &server) {
 	else if (cmd.length() >= 3)
 		set_topic(cmd, client, server);
 	else
-		client->bufferize(":" + server.getServerName() +  REPLY(ERR_NEEDMOREPARAMS) + current_user->getNickname() + " TOPIC :Not enough parameters");
+		client->bufferize(":" + server.getServerName() + REPLY(ERR_NEEDMOREPARAMS) + current_user->getNickname() + " TOPIC :Not enough parameters");
 }

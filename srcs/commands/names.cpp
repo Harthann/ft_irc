@@ -10,6 +10,8 @@ void	list_users_in_chan(std::string chan_name, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(chan_name, server)))
 		return ;
+	if (chan->IsPrivate() || chan->IsSecret())
+		return ;
 	users_of_channel = chan->user_list();
 	utils::delete_char(users_of_channel, ',');
 	response.append(":" + server.getServerName() + REPLY(RPL_NAMREPLY) + current_user->getNickname() + " @ = " + chan->getName() + " :" + users_of_channel);
@@ -25,7 +27,8 @@ void	list_all(Commands &cmd, Socket *client, Server &server) {
 	for (std::vector<Channel *>::iterator it = server.getChannels().begin(); it != server.getChannels().end(); ++it) {
 		users_of_channel = (*it)->user_list();
 		utils::delete_char(users_of_channel, ',');
-		response.append(":" + server.getServerName() + REPLY(RPL_NAMREPLY) + current_user->getNickname() + " = " + (*it)->getName() + " :" + users_of_channel);
+		if ((*it)->getUserByName(current_user->getNickname()) || (!(*it)->IsSecret() && !(*it)->IsPrivate()))
+			response.append(":" + server.getServerName() + REPLY(RPL_NAMREPLY) + current_user->getNickname() + " = " + (*it)->getName() + " :" + users_of_channel);
 		client->bufferize(response);
 		response.clear();
 		users_of_channel.clear();

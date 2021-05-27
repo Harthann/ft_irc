@@ -5,7 +5,7 @@ User::User()
 }
 
 User::User(Socket *client, Commands cmd, std::string server_name)
-: away_message()
+: flags(0), away_message()
 {
 	this->self = client;
 	this->status = 0;
@@ -160,6 +160,24 @@ std::string		User::getID() const {
 				"!~" + this->getNickname() +
 				"@" + this->getSocketPtr()->IP());
 	return (ret);
+}
+
+/****************************************************************/
+/*							Flags								*/
+/****************************************************************/
+
+void	User::enableFlag(char mask) {
+	// this->flags = this->flags | mask;
+	this->flags |= mask;
+}
+
+void	User::disableFlag(char mask) {
+	// this->flags = this->flags ^ mask;
+	this->flags ^= mask;
+}
+
+bool	User::flagIsSet(char mask) {
+	return (this->flags & mask);
 }
 
 bool	User::operator == (User *u2)
