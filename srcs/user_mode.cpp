@@ -1,7 +1,7 @@
 
 #include "mode.hpp"
 
-char	get_flag(char c, User &targeted_user) {
+char	get_flag(char c) {
 	char	mode;
 
 	mode = 0;
@@ -40,7 +40,7 @@ void	mode_user(Commands &cmd, Socket *client, Server &server) {
 	else
 	{
 		for (size_t i = 1; i < cmd[2].length(); ++i) {
-			mode = get_flag(cmd[2][i], *targeted_user);
+			mode = get_flag(cmd[2][i]);
 			if (mode)
 			{
 				if (cmd[2][0] == '+' || cmd[2][0] == '-')
