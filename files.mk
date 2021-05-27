@@ -1,4 +1,7 @@
-SRC_FILE= version.cpp \
+SRC_FILE= channel_mode.cpp \
+user_mode.cpp \
+kill.cpp \
+version.cpp \
 list.cpp \
 signal_handle.cpp \
 names.cpp \

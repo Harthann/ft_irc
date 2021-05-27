@@ -10,6 +10,11 @@
 
 class Channel;
 
+#define INVISIBLE_FLAG		0b10000000
+#define SERVER_NOTICES_FLAG	0b01000000
+#define WALLOPS_FLAG		0b00100000
+#define OPERATOR_FLAG		0b00010000
+
 class User
 {
 	public:
@@ -33,6 +38,14 @@ class User
 		void		partChannels();
 		std::string	getID() const;
 
+		/****************************************************************/
+		/*							Flags								*/
+		/****************************************************************/
+
+		void		enableFlag(char mask);
+		void		disableFlag(char mask);
+		bool		flagIsSet(char mask);
+
 		const std::string &getAwayMessage() const;
 
 		void		setAwayMessage(std::string);
@@ -52,6 +65,7 @@ class User
 		std::string				realname;
 		std::string				password;
 		Socket					*self;
+		char					flags;
 
 		std::string				away_message;
 };

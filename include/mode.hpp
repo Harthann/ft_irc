@@ -12,6 +12,8 @@
 void	mode_parser(Commands &cmd, Socket *client, Server &server);
 void	RemoveMode(Commands &mode, Channel *channel ,User *user);
 void	AddMode(Commands &mode, Channel *channel ,User *user);
+void	mode_channel(Commands &cmd, Socket *client, Server &server);
+void	mode_user(Commands &cmd, Socket *client, Server &server);
 
 
 #endif
