@@ -40,10 +40,10 @@ void	extract_targets(std::string &list, std::vector<std::string> &target_list)
 	{
 		pos2 = list.find(',', pos1);
 		if (pos2 == std::string::npos)
-			return ;
-		target_list.push_back(list.substr(pos1, pos2));
+			pos2 = list.length();
+		target_list.push_back(list.substr(pos1, pos2 - pos1));
 		pos1 = pos2 + 1;
-	} while (pos2 != std::string::npos);
+	} while (pos2 != std::string::npos && pos2 != list.length());
 }
 
 void	messages_command(Commands &cmd, Socket *client, Server &server)
@@ -65,7 +65,6 @@ void	messages_command(Commands &cmd, Socket *client, Server &server)
 	else
 	{
 		extract_targets(cmd[1], targets);
-		server.logString("Targets has " + utils::itos(targets.size()) + " strings");
 		for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); ++it)
 		{
 			if ((ptr = channel_exist(*it, server)))
