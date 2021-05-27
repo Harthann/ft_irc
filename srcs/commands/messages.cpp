@@ -4,24 +4,52 @@
 #include "numeric_replies.hpp"
 
 
-static void	channel_messages(Commands &cmd, Socket *client, Server &server, Channel *channel)
+static void	channel_messages(Commands cmd, Socket *client, Server &server, Channel *channel, std::string &target)
 {
+	server.logString("Channel message received with target : " + target);
+	if (channel->NoMessageOutside() && !channel->getUserByName(check_user(server.getClients(), client)->getNickname()))
+	{
+		client->bufferize(":" + server.getServerName() + REPLY(ERR_CANNOTSENDTOCHAN) + channel->getName() + " :Cannot send to nick/channel");
+		return ;
+	}
+	cmd[1] = target;
 	channel->SendMsgToAll(cmd.as_string(), check_user(server.getClients(), client));
 }
 
-static void	user_messages(Commands &cmd, Socket *client, Server &server, User *user)
+static void	user_messages(Commands cmd, Socket *client, Server &server, User *user, std::string &target)
 {
 	if (user->getAwayMessage().empty())
-			user->getSocketPtr()->bufferize(cmd);
+	{
+		cmd[1] = target;
+		user->getSocketPtr()->bufferize(cmd);
+	}
 	else
 		client->bufferize(":" + server.getServerName() + REPLY(RPL_AWAY)
 							+ check_user(server.getClients(), client)->getNickname() + " "
 							+ user->getNickname() + " :" + user->getAwayMessage());
 }
 
+/* nice spaghetti code */
+
+void	extract_targets(std::string &list, std::vector<std::string> &target_list)
+{
+	size_t	pos1 = 0;
+	size_t	pos2 = 0;
+
+	do
+	{
+		pos2 = list.find(',', pos1);
+		if (pos2 == std::string::npos)
+			return ;
+		target_list.push_back(list.substr(pos1, pos2));
+		pos1 = pos2 + 1;
+	} while (pos2 != std::string::npos);
+}
+
 void	messages_command(Commands &cmd, Socket *client, Server &server)
 {
-	void	*ptr;
+	void						*ptr;
+	std::vector<std::string>	targets;
 
 	/*		To add check if user has right to send to channel either way send 404 error */
 	cmd.setFrom(check_user(server.getClients(), client)->getID());
@@ -34,12 +62,20 @@ void	messages_command(Commands &cmd, Socket *client, Server &server)
 		else
 			client->bufferize(":" + server.getServerName() + REPLY(ERR_NOTEXTTOSEND) + ":No text to send");
 	}
-	else if ((ptr = channel_exist(cmd[1], server)))
-		channel_messages(cmd, client, server, reinterpret_cast<Channel*>(ptr));
-	else if ((ptr = server.getUserByName(cmd[1])))
-		user_messages(cmd, client, server, reinterpret_cast<User*>(ptr));
 	else
-		client->bufferize(":" + server.getServerName() + REPLY(ERR_NOSUCHNICK) + cmd[1] + " :No such nick/channel");
+	{
+		extract_targets(cmd[1], targets);
+		server.logString("Targets has " + utils::itos(targets.size()) + " strings");
+		for (std::vector<std::string>::iterator it = targets.begin(); it != targets.end(); ++it)
+		{
+			if ((ptr = channel_exist(*it, server)))
+				channel_messages(cmd, client, server, reinterpret_cast<Channel*>(ptr), *it);
+			else if ((ptr = server.getUserByName(*it)))
+				user_messages(cmd, client, server, reinterpret_cast<User*>(ptr), *it);
+			else
+				client->bufferize(":" + server.getServerName() + REPLY(ERR_NOSUCHNICK) + *it + " :No such nick/channel");
+		}
+	}
 }
 
 void	notice_command(Commands &cmd, Socket *client, Server &server)
