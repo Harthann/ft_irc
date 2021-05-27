@@ -7,7 +7,7 @@ void	list_all_topics(Commands &cmd, Socket *client, Server &server) {
 
 	current_user = check_user(server.getClients(), client);
 	for (std::vector<Channel *>::iterator it = server.getChannels().begin(); it != server.getChannels().end(); ++it) {
-		response.append(":" + server.getServerName() + RPL_LIST + current_user->getNickname() + " " + (*it)->getName() + " 1" + " :" + (*it)->getTopic());
+		response.append(":" + server.getServerName() + REPLY(RPL_LIST) + current_user->getNickname() + " " + (*it)->getName() + " 1" + " :" + (*it)->getTopic());
 		client->bufferize(response);
 		response.clear();
 	}
@@ -23,7 +23,7 @@ void	list_channels_topics(std::string chan_name, Socket *client, Server &server)
 	if (!(chan = channel_exist(chan_name, server)))
 		return ;
 	channel_topic = chan->getTopic();
-	response.append(":" + server.getServerName() + RPL_LIST + current_user->getNickname() + " " + chan->getName() + " 1" + " :" + channel_topic);
+	response.append(":" + server.getServerName() + REPLY(RPL_LIST) + current_user->getNickname() + " " + chan->getName() + " 1" + " :" + channel_topic);
 	client->bufferize(response);
 }
 
@@ -44,6 +44,6 @@ void	list_command(Commands &cmd, Socket *client, Server &server) {
 	}
 	else if (cmd.length() == 2)
 		list_channels_topics(cmd[1], client, server);
-	response.append(":" + server.getServerName() + RPL_LISTEND + current_user->getNickname() + " :End of LIST");
+	response.append(":" + server.getServerName() + REPLY(RPL_LISTEND) + current_user->getNickname() + " :End of LIST");
 	client->bufferize(response);
 }

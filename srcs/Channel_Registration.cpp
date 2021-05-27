@@ -28,7 +28,7 @@ bool	CheckKey(Commands &cmd, Channel *temp, User *user)
 		if(cmd[2] == temp->getKey())
 			return true;
 	}
-	std::string msg = ":" + temp->getServerName() + ERR_BADCHANNELKEY + user->getUser() + " " + temp->getName() + " :Cannot join channel (+k) \n";
+	std::string msg = ":" + temp->getServerName() + REPLY(ERR_BADCHANNELKEY) + user->getUser() + " " + temp->getName() + " :Cannot join channel (+k) \n";
 	user->getSocketPtr()->bufferize(msg);
 	return false;
 }
@@ -50,7 +50,7 @@ void	add_member(User *user, Server &server, Commands &cmd)
 			}
 			else if((temp->IsInviteOnly() && !temp->CheckIfInvited(user)))
 			{
-				std::string msg = ":" + temp->getServerName() + ERR_INVITEONLYCHAN + user->getUser() + " " + temp->getName() + "\n";
+				std::string msg = ":" + temp->getServerName() + REPLY(ERR_INVITEONLYCHAN) + user->getUser() + " " + temp->getName() + "\n";
 				user->getSocketPtr()->bufferize(msg);
 			}
 		}

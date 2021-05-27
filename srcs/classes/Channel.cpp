@@ -36,7 +36,7 @@ channel_type(Name[0])
 	C_operator->getSocketPtr()->bufferize(msg);
 	msg = ":" + server_name + " 366 " + C_operator->getUser() + " " + this->name + " :End of NAMES list.\n";
 	C_operator->getSocketPtr()->bufferize(msg);
-	std::cout << "msg = " << msg << std::endl;
+	// std::cout << "msg = " << msg << std::endl;
 }
 
 void				Channel::addUser(User *user)
@@ -524,7 +524,7 @@ bool			Channel::LimitCheck(User *user)
 {
 	if(this->limit > active_users.size())
 		return false;
-	std::string msg = ":" + this->getServerName() + ERR_CHANNELISFULL + user->getUser() + " " + this->getName() + " :Cannot join channel (+l) \n";
+	std::string msg = ":" + this->getServerName() + REPLY(ERR_CHANNELISFULL) + user->getUser() + " " + this->getName() + " :Cannot join channel (+l) \n";
 	user->getSocketPtr()->bufferize(msg);
 	return true;
 }

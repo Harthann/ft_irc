@@ -14,10 +14,9 @@ static void	user_messages(Commands &cmd, Socket *client, Server &server, User *u
 	if (user->getAwayMessage().empty())
 			user->getSocketPtr()->bufferize(cmd);
 	else
-		client->bufferize(":" + server.getServerName() + " "
-						+ RPL_AWAY + " "
-						+ check_user(server.getClients(), client)->getNickname() + " "
-						+ user->getNickname() + " :" + user->getAwayMessage());
+		client->bufferize(":" + server.getServerName() + REPLY(RPL_AWAY)
+							+ check_user(server.getClients(), client)->getNickname() + " "
+							+ user->getNickname() + " :" + user->getAwayMessage());
 }
 
 void	messages_command(Commands &cmd, Socket *client, Server &server)
@@ -29,18 +28,18 @@ void	messages_command(Commands &cmd, Socket *client, Server &server)
 	if (cmd.length() != 3)
 	{
 		if (cmd.length() > 3)
-			client->bufferize(":" + server.getServerName() + " " + ERR_TOOMANYTARGETS + ":Too many target");
+			client->bufferize(":" + server.getServerName() + REPLY(ERR_TOOMANYTARGETS) + ":Too many target");
 		else if (cmd.length() > 1 && cmd[1][0] == ':')
-			client->bufferize(":" + server.getServerName() + " " + ERR_NORECIPIENT + ":No recipient given (PRIVMSG)");
+			client->bufferize(":" + server.getServerName() + REPLY(ERR_NORECIPIENT) + ":No recipient given (PRIVMSG)");
 		else
-			client->bufferize(":" + server.getServerName() + " " + ERR_NOTEXTTOSEND + ":No text to send");
+			client->bufferize(":" + server.getServerName() + REPLY(ERR_NOTEXTTOSEND) + ":No text to send");
 	}
 	else if ((ptr = channel_exist(cmd[1], server)))
 		channel_messages(cmd, client, server, reinterpret_cast<Channel*>(ptr));
 	else if ((ptr = server.getUserByName(cmd[1])))
 		user_messages(cmd, client, server, reinterpret_cast<User*>(ptr));
 	else
-		client->bufferize(":" + server.getServerName() + " " + ERR_NOSUCHNICK + cmd[1] + " :No such nick/channel");
+		client->bufferize(":" + server.getServerName() + REPLY(ERR_NOSUCHNICK) + cmd[1] + " :No such nick/channel");
 }
 
 void	notice_command(Commands &cmd, Socket *client, Server &server)
@@ -58,12 +57,12 @@ void	away_command(Commands &cmd, Socket *client, Server &server)
 	if (cmd.length() == 1 && tmp)
 	{
 		tmp->setAwayMessage("");
-		tmp->getSocketPtr()->bufferize(":" + server.getServerName() + " " + RPL_UNAWAY + " " + tmp->getNickname() + ":You are no longer marked as being away");
+		tmp->getSocketPtr()->bufferize(":" + server.getServerName() + REPLY(RPL_UNAWAY) + tmp->getNickname() + ":You are no longer marked as being away");
 	}
 	else if (tmp)
 	{
 		tmp->setAwayMessage(cmd[1].substr(1, cmd[1].length()));
 		std::cout << "Away message sent to : " << tmp->getAwayMessage() << std::endl;
-		tmp->getSocketPtr()->bufferize(":" + server.getServerName() + " " + RPL_NOWAWAY + " " + tmp->getNickname() + ":You have been marked as being away");
+		tmp->getSocketPtr()->bufferize(":" + server.getServerName() + REPLY(RPL_NOWAWAY) + tmp->getNickname() + ":You have been marked as being away");
 	}
 }

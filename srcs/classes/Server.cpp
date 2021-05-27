@@ -106,7 +106,7 @@ void	Server::flushClient()
 
 void	Server::ping()
 {
-	if (this->timer() % PING_FREQUENCY == 0)
+	if (this->timer() % PING_FREQUENCY == 0 && this->last_ping != time(NULL))
 	{
 		for (user_it it = users.begin(); it != users.end(); ++it)
 		{
@@ -128,8 +128,13 @@ std::fstream	&Server::logStream()
 
 void			Server::logString(std::string	to_log)
 {
-	this->irc_log << this->__header() << to_log << std::endl;
-	std::cout << this->__header() << to_log << std::endl;
+	this->irc_log << this->__header() << to_log;
+	std::cout << this->__header() << to_log;
+	if (*(to_log.end() - 1) != '\n')
+	{
+		this->irc_log << std::endl;
+		std::cout << std::endl;
+	}
 }
 
 /****************************************************************/
@@ -302,11 +307,10 @@ void				Server::addUser(User *x)
 			break ;
 		}
 	}
-	x->getSocketPtr()->bufferize(":" + this->server_name + " " + RPL_WELCOME + " " + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
-	this->logString("########### USER " + utils::itos(users.size()) + " ##############");
-	this->logString("#\t" + x->getNickname() + "\t\t\t#");
-	// x->displayinfo();
-	this->logString("#################################");
+	x->getSocketPtr()->bufferize(":" + this->server_name + REPLY(RPL_WELCOME) + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+	this->logString("############### USER " + utils::itos(users.size()) + " ##################");
+	this->logString("#\t\t" + x->getNickname() + "\t\t\t#");
+	this->logString("#########################################");
 }
 
 /*
@@ -352,7 +356,7 @@ void	Server::setProxy(Commands &datas, Socket *client)
 	{
 		if ((*it).getName() == datas[1])
 		{
-			client->bufferize("462	ERR_ALREADYREGISTRED :You may not reregister");
+			client->bufferize(":" + this->server_name + REPLY(ERR_ALREADYREGISTRED) + ":You may not reregister");
 			return ;
 		}
 	}
