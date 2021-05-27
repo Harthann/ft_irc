@@ -38,9 +38,12 @@ Addr::~Addr()
 
 }
 
-void	Addr::setIP(const char*x)
+void	Addr::setIP(const char* x)
 {
-	this->sin_addr.s_addr = inet_addr(x);
+	if (x && *x)
+		this->sin_addr.s_addr = inet_addr(x);
+	else
+		this->sin_addr.s_addr = htonl(INADDR_ANY);
 }
 
 void	Addr::setIP(std::string &x)
