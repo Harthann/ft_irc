@@ -74,11 +74,11 @@ class Server
 		/****************************************************************/
 		/*							Getters								*/
 		/****************************************************************/
-		std::vector<User*>		&getClients();
-		User					*getUserByName(std::string);
-		std::vector<Channel *>	&getChannels();
-		std::string				&getServerName();
-		std::vector<Socket *>	&getSocketList();
+		std::vector<User*>			&getClients();
+		User						*getUserByName(std::string);
+		std::vector<Channel *>		&getChannels();
+		std::string					&getServerName();
+		std::vector<Socket *>		&getSocketList();
 		std::vector<std::string>	&getUnavailableNicknames();
 
 		/****************************************************************/
