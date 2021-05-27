@@ -23,7 +23,7 @@ class Commands;
 class Socket
 {
 	public:
-		Socket(int port = 0, std::string = "", std::string IP = "127.0.0.1");
+		Socket(int port = 0, std::string = "", std::string IP = "");
 		Socket(host_info &);
 		Socket(Socket const &);
 		Socket &operator=(Socket const&);

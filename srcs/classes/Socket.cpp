@@ -6,7 +6,7 @@ Socket::Socket(int port, std::string , std::string IP)
 {
 	time(&this->timestamp);
 	const int opt = 1;
-	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	this->socketfd = socket(AF_INET & AF_INET6, SOCK_STREAM, IPPROTO_TCP);
 	if (!this->socketfd)
 		throw se::SocketFailed();
 	this->addr.setPort(port);
