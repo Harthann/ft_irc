@@ -79,6 +79,7 @@ class Server
 		std::vector<Channel *>	&getChannels();
 		std::string				&getServerName();
 		std::vector<Socket *>	&getSocketList();
+		std::vector<std::string>	&getUnavailableNicknames();
 
 		/****************************************************************/
 		/*						Information function					*/
