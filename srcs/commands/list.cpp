@@ -7,9 +7,14 @@ void	list_all_topics(Commands &cmd, Socket *client, Server &server) {
 
 	current_user = check_user(server.getClients(), client);
 	for (std::vector<Channel *>::iterator it = server.getChannels().begin(); it != server.getChannels().end(); ++it) {
-		response.append(":" + server.getServerName() + REPLY(RPL_LIST) + current_user->getNickname() + " " + (*it)->getName() + " 1" + " :" + (*it)->getTopic());
-		client->bufferize(response);
-		response.clear();
+		if ((!(*it)->IsSecret()) || ((*it)->IsSecret() && (*it)->getUserByName(current_user->getNickname()))) {
+			response.append(":" + server.getServerName() + REPLY(RPL_LIST) + current_user->getNickname() + " " + (*it)->getName());
+			// if ((*it)->IsPrivate())
+			// 	response.append(" Prv");
+			response.append(std::string(" 1") + " :" + (*it)->getTopic());
+			client->bufferize(response);
+			response.clear();
+		}
 	}
 }
 

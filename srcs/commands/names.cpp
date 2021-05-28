@@ -25,13 +25,15 @@ void	list_all(Commands &cmd, Socket *client, Server &server) {
 
 	current_user = check_user(server.getClients(), client);
 	for (std::vector<Channel *>::iterator it = server.getChannels().begin(); it != server.getChannels().end(); ++it) {
-		users_of_channel = (*it)->user_list();
-		utils::delete_char(users_of_channel, ',');
-		if ((*it)->getUserByName(current_user->getNickname()) || (!(*it)->IsSecret() && !(*it)->IsPrivate()))
-			response.append(":" + server.getServerName() + REPLY(RPL_NAMREPLY) + current_user->getNickname() + " = " + (*it)->getName() + " :" + users_of_channel);
-		client->bufferize(response);
-		response.clear();
-		users_of_channel.clear();
+		if ((!((*it)->IsPrivate() || (*it)->IsSecret())) || (*it)->getUserByName(current_user->getNickname())) {
+			users_of_channel = (*it)->user_list();
+			utils::delete_char(users_of_channel, ',');
+			if ((*it)->getUserByName(current_user->getNickname()) || (!(*it)->IsSecret() && !(*it)->IsPrivate()))
+				response.append(":" + server.getServerName() + REPLY(RPL_NAMREPLY) + current_user->getNickname() + " = " + (*it)->getName() + " :" + users_of_channel);
+			client->bufferize(response);
+			response.clear();
+			users_of_channel.clear();
+		}
 	}
 	for (std::vector<User *>::iterator it = server.getClients().begin(); it != server.getClients().end(); ++it) {
 		if ((*it)->getChannels().empty())

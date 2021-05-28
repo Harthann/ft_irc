@@ -100,6 +100,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		away_command(cmd, client, server);
 	else if (cmd.name() == "INVITE")
 		InvitingUser(cmd, client, server);
+	else if (cmd.name() == "KICK")
+		kick_command(cmd, client, server);
 	else if (cmd.name() == "PONG")
 	{
 		client->setPinged();
