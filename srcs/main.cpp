@@ -18,9 +18,19 @@ void	pong_response(Commands &, Socket *client, Server &server)
 	client->bufferize("PONG " + server.IP() + "\r\n");
 }
 
-void	exit_server(Server &server)
+void	exit_server(Commands &cmd, Server &server, Socket *client)
 {
-	server.Stop();
+	User *user = check_user(server.getClients(), client);
+	
+	if (user)
+	{
+		if (user->flagIsSet(OPERATOR_FLAG))
+			server.Stop();
+		else
+			client->bufferize(":" + server.getServerName() + REPLY(ERR_NOPRIVILEGES) + ":Permission Denied- You're not an IRC operator");
+	}
+	else
+		server.Stop();
 }
 
 void	quit_server(Socket *client, Server &server, Commands &cmd)
@@ -70,8 +80,8 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	}
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
-	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
-		exit_server(server);
+	else if (cmd.name() == "DIE")
+		exit_server(cmd, server, client);
 	else if(cmd.name() == "QUIT")
 		quit_server(client, server, cmd);
 	else if (!server.isRegister(client))
@@ -105,8 +115,6 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 		client->setPinged();
 		server.logString("Pong received");
 	}
-	else if (!cmd.name().compare("DIE") || !cmd.name().compare("DIE\n"))
-		exit_server(server);
 }
 
 void	server_loop(int port, std::string password, host_info &host)
