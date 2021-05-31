@@ -283,7 +283,7 @@ void	Server::add(Socket *x)
 void				Server::addUser(User *x)
 {
 	Socket *client = x->getSocketPtr();
-
+/*
 	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
 	{
 		if (x->getSocketPtr() == (*it).getSocketPtr()) {
@@ -295,19 +295,17 @@ void				Server::addUser(User *x)
 			}
 		}
 	}
-	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
+*/	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 	{
 		if (*it == client) {
-			this->logString("Socket password : " + client->getPassword());
-			this->logString("Server password : " + this->server_password);
+			// this->logString("Socket password : " + client->getPassword());
+			// this->logString("Server password : " + this->server_password);
+			pending_clients.erase(it);
+			users.push_back(x);
 			if (client->getPassword() == this->server_password) {
-				pending_clients.erase(it);
-				users.push_back(x);
-			}
-			else {
-				client->bufferize("Connection refused");
-				this->remove(*it);
-				return ;
+				x->enableFlag(OPERATOR_FLAG);
+				this->logString("User : " + x->getNickname() + " has been promot has server operator");
+				client->bufferize(":" + this->server_name + " MODE " + x->getNickname() + " :+o");
 			}
 			break ;
 		}
