@@ -32,6 +32,8 @@ class User
 		std::string				getNickname() const;
 		std::string				getUser() const;
 		std::vector<Channel *>	&getChannels();
+		std::string				&getRealName();
+		bool					haveCommonChanel(User *user);
 
 		void		displayinfo();
 		void		setDatas(Commands cmd, std::string server_name);
