@@ -1,4 +1,5 @@
-SRC_FILE= channel_mode.cpp \
+SRC_FILE= oper.cpp \
+channel_mode.cpp \
 user_mode.cpp \
 kill.cpp \
 version.cpp \

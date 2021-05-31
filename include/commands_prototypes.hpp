@@ -18,5 +18,7 @@ void	notice_command(Commands &cmd, Socket *client, Server &server);
 void	InvitingUser(Commands &cmd, Socket *client, Server &server);
 void	quit_server(Socket *client, Server &server, Commands &cmd);
 void	kill_by_server(Commands &cmd, Socket *client, Server &server, std::string msg = "Duplicates nicknames");
+void	oper_commands(Commands &cmd, Socket *client, Server &server);
+
 
 #endif

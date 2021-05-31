@@ -508,6 +508,11 @@ std::vector<std::string>	&Server::getUnavailableNicknames() {
 	return (this->unavailable_nicknames);
 }
 
+const std::string	&Server::getPassword() const
+{
+	return this->server_password;
+}
+
 /****************************************************************/
 /*					Information function						*/
 /****************************************************************/

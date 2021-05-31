@@ -80,6 +80,7 @@ class Server
 		std::string					&getServerName();
 		std::vector<Socket *>		&getSocketList();
 		std::vector<std::string>	&getUnavailableNicknames();
+		const std::string			&getPassword() const;
 
 		/****************************************************************/
 		/*						Information function					*/
