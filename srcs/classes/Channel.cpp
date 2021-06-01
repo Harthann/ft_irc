@@ -10,13 +10,11 @@ topic(""),
 server_name(server_name),
 channel_type(Name[0])
 {
-
 	this->active_users.push_back(C_operator);
 	if (channel_type != '+')
 		this->channel_operators.push_back(C_operator);
 	else
 		this->list_all_users.push_back(C_operator->getNickname());
-	
 	for(int i = 0; i < 16; ++i)
 		clearing_a_bit(this->mode, i);
 	std::string temp = ":" + C_operator->getUser() + "!~" + C_operator->getUser() + "@127.0.0.1";
