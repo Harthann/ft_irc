@@ -310,19 +310,15 @@ void				Server::addUser(User *x)
 		if (*it == client) {
 			// this->logString("Socket password : " + client->getPassword());
 			// this->logString("Server password : " + this->server_password);
-			if ((client->getPassword() == this->server_password) && !this->ForbiddenNick(x->getNickname())) {
+			if(!this->ForbiddenNick(x->getNickname()))
+			{
 				pending_clients.erase(it);
 				users.push_back(x);
-				if (client->getPassword() == this->server_password) {
+				if ((client->getPassword() == this->server_password)) {
 					x->enableFlag(OPERATOR_FLAG);
 					this->logString("User : " + x->getNickname() + " has been promot has server operator");
 					client->bufferize(":" + this->server_name + " MODE " + x->getNickname() + " :+o");
 				}
-			}
-			else {
-				client->bufferize("Connection refused");
-				this->remove(*it);
-				return ;
 			}
 			break ;
 		}
