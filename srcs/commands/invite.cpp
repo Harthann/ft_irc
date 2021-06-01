@@ -16,8 +16,8 @@ void	InvitingUser(Commands &cmd, Socket *client, Server &server)
 		{
 			if (channel->getUserByName(ChannelMember->getNickname()) && !channel->getUserByName(Guest->getNickname()))
 			{
-				if ((channel->IsInviteOnly() && channel->CheckIfChannelOperator(ChannelMember))
-					|| !channel->IsInviteOnly())
+				if ((checking_a_bit(channel->getMode(), INVITE_FLAG) && channel->CheckIfChannelOperator(ChannelMember))
+					|| !checking_a_bit(channel->getMode(), INVITE_FLAG))
 					channel->AddToInvitedUser(ChannelMember, Guest);
 			}
 			else if(!channel->getUserByName(ChannelMember->getNickname()))

@@ -7,6 +7,7 @@
 #include "Channel_Registration.hpp"
 #include "numeric_replies.hpp"
 #include "utils.hpp"
+#include "mode_bool.hpp"
 
 void	topic_command(Commands &cmd, Socket *client, Server &server);
 void	names_command(Commands &cmd, Socket *client, Server &server);

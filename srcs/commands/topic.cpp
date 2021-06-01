@@ -1,4 +1,5 @@
 #include "commands_prototypes.hpp"
+#include "mode_bool.hpp"
 
 void	clear_topic(Commands &cmd, Socket *client, Server &server) {
 	std::string	response;
@@ -25,7 +26,7 @@ void	set_topic(Commands &cmd, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(cmd[1], server)))
 		response.append(cmd[1] + ":No such channel");
-	else if (!chan->TopicIsSettable() && !chan->CheckIfChannelOperator(current_user))
+	else if (!checking_a_bit(chan->getMode(),TOPIC_FLAG)  && !chan->CheckIfChannelOperator(current_user))
 	{
 		response.append(":" + server.getServerName()
 							+ REPLY(ERR_CHANOPRIVSNEEDED)

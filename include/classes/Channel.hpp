@@ -5,8 +5,6 @@
 # include "User.hpp"
 # include <stdlib.h>
 # include "mode_bool.hpp"
-# include "utils.hpp"
-# include "Socket.hpp"
 
 
 class User;
@@ -17,26 +15,10 @@ class Channel
 		Channel();
 		Channel(std::string Name, User *channel_operator, std::string server_name);
 		std::string			getName();
-/*		bool				IsPrivate();
-		bool				IsSecret();
-		bool				IsInviteOnly();
-		bool				IsModerate();
-		bool				IsAnonymous();
-		bool				KeyIsSet();
-		bool				LimitUserSet();
-		bool				NoMessageOutside();
-		bool				TopicIsSettable();*/
 		bool				check_if_flag_n_active(int n);
-/*		void				setPrivate(int n, User *user);
-		void				setSecret(int n, User *user);
-		void				setInviteOnly(int n, User *user);
-		void				setModerate(int n, User *user);
-		void				setAnonymous(int n, User *user);
-		void				setNoMessageOutside(int n, User *user);
-		void				setTopicFlag(int n, User *user);*/
 		void				setKey(int n, Commands &cmd, User *user);
 		void				setLimitUser(int n, Commands &cmd, User *user);
-		void				setModes(int n, User *user);
+		void				setModes(int n, User *user, int n_mode);
 		void				addUser(User *user);
 		void				part(Socket *user);
 		void				Kick(User *ChannelOP, User *member, std::string msg = "No reason");
@@ -61,18 +43,11 @@ class Channel
 		void				AddVoiceUsers(User *Ch_operator, User *user);
 		void				DelVoiceUsers(User *Ch_operator, User *user);
 		bool				LimitCheck(User *user);
+		std::string			mode_msg(int n, int i, User *user, std::string channel_name, std::string keyLimit = "");
+		short				&getMode();
 	protected:
 		std::string				name;
 		unsigned long			limit;
-/*		bool					PrivateFlag;
-		bool					SecretFlag;
-		bool					InviteFlag;
-		bool					ModerateFlag;
-		bool					AnonymousFlag;
-		bool					MessageOutsideFlag;
-		bool					TopicSettableFlag;*/
-		bool					KeyFlag;
-		bool					LimitFlag;
 		short					mode;
 		std::string				key;
 		user_vector				invited_users;

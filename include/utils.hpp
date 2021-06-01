@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include "User.hpp"
 
 namespace utils {
 	std::vector<std::string>	split_params(std::string &datas);
@@ -13,10 +12,11 @@ namespace utils {
 	std::vector<std::string>	split(std::string str, char delimiter);
 	std::string					trim(std::string &str, char c);
 	std::string					&delete_char(std::string &str, char c);
-	std::string					mode_msg(int n, int i, User *user, std::string channel_name);
-	void						setting_a_bit(short &mode, int n);
-	bool						checking_a_bit(short &mode, int n);
-	void						clearing_a_bit(short &mode, int n);
 }
+
+void			setting_a_bit(short &mode, int n);
+bool			checking_a_bit(short &mode, int n);
+void			clearing_a_bit(short &mode, int n);
+
 
 #endif

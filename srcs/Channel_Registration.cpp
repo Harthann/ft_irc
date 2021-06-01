@@ -41,14 +41,14 @@ void	add_member(User *user, Server &server, Commands &cmd)
 		if(server.getChannels()[i]->getName() == cmd[1])
 		{
 			temp = server.getChannels()[i];
-			if(temp->LimitUserSet() && temp->LimitCheck(user))
+			if(checking_a_bit(temp->getMode(), LIMIT_FLAG) && temp->LimitCheck(user))
 				break;
-			if ((!temp->IsInviteOnly() && !temp->getUserByName(user->getNickname()) && !temp->KeyIsSet()) || (temp->IsInviteOnly() && temp->CheckIfInvited(user)) || (temp->KeyIsSet() && CheckKey(cmd, temp, user)))
+			if ((!checking_a_bit(temp->getMode(), INVITE_FLAG) && !temp->getUserByName(user->getNickname()) && !checking_a_bit(temp->getMode(), KEY_FLAG)) || (checking_a_bit(temp->getMode(), INVITE_FLAG) && temp->CheckIfInvited(user)) || (checking_a_bit(temp->getMode(), KEY_FLAG) && CheckKey(cmd, temp, user)))
 			{
 				temp->addUser(user);
 				user->ActiveChannel(temp);
 			}
-			else if((temp->IsInviteOnly() && !temp->CheckIfInvited(user)))
+			else if((checking_a_bit(temp->getMode(), INVITE_FLAG) && !temp->CheckIfInvited(user)))
 			{
 				std::string msg = ":" + temp->getServerName() + REPLY(ERR_INVITEONLYCHAN) + user->getUser() + " " + temp->getName() + "\n";
 				user->getSocketPtr()->bufferize(msg);

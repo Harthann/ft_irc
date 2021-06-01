@@ -8,13 +8,6 @@ Channel::Channel()
 Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name),
 topic(""),
 server_name(server_name),
-PrivateFlag(false),
-SecretFlag(false),
-InviteFlag(false),
-ModerateFlag(false),
-TopicSettableFlag(false),
-KeyFlag(false),
-LimitFlag(false),
 channel_type(Name[0])
 {
 
@@ -69,7 +62,7 @@ std::string			Channel::user_list()
 	{
 		if(this->CheckIfChannelOperator(this->active_users[i]))
 			temp = "@" + this->active_users[i]->getNickname();
-		else if(this->IsModerate() && this->CheckIfVoiceUser(this->active_users[i]))
+		else if(checking_a_bit(this->mode, MODERATE_FLAG) && this->CheckIfVoiceUser(this->active_users[i]))
 			temp = "+" + this->active_users[i]->getNickname();
 		else
 			temp = this->active_users[i]->getNickname();
@@ -224,191 +217,6 @@ void		Channel::SendMsgToAll(std::string msg, User *x)
 	}
 }
 
-bool		Channel::IsPrivate()
-{
-	return this->PrivateFlag;
-}
-
-bool		Channel::IsSecret()
-{
-	return this->SecretFlag;
-}
-
-bool		Channel::IsInviteOnly()
-{
-	return this->InviteFlag;
-}
-
-bool		Channel::IsModerate()
-{
-	return this->ModerateFlag;
-}
-
-bool		Channel::IsAnonymous()
-{
-	return this->AnonymousFlag;
-}
-
-bool		Channel::NoMessageOutside()
-{
-	return this->MessageOutsideFlag;
-}
-
-bool		Channel::TopicIsSettable()
-{
-	return this->TopicSettableFlag;
-}
-
-bool		Channel::KeyIsSet()
-{
-	return this->KeyFlag;
-}
-
-bool		Channel::LimitUserSet()
-{
-	return this->LimitFlag;
-}
-
-void		Channel::setPrivate(int n, User *user)
-{
-	std::string msg;
-	if(CheckIfChannelOperator(user))
-	{
-		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-		if(n)
-		{
-			msg = temp + " MODE "+ this->name + " +p \n";
-			this->PrivateFlag = true;
-		}
-		else
-		{
-			msg = temp + " MODE "+ this->name + " -p \n";
-			this->PrivateFlag = false;
-		}
-		this->SendMsgToAll(msg);
-	}
-}
-
-void		Channel::setSecret(int n, User *user)
-{
-	std::string msg;
-	if(CheckIfChannelOperator(user))
-	{
-		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-		if(n)
-		{
-			msg = temp + " MODE "+ this->name + " +s \n";
-			this->SecretFlag = true;
-		}
-		else
-		{
-			msg = temp + " MODE "+ this->name + " -s \n";
-			this->SecretFlag = false;
-		}
-		this->SendMsgToAll(msg);
-	}
-}
-
-void		Channel::setInviteOnly(int n, User *user)
-{
-	std::string msg;
-	if(CheckIfChannelOperator(user))
-	{
-		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-		if(n)
-		{
-			msg = temp + " MODE "+ this->name + " +i \n";
-			this->InviteFlag = true;
-		}
-		else
-		{
-			msg = temp + " MODE "+ this->name + " -i \n";
-			this->InviteFlag = false;
-		}
-		this->SendMsgToAll(msg);
-	}
-}
-
-void		Channel::setModerate(int n, User *user)
-{
-	std::string msg;
-	if(CheckIfChannelOperator(user))
-	{
-		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-		if(n)
-		{
-			msg = temp + " MODE "+ this->name + " +m \n";
-			this->ModerateFlag = true;
-		}
-		else
-		{
-			msg = temp + " MODE "+ this->name + " -m \n";
-			this->ModerateFlag = false;
-		}
-		this->SendMsgToAll(msg);
-	}
-}
-
-void		Channel::setNoMessageOutside(int n, User *user)
-{
-	std::string msg;
-	if(CheckIfChannelOperator(user))
-	{
-		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-		if(n)
-		{
-			msg = temp + " MODE "+ this->name + " +n \n";
-			this->MessageOutsideFlag = true;
-		}
-		else
-		{
-			msg = temp + " MODE "+ this->name + " -n \n";
-			this->MessageOutsideFlag = false;
-		}
-		this->SendMsgToAll(msg);
-	}
-}
-
-void		Channel::setAnonymous(int n, User *user)
-{
-	std::string msg;
-	if(CheckIfChannelOperator(user))
-	{
-		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-		if(n)
-		{
-			msg = temp + " MODE "+ this->name + " +a \n";
-			this->AnonymousFlag = true;
-		}
-		else
-		{
-			msg = temp + " MODE "+ this->name + " -a \n";
-			this->AnonymousFlag = false;
-		}
-		this->SendMsgToAll(msg);
-	}
-}
-
-void		Channel::setTopicFlag(int n, User *user)
-{
-	std::string msg;
-	if(CheckIfChannelOperator(user))
-	{
-		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
-		if(n)
-		{
-			msg = temp + " MODE "+ this->name + " +t \n";
-			this->TopicSettableFlag = true;
-		}
-		else
-		{
-			msg = temp + " MODE "+ this->name + " -t \n";
-			this->TopicSettableFlag = false;
-		}
-		this->SendMsgToAll(msg);
-	}
-}
-
 void		Channel::setKey(int n, Commands &cmd, User *user)
 {
 	std::string msg;
@@ -416,17 +224,16 @@ void		Channel::setKey(int n, Commands &cmd, User *user)
 	{
 		if(CheckIfChannelOperator(user))
 		{
-			std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 			if(n)
 			{
+				msg = mode_msg(n, KEY_FLAG, user, this->name, cmd[3]);
+				setting_a_bit(this->mode, KEY_FLAG);
 				this->key = cmd[3];
-				msg = temp + " MODE "+ this->name + " +k " + this->key + "\n";
-				this->KeyFlag = true;
 			}
 			else
 			{
-				msg = temp + " MODE "+ this->name + " -k \n";
-				this->KeyFlag = false;
+				msg = mode_msg(n, KEY_FLAG, user, this->name);
+				clearing_a_bit(this->mode, KEY_FLAG);
 			}
 			this->SendMsgToAll(msg);
 		}
@@ -440,40 +247,32 @@ void		Channel::setLimitUser(int n, Commands &cmd, User *user)
 	{
 		if(CheckIfChannelOperator(user))
 		{
-			std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 			if(n)
 			{
+				msg = mode_msg(n, LIMIT_FLAG, user, this->name, cmd[3]);
 				this->limit = atoi(cmd[3].c_str());
-				msg = temp + " MODE "+ this->name + " +l " + cmd[3] + "\n";
-				this->LimitFlag = true;
+				setting_a_bit(this->mode, LIMIT_FLAG);
 			}
 			else
 			{
-				msg = temp + " MODE "+ this->name + " -l \n";
-				this->LimitFlag = false;
+				msg = mode_msg(n, LIMIT_FLAG, user, this->name);
+				clearing_a_bit(this->mode, LIMIT_FLAG);
 			}
 			this->SendMsgToAll(msg);
 		}
 	}
 }
 
-void	Channel::setModes(int n, User *User, int n_mode)
+void	Channel::setModes(int n, User *user, int n_mode)
 {
 	std::string msg;
 	if(CheckIfChannelOperator(user))
 	{
-//		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
 		msg = mode_msg(n, n_mode, user, this->name);
 		if(n)
-		{
-i//			msg = temp + " MODE "+ this->name + " +t \n";
 			setting_a_bit(this->mode, n_mode);
-		}
 		else
-		{
-//			msg = temp + " MODE "+ this->name + " -t \n";
 			clearing_a_bit(this->mode, n_mode);
-		}
 		this->SendMsgToAll(msg);
 	}
 }
@@ -564,6 +363,28 @@ unsigned long	Channel::getLimit()
 bool			Channel::check_if_flag_n_active(int n)
 {
 	return checking_a_bit(this->mode, n);
+}
+
+std::string						Channel::mode_msg(int n, int i, User *user, std::string channel_name, std::string keyLimit)
+{
+	std::string modes("ovaimnpstkl");
+	std::string remove_add;
+	std::string msg;
+
+	msg = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+	remove_add = (n == 1) ? " +" : " -";
+	remove_add += modes[i];
+	if(keyLimit == "")
+		msg += " MODE " + channel_name + remove_add + "\r\n";
+	else
+		msg += " MODE " + channel_name + remove_add + " " + keyLimit +"\r\n";
+
+	return msg;
+}
+
+short							& Channel::getMode()
+{
+	return this->mode;
 }
 
 Channel::~Channel()

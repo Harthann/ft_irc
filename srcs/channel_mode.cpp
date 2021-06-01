@@ -5,10 +5,5 @@ void	mode_channel(Commands &cmd, Socket *client, Server &server) {
 	Channel	*temp_channel = channel_exist(cmd[1], server);
 
 	if (cmd.length() >= 3)
-	{
-		if (cmd[2].at(0) != '+')
-			RemoveMode(cmd, temp_channel, temp_user);
-		else
-			AddMode(cmd, temp_channel, temp_user);
-	}
+			mode_add_or_remove(cmd, temp_channel, temp_user);
 }

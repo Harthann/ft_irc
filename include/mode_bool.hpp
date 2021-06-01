@@ -18,7 +18,7 @@
 
 #define SECRET_FLAG 7
 
-#define TOPIC_SETTABLE_FLAG 8
+#define TOPIC_FLAG 8
 
 #define KEY_FLAG 9
 
