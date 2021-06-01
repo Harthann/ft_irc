@@ -8,6 +8,7 @@
 # include "Channel_Registration.hpp"
 # include <vector>
 # include <iostream>
+# include "utils.hpp"
 
 void	mode_parser(Commands &cmd, Socket *client, Server &server);
 void	RemoveMode(Commands &mode, Channel *channel ,User *user);

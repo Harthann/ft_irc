@@ -75,4 +75,35 @@ namespace utils {
 		return (str);
 	}
 
+	std::string						mode_msg(int n, int i, User *user, std::string channel_name)
+	{
+		std::string mode("ovaimnpstkl");
+		std::string remove_add;
+		std::string msg;
+
+		msg = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		if (n)
+			remove_add = " -";
+		else
+			remove_add = " +";
+		remove_add += mode[i];
+		msg += " MODE " + channel_name + remove_add + "\r\n";
+		return msg;
+	}
+
+	void							setting_a_bit(short &mode, int n)
+	{
+		mode |= 1UL << n;
+	}
+
+	bool							checking_a_bit(short &mode, int n)
+	{
+			bool bit = (mode >> n) & 1U;
+			return bit;
+	}
+	
+	void							clearing_a_bit(short &mode, int n)
+	{
+		mode &= ~(1UL << n);
+	}
 }

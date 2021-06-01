@@ -19,11 +19,13 @@ channel_type(Name[0])
 {
 
 	this->active_users.push_back(C_operator);
-//	this->channel_type = Name[0];
 	if (channel_type != '+')
 		this->channel_operators.push_back(C_operator);
 	else
 		this->list_all_users.push_back(C_operator->getNickname());
+	
+	for(int i = 0; i < 16; ++i)
+		clearing_a_bit(this->mode, i);
 	std::string temp = ":" + C_operator->getUser() + "!~" + C_operator->getUser() + "@127.0.0.1";
 	std::string msg = temp + " JOIN :"+ Name + "\n";
 	C_operator->getSocketPtr()->bufferize(msg);
@@ -36,7 +38,6 @@ channel_type(Name[0])
 	C_operator->getSocketPtr()->bufferize(msg);
 	msg = ":" + server_name + " 366 " + C_operator->getUser() + " " + this->name + " :End of NAMES list.\n";
 	C_operator->getSocketPtr()->bufferize(msg);
-	// std::cout << "msg = " << msg << std::endl;
 }
 
 void				Channel::addUser(User *user)
@@ -456,6 +457,27 @@ void		Channel::setLimitUser(int n, Commands &cmd, User *user)
 	}
 }
 
+void	Channel::setModes(int n, User *User, int n_mode)
+{
+	std::string msg;
+	if(CheckIfChannelOperator(user))
+	{
+//		std::string temp = ":" + user->getUser() + "!~" + user->getUser() + "@127.0.0.1";
+		msg = mode_msg(n, n_mode, user, this->name);
+		if(n)
+		{
+i//			msg = temp + " MODE "+ this->name + " +t \n";
+			setting_a_bit(this->mode, n_mode);
+		}
+		else
+		{
+//			msg = temp + " MODE "+ this->name + " -t \n";
+			clearing_a_bit(this->mode, n_mode);
+		}
+		this->SendMsgToAll(msg);
+	}
+}
+
 void	Channel::AddToInvitedUser(User * Member, User *Guest)
 {
 	std::string temp;
@@ -537,6 +559,11 @@ std::string		& Channel::getKey()
 unsigned long	Channel::getLimit()
 {
 	return this->limit;
+}
+
+bool			Channel::check_if_flag_n_active(int n)
+{
+	return checking_a_bit(this->mode, n);
 }
 
 Channel::~Channel()
