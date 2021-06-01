@@ -1,6 +1,5 @@
 #include "commands_prototypes.hpp"
-#include "mode_bool.hpp"
-
+// FREEEEEEEEENNNN ????!!!??
 void	clear_topic(Commands &cmd, Socket *client, Server &server) {
 	std::string	response;
 	User		*current_user;

@@ -76,7 +76,6 @@ struct host_info
 };
 
 host_info	parse_info(int ac, char **av, int &port, std::string &pass);
-void		exit_server(Server &server);
 void		signal_handler(int signal);
 
 #endif

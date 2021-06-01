@@ -48,30 +48,26 @@ void	mode_user(Commands &cmd, Socket *client, Server &server) {
 			mode = get_flag(cmd[2][i], *targeted_user);
 			if (mode)
 			{
-				if (!targeted_user->flagIsSet(mode))
+				if (cmd[2][0] == '+' || cmd[2][0] == '-')
 				{
-					if (cmd[2][0] == '+')
-					{
+					if (cmd[2][0] == '+' && targeted_user->flagIsSet(mode))
 						targeted_user->enableFlag(mode);
-						response.append(current_user->getID()
-										+ " MODE "
-										+ targeted_user->getNickname()
-										+ " :"
-										+ cmd[2][0]
-										+ cmd[2][i]);
-					}
-					else if (cmd[2][0] == '-')
-					{
+					else if (cmd[2][0] == '-' && !targeted_user->flagIsSet(mode))
 						targeted_user->disableFlag(mode);
-					}
-					else
-						response.append(":"
-										+ server.getServerName()
-										+ REPLY(ERR_UMODEUNKNOWNFLAG)
-										+ current_user->getNickname()
-										+ " :Unknown mode");
+					response.append(current_user->getID()
+									+ " MODE "
+									+ targeted_user->getNickname()
+									+ " :"
+									+ cmd[2][0]
+									+ cmd[2][i]);
 				}
-			}
+				else
+					response.append(":"
+									+ server.getServerName()
+									+ REPLY(ERR_UMODEUNKNOWNFLAG)
+									+ current_user->getNickname()
+									+ " :Unknown mode");
+				}
 			else
 				response.append(":"
 								+ server.getServerName()

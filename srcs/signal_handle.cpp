@@ -6,7 +6,7 @@ void	signal_handler(int signal)
 	server_addr->logStream() << std::endl;
 	std::cout << std::endl;
 	if (signal == SIGINT || signal == SIGQUIT)
-		exit_server(*server_addr);
+		server_addr->Stop();
 	if (signal == SIGSEGV) {
 		server_addr->logString("Closing server");
 		// exit_server(*server_addr);

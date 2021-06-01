@@ -12,7 +12,7 @@
 
 #define MODERATE_FLAG 4
 
-#define MESSAGE_OUTSIDE_FLAG 5
+#define MESSAGE_FLAG 5
 
 #define PRIVATE_FLAG 6
 
