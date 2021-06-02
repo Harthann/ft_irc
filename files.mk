@@ -23,7 +23,7 @@ Proxy \
 Commands \
 Socket \
 User \
-Channel \
+Channel
 
 
 
@@ -41,4 +41,5 @@ ft_irc.hpp \
 server_except.hpp \
 Registration.hpp \
 Channel_Registration.hpp \
+mode_bool.hpp \
 mode.hpp

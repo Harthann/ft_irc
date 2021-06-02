@@ -74,5 +74,21 @@ namespace utils {
 		}
 		return (str);
 	}
-
 }
+
+void							setting_a_bit(short &mode, int n)
+{
+	mode |= 1UL << n;
+}
+
+bool							checking_a_bit(short &mode, int n)
+{
+		bool bit = (mode >> n) & 1U;
+		return bit;
+}
+
+void							clearing_a_bit(short &mode, int n)
+{
+	mode &= ~(1UL << n);
+}
+

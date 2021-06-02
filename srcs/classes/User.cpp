@@ -24,7 +24,6 @@ User::User(Socket *client, Commands cmd, std::string server_name)
 		std::string msg = ":" + server_name + REPLY(ERR_NEEDMOREPARAMS) + cmd[0] + " :Not enough parameters\n";
 		this->self->bufferize(msg);
 	}
-
 }
 
 

@@ -6,6 +6,7 @@
 # include "Server.hpp"
 # include "Commands.hpp"
 # include "numeric_replies.hpp"
+# include "mode_bool.hpp"
 # include <vector>
 # include <iostream>
 
