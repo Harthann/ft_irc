@@ -43,7 +43,9 @@ void	add_member(User *user, Server &server, Commands &cmd)
 			temp = server.getChannels()[i];
 			if(checking_a_bit(temp->getMode(), LIMIT_FLAG) && temp->LimitCheck(user))
 				break;
-			if ((!checking_a_bit(temp->getMode(), INVITE_FLAG) && !temp->getUserByName(user->getNickname()) && !checking_a_bit(temp->getMode(), KEY_FLAG)) || (checking_a_bit(temp->getMode(), INVITE_FLAG) && temp->CheckIfInvited(user)) || (checking_a_bit(temp->getMode(), KEY_FLAG) && CheckKey(cmd, temp, user)))
+			if ((!checking_a_bit(temp->getMode(), INVITE_FLAG) && !temp->getUserByName(user->getNickname()) && !checking_a_bit(temp->getMode(), KEY_FLAG)) ||
+				(checking_a_bit(temp->getMode(), INVITE_FLAG) && temp->CheckIfInvited(user)) ||
+				(checking_a_bit(temp->getMode(), KEY_FLAG) && CheckKey(cmd, temp, user)))
 			{
 				temp->addUser(user);
 				user->ActiveChannel(temp);

@@ -25,7 +25,8 @@ int		mode_char_to_mode_bit(char c, Channel *channel)
 	{
 		if(c == mode[i])
 		{
-			if ((i == 7 && checking_a_bit(channel->getMode(), PRIVATE_FLAG)) || (i == 6 && checking_a_bit(channel->getMode(), SECRET_FLAG)))
+			if ((i == 7 && checking_a_bit(channel->getMode(), PRIVATE_FLAG)) ||
+				(i == 6 && checking_a_bit(channel->getMode(), SECRET_FLAG)))
 				break ;
 			return i;
 		}

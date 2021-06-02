@@ -5,11 +5,11 @@ Channel::Channel()
 
 }
 
-Channel::Channel(std::string Name, User *C_operator, std::string server_name) : name(Name),
-topic(""),
-server_name(server_name),
-channel_type(Name[0])
+Channel::Channel(std::string Name, User *C_operator, std::string Server_name) : name(Name),
+topic("")
 {
+	this->server_name = Server_name;
+	this->channel_type = Name[0];
 	this->active_users.push_back(C_operator);
 	if (channel_type != '+')
 		this->channel_operators.push_back(C_operator);
