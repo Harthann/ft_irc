@@ -79,7 +79,7 @@ class Socket
 		};
 
 	protected:
-		Socket(int fd, Addr addr, int addr_l);
+		Socket(int fd, Addr addr);
 
 		Addr					addr;
 		int						socketfd;

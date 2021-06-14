@@ -18,13 +18,10 @@ invite.cpp
 
 CLASSES= Server \
 Addr \
-Proxy \
 Commands \
 Socket \
 User \
 Channel \
-
-
 
 INTERFACES= 
 
@@ -35,7 +32,6 @@ TEMPLATES=
 HEADERS= numeric_replies.hpp \
 commands_prototypes.hpp \
 utils.hpp \
-tokens.hpp \
 ft_irc.hpp \
 server_except.hpp \
 Registration.hpp \

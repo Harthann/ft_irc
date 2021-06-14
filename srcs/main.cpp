@@ -15,10 +15,10 @@ Server *server_addr;
 void	pong_response(Commands &, Socket *client, Server &server)
 {
 	std::cout << "PONG RESPONS SEND" << std::endl;
-	client->bufferize("PONG " + server.IP() + "\r\n");
+	client->bufferize(server.getServerName() + "PONG " + server.IP() + "\r\n");
 }
 
-void	exit_server(Commands &cmd, Server &server, Socket *client)
+void	exit_server(Server &server, Socket *client)
 {
 	User *user = check_user(server.getClients(), client);
 	
@@ -54,8 +54,6 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 		else
 			client->bufferize(":" + server.getServerName() + REPLY(ERR_ALREADYREGISTRED) + "Password can't be changed");
 	}
-	else if (!cmd.name().compare("SERVER"))
-		server.setProxy(cmd, client);
 	ret = already_register(client, server);
 	if(!ret)
 	{
@@ -63,10 +61,6 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 		update_server_user(temp_users, server);
 	}
 }
-
-/****************************************************/
-/**					HELLLOOOOOOOOOOO		 		*/
-/****************************************************/
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
 {
@@ -81,7 +75,7 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
 		identification(cmd, client, server, temp_users);
 	else if (cmd.name() == "DIE")
-		exit_server(cmd, server, client);
+		exit_server(server, client);
 	else if(cmd.name() == "QUIT")
 		quit_server(client, server, cmd);
 	else if (!server.isRegister(client))
@@ -119,7 +113,7 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	}
 }
 
-void	server_loop(int port, std::string password, host_info &host)
+void	server_loop(int port, std::string password)
 {	
 	Server					*server = NULL;
 	Server::clients_vector	client_list;
@@ -129,8 +123,6 @@ void	server_loop(int port, std::string password, host_info &host)
 	try {
 		server = new Server(port, password);
 		server_addr = server;
-		if (host.host.sin_zero[0] == 'h')
-			server->setHost(host);
 		server->logString("Server construction done");
 		while (server->IsRunning()) {
 				server->update();
@@ -159,7 +151,6 @@ void	server_loop(int port, std::string password, host_info &host)
 			server->ping();
 		}
 		server->logString("Closing server");
-		// std::cout << server->timer() << "\tClosing server" << std::endl;
 		delete server;
 	}
 	catch (se::ServerException &e) {
@@ -191,7 +182,7 @@ int main(int ac, char **av)
 		server_addr = NULL;
 		set_signals();
 		host = parse_info(ac, av, port, pass);
-		server_loop(port, pass, host);
+		server_loop(port, pass);
 	}
 	catch (se::ServerException &e) {
 		std::cout << e.what() << std::endl;
