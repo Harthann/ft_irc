@@ -260,8 +260,6 @@ void				Server::addUser(User *x)
 	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 	{
 		if (*it == client) {
-			pending_clients.erase(it);
-			users.push_back(x);
 			if(!this->ForbiddenNick(x->getNickname()))
 			{
 				pending_clients.erase(it);
