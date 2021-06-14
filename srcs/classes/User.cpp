@@ -34,7 +34,13 @@ void	User::setPASS(std::string str)
 
 void	User::setNICK(std::string str)
 {
+	static int i = 0;
+	std::string msg = ":" + nickname + "!~" + nickname + "@" + self->IP();
+	msg += " NICK " + str + "\r\n";
+	if(i > 0)
+		self->bufferize(msg);
 	nickname.assign(str);
+	i++;
 }
 
 void	User::setAwayMessage(std::string str)

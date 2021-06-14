@@ -47,13 +47,13 @@ class User
 		bool		flagIsSet(char mask);
 
 		const std::string &getAwayMessage() const;
+		void		setNICK(std::string str);
 
 		void		setAwayMessage(std::string);
 		bool		operator == (User *u2);
 
 	protected:
 	private:
-		void		setNICK(std::string str);
 		void		setPASS(std::string str);
 		void		setUSER(Commands cmd, std::string server_name);
 

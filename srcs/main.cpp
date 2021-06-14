@@ -60,6 +60,11 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 		add_user(client, temp_users, cmd, server);
 		update_server_user(temp_users, server);
 	}
+	else if(cmd.name() == "NICK")
+	{
+		User *temp = check_user(server.getClients(), client);
+		temp->setNICK(cmd[1]);
+	}
 }
 
 void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
