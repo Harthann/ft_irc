@@ -7,7 +7,9 @@
 static void	channel_messages(Commands cmd, Socket *client, Server &server, Channel *channel, std::string &target)
 {
 	server.logString("Channel message received with target : " + target);
-	if (checking_a_bit(channel->getMode(), MESSAGE_FLAG) && !channel->getUserByName(check_user(server.getClients(), client)->getNickname()))
+	if (!check_user(server.getClients(), client)
+		|| checking_a_bit(channel->getMode(), MESSAGE_FLAG)
+		|| (checking_a_bit(channel->getMode(), MODERATE_FLAG) && !channel->CheckIfVoiceUser(check_user(server.getClients(), client))))
 	{
 		client->bufferize(":" + server.getServerName() + REPLY(ERR_CANNOTSENDTOCHAN) + channel->getName() + " :Cannot send to nick/channel");
 		return ;

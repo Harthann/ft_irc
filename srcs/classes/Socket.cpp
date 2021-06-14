@@ -35,7 +35,7 @@ Socket::Socket(host_info &host)
 	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
 }
 
-Socket::Socket(int fd, Addr ad, int length)
+Socket::Socket(int fd, Addr ad)
 : ping_ts(0), password(), recv_buffer(), cmd_buffer(),  writable(false)
 {
 	time(&this->timestamp);
@@ -115,7 +115,7 @@ Socket	*Socket::Accept()
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
 	if (new_fd < 0)
 		throw se::InvalidAccept();
-	return (new Socket(new_fd, addr, tmp_addr_len));
+	return (new Socket(new_fd, addr));
 }
 
 /****************************************************************/

@@ -4,7 +4,6 @@
 #include "Socket.hpp"
 #include "User.hpp"
 #include "ft_irc.hpp"
-#include "Proxy.hpp"
 #include "Commands.hpp"
 #include <vector>
 #include <map>
@@ -32,7 +31,6 @@ class Server
 		~Server();
 
 		void					Stop();
-		void					redirect(Commands &, Socket *);
 		void					flushClient();
 		void					ping();
 		
@@ -49,7 +47,6 @@ class Server
 		int						Select();
 		void					update();
 		void					fdSet(std::vector<Socket*> &);
-		void					fdSet(std::vector<Proxy> &);
 		void					fdSet(std::vector<User*> &);
 		bool					readable(Socket *) const;
 		bool					writeable(Socket *) const;
@@ -59,8 +56,6 @@ class Server
 		/****************************************************************/
 		/*						ADDERS									*/
 		void					add(Socket*);
-		void					setHost(host_info &);
-		void					setProxy(Commands &, Socket *);
 		void					addUser(User *);
 		void					addChannel(Channel *Ch);
 		void					addUnavailableNickname(std::string nick);
@@ -69,7 +64,6 @@ class Server
 		void					remove(Socket*);
 		void					removeSocket(Socket *);
 		void					delete_user(User *user, std::string msg1);
-		void					removeServer(Socket*);
 
 		/****************************************************************/
 		/*							Getters								*/
@@ -80,6 +74,7 @@ class Server
 		std::string					&getServerName();
 		std::vector<Socket *>		&getSocketList();
 		std::vector<std::string>	&getUnavailableNicknames();
+		const std::string			&getPassword() const;
 
 		/****************************************************************/
 		/*						Information function					*/
@@ -100,15 +95,12 @@ class Server
 		typedef	std::vector<Socket*>			clients_vector;
 		typedef	std::vector<User *>				user_vector;
 		typedef	std::vector<Channel *>			channel_vector;
-		typedef	std::vector<Proxy>				proxy_vector;
 	
 		/****************************************************************/
 		/*						Iterator typedef						*/
 		/****************************************************************/
 		typedef clients_vector::iterator		client_it;
 		typedef clients_vector::const_iterator	const_client_it;
-		typedef proxy_vector::iterator			proxy_it;
-		typedef proxy_vector::const_iterator	const_proxy_it;
 		typedef user_vector::iterator			user_it;
 		typedef user_vector::const_iterator		const_user_it;
 		typedef channel_vector::iterator		channel_it;
@@ -130,7 +122,6 @@ class Server
 		Socket				*master;
 		clients_vector		pending_clients;
 		clients_vector		socket_list;
-		proxy_vector		servers;
 		user_vector			users;
 
 		std::vector<std::string>	unavailable_nicknames;

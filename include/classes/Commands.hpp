@@ -4,7 +4,6 @@
 #include <map>
 #include <exception>
 #include "Socket.hpp"
-#include "tokens.hpp"
 
 #define CMD_TYPE 0
 #define MSG_TYPE 1

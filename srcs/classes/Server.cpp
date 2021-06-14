@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 Server::Server(int const &master_port, std::string pass)
-:	pending_clients(), socket_list(), servers(), users(), unavailable_nicknames(),
+:	pending_clients(), socket_list(), users(), unavailable_nicknames(),
 	channels(), server_name(), server_message(), server_password(pass), state(1),
 	timeout(0), last_ping(time(NULL))
 {
@@ -62,8 +62,6 @@ Server::Server(Server const &x)
 Server	&Server::operator=(Server const &x)
 {
 	this->readfds = x.readfds;
-	// this->clients = x.clients;
-	this->servers = x.servers;
 	this->server_password = x.server_password;
 	this->max_fd = x.max_fd;
 	this->unavailable_nicknames = x.unavailable_nicknames;
@@ -81,29 +79,11 @@ void		Server::Stop()
 	this->state = 0;
 }
 
-void	Server::redirect(Commands &cmd, Socket *client)
-{
-	std::string datas = cmd.as_string();
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-	{
-		// reedit commands part
-		if ((*it).getSocketPtr() != client)
-		{
-			this->logString("Redirect message to socket : " + utils::itos((*it).getSocket()));
-			(*it).getSocketPtr()->bufferize(datas);
-		}
-	}
-}
-
 void	Server::flushClient()
 {
 	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 		if (writeable(*it))
 			(*it)->flushWrite();
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-		if (writeable((*it).getSocketPtr()))
-			(*it).getSocketPtr()->flushWrite();
-
 }
 
 void	Server::ping()
@@ -213,22 +193,6 @@ void	Server::fdSet(clients_vector &clients)
 	}
 }
 
-void	Server::fdSet(proxy_vector &)
-{
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
-		if ((*it).getSocket() > 0) {
-			FD_SET((*it).getSocket(), &this->readfds);
-			FD_SET((*it).getSocket(), &this->writefds);
-			if ((*it).getSocket() > max_fd)
-				max_fd = (*it).getSocket();
-		}
-		else {
-			delete ((*it).getSocketPtr());
-			servers.erase(it);
-		}
-	}
-}
-
 void	Server::fdSet(user_vector &)
 {
 	Addr	tmp;
@@ -293,23 +257,9 @@ bool				Server::ForbiddenNick(std::string name)
 void				Server::addUser(User *x)
 {
 	Socket *client = x->getSocketPtr();
-/*
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-	{
-		if (x->getSocketPtr() == (*it).getSocketPtr()) {
-			if (client->getPassword() == this->server_password)
-				users.push_back(x);
-			else {
-				client->bufferize("Connection refused");
-				return ;
-			}
-		}
-	}
-*/	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
+	for (client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
 	{
 		if (*it == client) {
-			// this->logString("Socket password : " + client->getPassword());
-			// this->logString("Server password : " + this->server_password);
 			if(!this->ForbiddenNick(x->getNickname()))
 			{
 				pending_clients.erase(it);
@@ -327,75 +277,6 @@ void				Server::addUser(User *x)
 	this->logString("############### USER " + utils::itos(users.size()) + " ##################");
 	this->logString("#\t\t" + x->getNickname() + "\t\t\t#");
 	this->logString("#########################################");
-}
-
-/*
-**	Add a server to connect to base on info inside host_info structure
-**	This server is added to the proxy list and is handle like one
-**	We just need to redirect command to the sergver to propagate
-**	the information and just indicate wich server as redirect the command
-**	and the hopcount from the client.
-*/
-void	Server::setHost(host_info &host)
-{
-	Socket *mem;
-	try {
-		std::string ret;
-		mem = new Socket(host);
-		this->logString("Host socket connection is : " + utils::itos(mem->getSocket()));
-		this->servers.push_back(mem);
-		this->socket_list.push_back(mem);
-
-		ret += "SERVER " + this->server_name + " 1 :";
-		if (mem->Connect())
-			throw se::ConnectionFailed(mem->getInfo());
-		ret.append(mem->getHostName());
-		ret.append("Experimental server\r\n");
-		mem->bufferize(ret);
-	} catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
-		throw e;
-	}
-}
-
-/*	Add a server to proxy list if he succeed identification */
-void	Server::setProxy(Commands &datas, Socket *client)
-{
-	int		hopcount;
-	std::string name;
-
-	if (datas.length() < 4) {
-		client->bufferize("ERRROR :SERVER Wrong command format\r\n");
-		return ;
-	}
-	for (Server::proxy_it it = servers.begin(); it != servers.end(); ++it)
-	{
-		if ((*it).getName() == datas[1])
-		{
-			client->bufferize(":" + this->server_name + REPLY(ERR_ALREADYREGISTRED) + ":You may not reregister");
-			return ;
-		}
-	}
-	for (Server::client_it it = pending_clients.begin(); it != pending_clients.end(); ++it)
-	{
-		if (*it == client) {
-			this->logString("Socket password : " + client->getPassword());
-			if (client->getPassword() == this->server_password) {
-				pending_clients.erase(it);
-			}
-			else {
-				client->bufferize("Connection refused");
-				this->remove(*it);
-				return ;
-			}
-			break ;
-		}
-	}
-	name = datas.getCmdParam(1);
-	hopcount = utils::stoi(datas.getCmdParam(2));
-	Proxy tmp(client, hopcount, name);
-	this->servers.push_back(tmp);
-	this->logString("Added server to network");
 }
 
 void			Server::addChannel(Channel *Ch)
@@ -433,12 +314,6 @@ void	Server::removeSocket(Socket *x)
 			break ;
 		}
 	}
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it) {
-		if ((*it).getSocketPtr() == x) {
-			servers.erase(it);
-			break ;
-		}
-	}
 	for (user_it it = users.begin(); it != users.end(); ++it)
 	{
 		if ((*it)->getSocketPtr() == x) {
@@ -468,18 +343,6 @@ void			Server::delete_user(User *user, std::string msg1)
 			user->getSocketPtr()->bufferize(msg);
 			users.erase(users.begin() + i);
 			break;
-		}
-	}
-}
-
-void	Server::removeServer(Socket *x)
-{
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-	{
-		//	Will need to change condition to use server name instead
-		if (x == (*it).getSocketPtr()) {
-			this->logString("Server " + utils::itos((*it).getSocket()) + " left");
-			it = servers.erase(it);
 		}
 	}
 }
@@ -521,6 +384,11 @@ std::vector<std::string>	&Server::getUnavailableNicknames() {
 	return (this->unavailable_nicknames);
 }
 
+const std::string	&Server::getPassword() const
+{
+	return this->server_password;
+}
+
 /****************************************************************/
 /*					Information function						*/
 /****************************************************************/
@@ -541,9 +409,6 @@ bool		Server::IsRunning() const
 
 bool	Server::isRegister(Socket *client)
 {
-	for (proxy_it it = servers.begin(); it != servers.end(); ++it)
-		if (client == (*it).getSocketPtr())
-			return true;
 	for (user_it it = users.begin(); it != users.end(); ++it)
 		if (client == (*it)->getSocketPtr())
 			return true;
@@ -624,8 +489,6 @@ std::string		Server::__process_block(std::string &str, std::string keyword)
 		while (!std::isalpha(str[pos]))
 			++pos;
 		second_pos = str.find(' ', pos);
-		// if (keyword == "timeout")
-		// 	std::cout << "Timeout found" << std::endl;
 		if (!str.compare(pos, second_pos - pos, keyword))
 		{
 			pos = str.find('"', pos);

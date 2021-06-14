@@ -62,6 +62,11 @@ struct WrongConfigFileFormat : public se::ServerException
 	WrongConfigFileFormat() : ServerException("Wrong config file format") {};
 };
 
+struct UnimplementedFeature : public se::ServerException
+{
+	UnimplementedFeature() : ServerException("This feature is not implemented") {};
+};
+
 /************************************/
 /*			DECLARATIONS			*/
 /************************************/

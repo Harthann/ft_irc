@@ -13,7 +13,7 @@ class Channel
 {
 	public:
 		Channel();
-		Channel(std::string Name, User *channel_operator, std::string server_name);
+		Channel(std::string Name, User *channel_operator, std::string Server_name);
 		std::string			getName();
 		bool				check_if_flag_n_active(int n);
 		void				setKey(int n, Commands &cmd, User *user);

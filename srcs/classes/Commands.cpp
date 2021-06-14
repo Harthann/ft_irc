@@ -5,7 +5,6 @@ Commands::Commands(std::string &datas, int type)
 {
 	size_t						tmp = 0;
 	size_t						tmp2 = 0;
-	int							length;
 	std::vector<std::string>	split;
 	std::vector<std::string>	spaces;
 
