@@ -24,7 +24,7 @@ void	set_topic(Commands &cmd, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(cmd[1], server)))
 		response.append(cmd[1] + ":No such channel");
-	else if (!checking_a_bit(chan->getMode(),TOPIC_FLAG)  && !chan->CheckIfChannelOperator(current_user))
+	else if (checking_a_bit(chan->getMode(),TOPIC_FLAG)  && !chan->CheckIfChannelOperator(current_user))
 	{
 		response.append(":" + server.getServerName()
 							+ REPLY(ERR_CHANOPRIVSNEEDED)
