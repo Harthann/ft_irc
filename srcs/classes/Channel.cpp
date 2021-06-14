@@ -198,6 +198,8 @@ bool			Channel::CheckIfChannelOperator(User *user)
 
 bool			Channel::CheckIfVoiceUser(User *user)
 {
+	if (CheckIfChannelOperator(user))
+		return true;
 	for (size_t i = 0; i < this->voice_users.size(); ++i)
 	{
 		if(this->voice_users[i]->getNickname() == user->getNickname())
