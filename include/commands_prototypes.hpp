@@ -20,6 +20,8 @@ void	InvitingUser(Commands &cmd, Socket *client, Server &server);
 void	KickUser(Commands &cmd, Socket *client, Server &server);
 void	quit_server(Socket *client, Server &server, Commands &cmd);
 void	kill_by_server(Commands &cmd, Socket *client, Server &server, std::string msg = "Duplicates nicknames");
+void	kick_command(Commands &cmd, Socket *client, Server &server);
+void	who_querry(Commands &cmd, Socket *client, Server &server);
 void	oper_commands(Commands &cmd, Socket *client, Server &server);
 
 

@@ -14,6 +14,9 @@ class Channel;
 #define SERVER_NOTICES_FLAG	0b01000000
 #define WALLOPS_FLAG		0b00100000
 #define OPERATOR_FLAG		0b00010000
+#define AWAY_FLAG			0b00001000
+#define RESTRICTED_FLAG		0b00000100
+#define LOCAL_OPERATOR_FLAG	0b00000010
 
 class User
 {
@@ -29,6 +32,8 @@ class User
 		std::string				getNickname() const;
 		std::string				getUser() const;
 		std::vector<Channel *>	&getChannels();
+		std::string				&getRealName();
+		bool					haveCommonChanel(User *user);
 
 		void		displayinfo();
 		void		setDatas(Commands cmd, std::string server_name);

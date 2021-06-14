@@ -1,4 +1,6 @@
-SRC_FILE= oper.cpp \
+SRC_FILE= who_querry.cpp \
+kick.cpp \
+oper.cpp \
 channel_mode.cpp \
 user_mode.cpp \
 kill.cpp \

@@ -112,6 +112,20 @@ void	User::setDatas(Commands cmd, std::string server_name)
 	}
 }
 
+std::string	&User::getRealName() {
+	return (this->realname);
+}
+
+bool		User::haveCommonChanel(User *user) {
+	for (std::vector<Channel *>::iterator it = this->getChannels().begin(); it != this->getChannels().end(); ++it) {
+		for (std::vector<Channel *>::iterator ite = user->getChannels().begin(); ite != user->getChannels().end(); ++ite) {
+			if ((*it) == (*ite))
+				return (true);
+		}
+	}
+	return (false);
+}
+
 void	User::displayinfo()
 {
 	std::cout << "nickname : " << nickname << std::endl;
