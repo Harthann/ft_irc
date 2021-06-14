@@ -1,7 +1,7 @@
 #include "commands_prototypes.hpp"
 #include "utils.hpp"
 
-void		version_command(Commands &cmd, Socket *client, Server &server) {
+void		version_command(Socket *client, Server &server) {
 	User		*current_user;
 
 	current_user = check_user(server.getClients(), client);

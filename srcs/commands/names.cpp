@@ -19,17 +19,17 @@ void	list_users_in_chan(std::string chan_name, Socket *client, Server &server) {
 	client->bufferize(response);
 }
 
-void	list_all(Commands &cmd, Socket *client, Server &server) {
+void	list_all(Socket *client, Server &server) {
 	std::string	users_of_channel;
 	std::string	response;
 	User		*current_user;
 
 	current_user = check_user(server.getClients(), client);
 	for (std::vector<Channel *>::iterator it = server.getChannels().begin(); it != server.getChannels().end(); ++it) {
-		if ((!((*it)->IsPrivate() || (*it)->IsSecret())) || (*it)->getUserByName(current_user->getNickname())) {
+		if ((!(checking_a_bit((*it)->getMode(), PRIVATE_FLAG) || checking_a_bit((*it)->getMode(), SECRET_FLAG))) || (*it)->getUserByName(current_user->getNickname())) {
 			users_of_channel = (*it)->user_list();
 			utils::delete_char(users_of_channel, ',');
-			if ((*it)->getUserByName(current_user->getNickname()) || (!(*it)->IsSecret() && !(*it)->IsPrivate()))
+			if ((*it)->getUserByName(current_user->getNickname()) || (!checking_a_bit((*it)->getMode(), SECRET_FLAG) && !checking_a_bit((*it)->getMode(), PRIVATE_FLAG)))
 				response.append(":" + server.getServerName() + REPLY(RPL_NAMREPLY) + current_user->getNickname() + " = " + (*it)->getName() + " :" + users_of_channel);
 			client->bufferize(response);
 			response.clear();
@@ -49,7 +49,7 @@ void	names_command(Commands &cmd, Socket *client, Server &server) {
 	std::vector<std::string>	params;
 
 	if (cmd.length() == 1)
-		list_all(cmd, client, server);
+		list_all(client, server);
 	else if (cmd.length() == 2 && (utils::split(cmd[1], ',').size()) > 1)
 	{
 		params = utils::split(cmd[1], ',');

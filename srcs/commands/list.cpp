@@ -1,16 +1,17 @@
 #include "commands_prototypes.hpp"
 #include "utils.hpp"
 
-void	list_all_topics(Commands &cmd, Socket *client, Server &server) {
+void	list_all_topics(Socket *client, Server &server) {
 	std::string	response;
 	User		*current_user;
 
 	current_user = check_user(server.getClients(), client);
 	for (std::vector<Channel *>::iterator it = server.getChannels().begin(); it != server.getChannels().end(); ++it) {
-		if ((!(*it)->IsSecret()) || ((*it)->IsSecret() && (*it)->getUserByName(current_user->getNickname()))) {
+		if ((!checking_a_bit((*it)->getMode(), SECRET_FLAG))
+			|| (checking_a_bit((*it)->getMode(), SECRET_FLAG) && (*it)->getUserByName(current_user->getNickname()))) {
 			response.append(":" + server.getServerName() + REPLY(RPL_LIST) + current_user->getNickname() + " " + (*it)->getName());
-			// if ((*it)->IsPrivate())
-			// 	response.append(" Prv");
+			if (checking_a_bit((*it)->getMode(), PRIVATE_FLAG))
+				response.append(" Prv");
 			response.append(std::string(" 1") + " :" + (*it)->getTopic());
 			client->bufferize(response);
 			response.clear();
@@ -39,7 +40,7 @@ void	list_command(Commands &cmd, Socket *client, Server &server) {
 
 	current_user = check_user(server.getClients(), client);
 	if (cmd.length() == 1)
-		list_all_topics(cmd, client, server);
+		list_all_topics(client, server);
 	else if (cmd.length() == 2 && (utils::split(cmd[1], ',').size()) > 1) {
 		params = utils::split(cmd[1], ',');
 		for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it) {
