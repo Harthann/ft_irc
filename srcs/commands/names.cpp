@@ -1,5 +1,6 @@
 #include "commands_prototypes.hpp"
 #include "utils.hpp"
+#include "mode_bool.hpp"
 
 void	list_users_in_chan(std::string chan_name, Socket *client, Server &server) {
 	std::string	users_of_channel;
@@ -10,7 +11,7 @@ void	list_users_in_chan(std::string chan_name, Socket *client, Server &server) {
 	current_user = check_user(server.getClients(), client);
 	if (!(chan = channel_exist(chan_name, server)))
 		return ;
-	if (chan->IsPrivate() || chan->IsSecret())
+	if (checking_a_bit(chan->getMode() ,PRIVATE_FLAG) || checking_a_bit(chan->getMode(), SECRET_FLAG))
 		return ;
 	users_of_channel = chan->user_list();
 	utils::delete_char(users_of_channel, ',');
@@ -27,7 +28,7 @@ void	list_all(Commands &cmd, Socket *client, Server &server) {
 	for (std::vector<Channel *>::iterator it = server.getChannels().begin(); it != server.getChannels().end(); ++it) {
 		users_of_channel = (*it)->user_list();
 		utils::delete_char(users_of_channel, ',');
-		if ((*it)->getUserByName(current_user->getNickname()) || (!(*it)->IsSecret() && !(*it)->IsPrivate()))
+		if ((*it)->getUserByName(current_user->getNickname()) || (!checking_a_bit((*it)->getMode(), SECRET_FLAG) && !checking_a_bit((*it)->getMode(), PRIVATE_FLAG)))
 			response.append(":" + server.getServerName() + REPLY(RPL_NAMREPLY) + current_user->getNickname() + " = " + (*it)->getName() + " :" + users_of_channel);
 		client->bufferize(response);
 		response.clear();

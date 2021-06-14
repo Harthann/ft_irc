@@ -7,7 +7,7 @@
 static void	channel_messages(Commands cmd, Socket *client, Server &server, Channel *channel, std::string &target)
 {
 	server.logString("Channel message received with target : " + target);
-	if (channel->NoMessageOutside() && !channel->getUserByName(check_user(server.getClients(), client)->getNickname()))
+	if (checking_a_bit(channel->getMode(), MESSAGE_FLAG) && !channel->getUserByName(check_user(server.getClients(), client)->getNickname()))
 	{
 		client->bufferize(":" + server.getServerName() + REPLY(ERR_CANNOTSENDTOCHAN) + channel->getName() + " :Cannot send to nick/channel");
 		return ;

@@ -14,4 +14,9 @@ namespace utils {
 	std::string					&delete_char(std::string &str, char c);
 }
 
+void			setting_a_bit(short &mode, int n);
+bool			checking_a_bit(short &mode, int n);
+void			clearing_a_bit(short &mode, int n);
+
+
 #endif

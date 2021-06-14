@@ -87,6 +87,7 @@ class Server
 		void					checkChannels();
 		time_t					timer() const;
 		bool					IsUserOnServer(std::string nickname);
+		bool					ForbiddenNick(std::string name);
 
 		/****************************************************************/
 		/*						Vector typedef							*/
