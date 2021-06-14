@@ -89,7 +89,7 @@ void	command_dispatcher(std::string &datas, Socket *client, Server &server, std:
 	else if(cmd.name() == "TOPIC")
 		topic_command(cmd, client, server);
 	else if(cmd.name() == "VERSION")
-		version_command(cmd, client, server);
+		version_command(client, server);
 	else if (cmd.name() == "WHO")
 		who_querry(cmd, client, server);
 	else if(cmd.name() == "PART")

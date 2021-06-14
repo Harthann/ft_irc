@@ -19,7 +19,7 @@ void	list_users_in_chan(std::string chan_name, Socket *client, Server &server) {
 	client->bufferize(response);
 }
 
-void	list_all(Commands &cmd, Socket *client, Server &server) {
+void	list_all(Socket *client, Server &server) {
 	std::string	users_of_channel;
 	std::string	response;
 	User		*current_user;
@@ -49,7 +49,7 @@ void	names_command(Commands &cmd, Socket *client, Server &server) {
 	std::vector<std::string>	params;
 
 	if (cmd.length() == 1)
-		list_all(cmd, client, server);
+		list_all(client, server);
 	else if (cmd.length() == 2 && (utils::split(cmd[1], ',').size()) > 1)
 	{
 		params = utils::split(cmd[1], ',');

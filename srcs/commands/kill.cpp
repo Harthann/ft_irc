@@ -1,7 +1,7 @@
 #include "commands_prototypes.hpp"
 #include "utils.hpp"
 
-void	kill_by_server(Commands &cmd, Socket *client, Server &server, std::string msg) {
+void	kill_by_server(Commands &cmd, Server &server, std::string msg) {
 	User	*user;
 
 	for (Server::user_vector::iterator it = server.getClients().begin(); it != server.getClients().end(); ++it) {

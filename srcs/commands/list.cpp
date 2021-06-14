@@ -1,7 +1,7 @@
 #include "commands_prototypes.hpp"
 #include "utils.hpp"
 
-void	list_all_topics(Commands &cmd, Socket *client, Server &server) {
+void	list_all_topics(Socket *client, Server &server) {
 	std::string	response;
 	User		*current_user;
 
@@ -40,7 +40,7 @@ void	list_command(Commands &cmd, Socket *client, Server &server) {
 
 	current_user = check_user(server.getClients(), client);
 	if (cmd.length() == 1)
-		list_all_topics(cmd, client, server);
+		list_all_topics(client, server);
 	else if (cmd.length() == 2 && (utils::split(cmd[1], ',').size()) > 1) {
 		params = utils::split(cmd[1], ',');
 		for (std::vector<std::string>::iterator it = params.begin(); it != params.end(); ++it) {
