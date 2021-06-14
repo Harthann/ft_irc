@@ -45,6 +45,7 @@ class User
 		void		enableFlag(char mask);
 		void		disableFlag(char mask);
 		bool		flagIsSet(char mask);
+		std::string	getIP() const;
 
 		const std::string &getAwayMessage() const;
 		void		setNICK(std::string str);

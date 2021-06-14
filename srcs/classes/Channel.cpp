@@ -17,7 +17,7 @@ topic("")
 		this->list_all_users.push_back(C_operator->getNickname());
 	for(int i = 0; i < 16; ++i)
 		clearing_a_bit(this->mode, i);
-	std::string temp = ":" + C_operator->getNickname() + "!~" + C_operator->getNickname() + "@127.0.0.1";
+	std::string temp = ":" + C_operator->getNickname() + "!~" + C_operator->getNickname() + "@" + C_operator->getIP();
 	std::string msg = temp + " JOIN :"+ Name + "\n";
 	C_operator->getSocketPtr()->bufferize(msg);
 	if (this->topic != "")
@@ -35,7 +35,7 @@ void				Channel::addUser(User *user)
 {
 	this->active_users.push_back(user);
 
-	std::string temp = ":" + user->getNickname() + "!~" + user->getNickname() + "@127.0.0.1";
+	std::string temp = ":" + user->getNickname() + "!~" + user->getNickname() + "@" + user->getIP();
 	std::string msg = temp + " JOIN :"+ this->name + "\n";
 	this->SendMsgToAll(msg);
 	if (CheckIfInvited(user))
@@ -101,7 +101,7 @@ void				Channel::part(Socket *user)
 		if(this->active_users[i]->getSocketPtr() == user)
 		{
 			temp = active_users[i];
-			msg = ":" + temp->getNickname() + "!~" + temp->getNickname() + "@127.0.0.1 PART " + this->name + "\n";
+			msg = ":" + temp->getNickname() + "!~" + temp->getNickname() + "@" + temp->getIP() +" PART " + this->name + "\n";
 			this->SendMsgToAll(msg);
 			active_users.erase(active_users.begin() + i);
 		}
@@ -122,7 +122,7 @@ void				Channel::Kick(User *ChannelOP, User *member, std::string msg)
 {
 	std::string msgg;
 
-	msgg = ":" + ChannelOP->getNickname() + "!~" + ChannelOP->getNickname() + "@127.0.0.1 KICK " + this->name + " " + member->getNickname() + "  "  + msg +"\n";
+	msgg = ":" + ChannelOP->getNickname() + "!~" + ChannelOP->getNickname() + "@" + ChannelOP->getIP() +" KICK " + this->name + " " + member->getNickname() + "  "  + msg +"\n";
 	this->SendMsgToAll(msgg);
 	for(unsigned int i = 0; i < this->active_users.size(); ++i)
 	{
@@ -166,7 +166,7 @@ void			Channel::Privilege(int n, User *user, Commands &cmd)
 		Receiver = this->getUserByName(cmd[3]);
 		if (Receiver != NULL)
 		{
-			std::string temp = ":" + user->getNickname() + "!~" + user->getNickname() + "@127.0.0.1";
+			std::string temp = ":" + user->getNickname() + "!~" + user->getNickname() + "@" + user->getIP();
 			if(n == 0)
 			{
 				msg = temp + " MODE "+ this->name + " -o " + Receiver->getNickname() + "\n";
@@ -283,7 +283,7 @@ void	Channel::AddToInvitedUser(User * Member, User *Guest)
 	std::string msg;
 	this->invited_users.push_back(Guest);
 
-	temp = ":" + Member->getNickname() + "!~" + Member->getNickname() + "@127.0.0.1";
+	temp = ":" + Member->getNickname() + "!~" + Member->getNickname() + "@" + Member->getIP();
 	msg = temp + " INVITE " + Guest->getNickname() + " " + this->name + "\n";
 	Guest->getSocketPtr()->bufferize(msg);
 }
@@ -316,7 +316,7 @@ void	Channel::AddVoiceUsers(User *Ch_operator, User *user)
 	if (!this->CheckIfChannelOperator(user))
 	{
 		this->voice_users.push_back(user);
-		std::string temp = ":" + Ch_operator->getNickname() + "!~" + Ch_operator->getNickname() + "@127.0.0.1";
+		std::string temp = ":" + Ch_operator->getNickname() + "!~" + Ch_operator->getNickname() + "@" + Ch_operator->getIP();
 		msg = temp + " MODE " + this->name + " +v " + user->getNickname() +"\n";
 		this->SendMsgToAll(msg);
 	}
@@ -327,7 +327,7 @@ void	Channel::DelVoiceUsers(User *Ch_operator, User *user)
 	std::string msg;
 	if (!this->CheckIfChannelOperator(user))
 	{
-		std::string temp = ":" + Ch_operator->getNickname() + "!~" + Ch_operator->getNickname() + "@127.0.0.1";
+		std::string temp = ":" + Ch_operator->getNickname() + "!~" + Ch_operator->getNickname() + "@" + Ch_operator->getIP();
 		msg = temp + " MODE " + this->name + " -v " + user->getNickname() +"\n";
 		this->SendMsgToAll(msg);
 		for (size_t i = 0; i < this->voice_users.size(); ++i)
@@ -371,7 +371,7 @@ std::string						Channel::mode_msg(int n, int i, User *user, std::string channel
 	std::string remove_add;
 	std::string msg;
 
-	msg = ":" + user->getNickname() + "!~" + user->getNickname() + "@127.0.0.1";
+	msg = ":" + user->getNickname() + "!~" + user->getNickname() + "@" + user->getIP();
 	remove_add = (n == 1) ? " +" : " -";
 	remove_add += modes[i];
 	if(keyLimit == "")

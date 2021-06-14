@@ -193,6 +193,11 @@ bool	User::operator == (User *u2)
 		return 1;
 }
 
+std::string	 User::getIP() const
+{
+	return this->self->IP();
+}
+
 User::~User()
 {
 }
