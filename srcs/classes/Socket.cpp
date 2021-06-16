@@ -227,7 +227,7 @@ std::vector<Commands>	Socket::Receive()
 		std::cout << "{"<<tmp<<"}"<<std::endl;
 		cmd.push_back(tmp);
 	} while (tmp.length());
-	
+
 	return cmd;
 	// return (extract_message());
 	// length = this->recv_buffer.find('\n', 0);
