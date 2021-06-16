@@ -46,6 +46,16 @@ void	quit_server(Socket *client, Server &server, Commands &cmd)
 	}
 }
 
+bool	check_nick_available(std::string nick, std::vector<User *> users)
+{
+	for(size_t i = 0; i < users.size(); ++i)
+	{
+		if(users[i]->getNickname() == nick)
+			return true;
+	}
+	return false;
+}
+
 void	identification(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users)
 {
 	int ret = 0;
@@ -66,7 +76,13 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 	else if(cmd.name() == "NICK")
 	{
 		User *temp = check_user(server.getClients(), client);
-		temp->setNICK(cmd[1]);
+		if(!check_nick_available(cmd[1], server.getClients()))
+			temp->setNICK(cmd[1]);
+		else
+		{
+			std::string msg = ":" + server.getServerName() + REPLY(ERR_NICKNAMEINUSE) + temp->getNickname() + " " + cmd[1] + " :Nickname already in use\r\n";
+			temp->getSocketPtr()->bufferize(msg);
+		}
 	}
 }
 
