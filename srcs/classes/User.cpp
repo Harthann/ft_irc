@@ -56,7 +56,8 @@ void	User::setUSER(Commands cmd, std::string server_name)
 		this->mode = cmd[2];
 		std::string res = cmd[4].substr(1, cmd[4].length());
 		realname.assign(res);
-		this->status = 1;
+		if(nickname != "")
+			this->status = 1;
 	}
 	else
 	{
@@ -104,6 +105,8 @@ void	User::setDatas(Commands cmd, std::string server_name)
 		}
 		else if(cmd[0].compare("USER") == 0)
 			this->setUSER(cmd, server_name);
+		if(nickname != "" && user != "" && realname != "")
+			this->status = 1;
 	}
 	else
 	{
