@@ -52,7 +52,7 @@ void	add_member(User *user, Server &server, Commands &cmd)
 			}
 			else if((checking_a_bit(temp->getMode(), INVITE_FLAG) && !temp->CheckIfInvited(user)))
 			{
-				std::string msg = ":" + temp->getServerName() + REPLY(ERR_INVITEONLYCHAN) + user->getNickname() + " " + temp->getName() + "\n";
+				std::string msg = ":" + temp->getServerName() + REPLY(ERR_INVITEONLYCHAN) + temp->getName() + "\n";
 				user->getSocketPtr()->bufferize(msg);
 			}
 		}
