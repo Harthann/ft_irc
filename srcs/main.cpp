@@ -37,10 +37,13 @@ void	quit_server(Socket *client, Server &server, Commands &cmd)
 {
 	User *temp = check_user(server.getClients(), client);
 
-	temp->partChannels();
-	if(cmd.length() > 1)
-		server.delete_user(temp, cmd[1]);
-	delete temp;
+	if(temp)
+	{
+		temp->partChannels();
+		if(cmd.length() > 1)
+			server.delete_user(temp, cmd[1]);
+		delete temp;
+	}
 }
 
 void	identification(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users)

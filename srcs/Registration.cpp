@@ -4,6 +4,9 @@ void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd, Serve
 {
 	unsigned long i;
 	int n = 0;
+
+	if(cmd.length() > 1 && (kill_by_server(cmd, server) || server.ForbiddenNick(cmd[1])))
+		return;
 	for (i = 0; i < temp_user.size(); i++)
 	{
 		if(temp_user[i].getSocketPtr() == client)
