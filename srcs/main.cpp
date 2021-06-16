@@ -67,9 +67,9 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 	}
 }
 
-void	command_dispatcher(std::string &datas, Socket *client, Server &server, std::vector<User> &temp_users)
+void	command_dispatcher(Commands cmd, Socket *client, Server &server, std::vector<User> &temp_users)
 {
-	Commands cmd(datas);
+	// Commands cmd(datas);
 	std::string	cmd_name;
 
 	server.logString(cmd.as_string());
@@ -124,7 +124,8 @@ void	server_loop(int port, std::string password)
 {	
 	Server					*server = NULL;
 	Server::clients_vector	client_list;
-	std::string				datas;
+	std::vector<Commands>		datas;
+	// std::string				datas;
 	std::vector<User> 		temp_users;
 
 	try {
@@ -143,12 +144,16 @@ void	server_loop(int port, std::string password)
 						server->add((*it)->Accept());
 					else {
 						datas = (*it)->Receive();
-						if (!datas.length()) {
-							server->remove(*it);
-							break ;
-						}
-						else
-							command_dispatcher(datas, *it, *server, temp_users);
+						do
+						{
+							if (!datas[0].length()) {
+								server->remove(*it);
+								break ;
+							}
+							else
+								command_dispatcher(datas[0], *it, *server, temp_users);
+							datas.erase(datas.begin());
+						} while (datas.size());
 					}
 				}
 				if (server->writeable(*it))
@@ -170,11 +175,6 @@ void	server_loop(int port, std::string password)
 static void	set_signals()
 {
 	signal(SIGINT, signal_handler);
-	signal(SIGTERM, signal_handler);
-	signal(SIGSEGV, signal_handler);
-	signal(SIGILL, signal_handler);
-	signal(SIGABRT, signal_handler);
-	signal(SIGFPE, signal_handler);
 	signal(SIGQUIT, signal_handler);
 }
 

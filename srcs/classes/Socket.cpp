@@ -201,41 +201,55 @@ void	Socket::Confirm(std::string message)
 }
 
 /*	Unefficient version that work just fine for the moment */
-std::string Socket::Receive()
+std::vector<Commands>	Socket::Receive()
 {
-	std::string	ret;
-	char		buffer;
-	int			readed;
+	std::string				ret;
+	char					buffer[4096];
+	int						readed;
+	size_t					length;
+	std::vector<Commands>	cmd;
+	std::string				tmp;
 
 	do {
-		readed = read(this->socketfd, &buffer, 1);
+		readed = read(this->socketfd, buffer, 4095);
 		if (readed > 0)
-			ret += buffer;
-	} while (readed && *(ret.end() - 1) != '\n' && *(ret.end() - 2) != '\r');
-	return (ret);
+		{
+			buffer[readed] = 0;
+			this->recv_buffer += buffer;
+		}
+		if (strchr(buffer, '\n'))
+			break ;
+	} while (readed > 0);
+	std::cout << "Received buffer : [" << this->recv_buffer<<"]" << std::endl;
+	do
+	{
+		tmp = extract_message();
+		std::cout << "{"<<tmp<<"}"<<std::endl;
+		cmd.push_back(tmp);
+	} while (tmp.length());
+	
+	return cmd;
+	// return (extract_message());
+	// length = this->recv_buffer.find('\n', 0);
+	// if (length == std::string::npos)
+	// 	return ret;
+	// ret = this->recv_buffer.substr(0, length + 1);
+	// this->recv_buffer.erase(0, length + 1);
+	// return (ret);
 }
 
-/* Efficient version in theory but still don't work correctly
-std::string Socket::Receive()
+std::string Socket::extract_message()
 {
-	std::string	ret;
-	char		buffer[513];
-	int			readed;
-	size_t			pos;
+	size_t		length;
+	std::string ret;
 
-	readed = read(this->socketfd, buffer, 512);
-	buffer[readed] = '\0';
-	if (readed > 0)
-		this->recv_buffer += buffer;
-	pos = this->recv_buffer.find("\r\n", 0);
-	if (pos == std::string::npos)
-		pos = this->recv_buffer.size() - 2;
-	pos += 2;
-	ret = this->recv_buffer.substr(0, pos);
-	this->recv_buffer.erase(0, pos);
-	return (ret);
+	length = this->recv_buffer.find('\n', 0);
+	if (length == std::string::npos)
+		return ret;
+	ret = this->recv_buffer.substr(0, length + 1);
+	this->recv_buffer.erase(0, length + 1);
+	return ret;
 }
-*/
 
 void			Socket::bufferize(Commands &cmd, int type)
 {
@@ -256,7 +270,6 @@ void			Socket::flushWrite()
 		cmd_buffer.erase(cmd_buffer.begin());
 	}
 }
-
 
 std::string Socket::flush()
 {

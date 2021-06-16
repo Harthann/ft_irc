@@ -94,7 +94,7 @@ void	Server::ping()
 		{
 			(*it)->getSocketPtr()->bufferize(":" + this->server_name + " PING " + (*it)->getNickname());
 			(*it)->getSocketPtr()->setPinged(time(NULL));
-			// std::cout << "Pinged user : " << (*it)->getNickname() << std::endl;
+			std::cout << "Pinged socket : " << (*it)->getSocket() << std::endl;
 		}
 		time(&this->last_ping);
 	}

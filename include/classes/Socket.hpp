@@ -14,9 +14,11 @@
 #include <string.h>
 #include "server_except.hpp"
 #include <iterator>
+#include <vector>
 #include "ft_irc.hpp"
 #include "Addr.hpp"
 #include "Commands.hpp"
+#include <sys/stat.h>
 
 class Commands;
 
@@ -38,14 +40,13 @@ class Socket
 		bool			Connect();
 		bool			Listen();
 		Socket			*Accept();
-		
 
 		/****************************************************************/
 		/*							Setters								*/
 		/****************************************************************/
 		void			setPassword(std::string &);
 		void			setPinged(time_t = 0);
-		
+
 		/****************************************************************/
 		/*					Getters and Info							*/
 		/****************************************************************/
@@ -58,17 +59,18 @@ class Socket
 		std::string			getHostName() const;
 		std::string			IP() const;
 		bool				bufferEmpty() const;
-		
+
 		/****************************************************************/
 		/*					Read/write buffers control					*/
 		/****************************************************************/
-		void			Send(std::string , int );
-		void			Confirm(std::string );
-		std::string		Receive();
-		void			bufferize(Commands &, int = 0);
-		void			bufferize(std::string, int = 0);
-		void			flushWrite();
-		std::string		flush();
+		void					Send(std::string , int );
+		void					Confirm(std::string );
+		std::vector<Commands>	Receive();
+		std::string				extract_message();
+		void					bufferize(Commands &, int = 0);
+		void					bufferize(std::string, int = 0);
+		void					flushWrite();
+		std::string				flush();
 
 		bool	operator==(Socket const& x) {
 			return (x.socketfd == this->socketfd);
