@@ -72,6 +72,10 @@ Server::~Server()
 {
 	for (client_it it = socket_list.begin(); it != socket_list.end(); ++it)
 		delete (*it);
+	for (channel_it it = channels.begin(); it != channels.end(); ++it)
+		delete (*it);
+	for (user_it it = users.begin(); it != users.end(); ++it)
+		delete (*it);
 }
 
 void		Server::Stop()
