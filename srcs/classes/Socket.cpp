@@ -206,7 +206,7 @@ std::vector<Commands>		Socket::Receive()
 	std::string				ret;
 	char					buffer[513];
 	int						readed;
-	size_t					length;
+//	size_t					length;
 	std::vector<Commands>	cmd;
 	std::string				tmp;
 
