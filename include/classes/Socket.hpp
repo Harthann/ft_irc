@@ -66,6 +66,7 @@ class Socket
 		void					Send(std::string , int );
 		void					Confirm(std::string );
 		std::vector<Commands>	Receive();
+		// std::string				Receive();
 		std::string				extract_message();
 		void					bufferize(Commands &, int = 0);
 		void					bufferize(std::string, int = 0);

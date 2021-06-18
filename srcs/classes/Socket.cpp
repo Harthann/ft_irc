@@ -24,7 +24,7 @@ Socket::Socket(host_info &host)
 {
 	const int opt = 1;
 	time(&this->timestamp);
-	this->socketfd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	this->socketfd = socket(AF_INET & AF_INET6, SOCK_STREAM, IPPROTO_TCP);
 	if (!this->socketfd)
 		throw se::SocketFailed();
 	this->addr = host.host;
@@ -32,15 +32,23 @@ Socket::Socket(host_info &host)
 	std::cout << "Port : " << this->addr.getPort() << std::endl;
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+	fcntl(this->socketfd, F_SETFL, O_NONBLOCK);
 	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
+	if (this->Bind())
+		throw se::InvalidBind();
 }
 
 Socket::Socket(int fd, Addr ad)
 : ping_ts(0), password(), recv_buffer(), cmd_buffer(),  writable(false)
 {
-	time(&this->timestamp);
+	const int opt = 1;
 	this->socketfd = fd;
+	time(&this->timestamp);
 	this->addr = ad;
+	fcntl(this->socketfd, F_SETFL, O_NONBLOCK);
+	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+  	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
 }
 
 Socket::Socket(Socket const &x)
@@ -69,14 +77,10 @@ Socket::~Socket()
 bool	Socket::Bind()
 {
 	int		ret;
-	int		error;
 
-	errno = 0;
 	ret = bind(this->socketfd, this->addr.as_sockaddr(), this->addr.addrlen());
-	error = errno;
 	if (ret) {
 		std::cout << "Something went wrong at binding phase for socket : " << this->socketfd << std::endl;
-		std::cout << strerror(error) << std::endl;
 	}
 	return (static_cast<bool>(ret));
 }
@@ -201,41 +205,36 @@ void	Socket::Confirm(std::string message)
 }
 
 /*	Unefficient version that work just fine for the moment */
-std::vector<Commands>	Socket::Receive()
+std::vector<Commands>		Socket::Receive()
 {
 	std::string				ret;
-	char					buffer[4096];
+	char					buffer[513];
 	int						readed;
 	size_t					length;
 	std::vector<Commands>	cmd;
 	std::string				tmp;
 
-	do {
-		readed = read(this->socketfd, buffer, 4095);
-		if (readed > 0)
-		{
-			buffer[readed] = 0;
-			this->recv_buffer += buffer;
-		}
-		if (strchr(buffer, '\n'))
-			break ;
-	} while (readed > 0);
-	std::cout << "Received buffer : [" << this->recv_buffer<<"]" << std::endl;
+	readed = read(this->socketfd, buffer, 512);
+	std::cout << readed << std::endl;
+	if (readed > 0)
+	{
+		buffer[readed] = '\0';
+		this->recv_buffer += buffer;
+		length = this->recv_buffer.find('\n', 0);
+	}
+	else if (readed == 0)
+	{
+		ret = "QUIT :Connection ended";
+		cmd.push_back(ret);
+		return (cmd);
+	}
 	do
 	{
 		tmp = extract_message();
-		std::cout << "{"<<tmp<<"}"<<std::endl;
-		cmd.push_back(tmp);
+		if (tmp.length())
+			cmd.push_back(tmp);
 	} while (tmp.length());
-
 	return cmd;
-	// return (extract_message());
-	// length = this->recv_buffer.find('\n', 0);
-	// if (length == std::string::npos)
-	// 	return ret;
-	// ret = this->recv_buffer.substr(0, length + 1);
-	// this->recv_buffer.erase(0, length + 1);
-	// return (ret);
 }
 
 std::string Socket::extract_message()

@@ -37,10 +37,12 @@ void	quit_server(Socket *client, Server &server, Commands &cmd)
 {
 	User *temp = check_user(server.getClients(), client);
 
-	temp->partChannels();
+	if (temp)
+		temp->partChannels();
 	if(cmd.length() > 1)
 		server.delete_user(temp, cmd[1]);
 	delete temp;
+	server.remove(client);
 }
 
 void	identification(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users)
@@ -73,6 +75,8 @@ void	command_dispatcher(Commands cmd, Socket *client, Server &server, std::vecto
 	std::string	cmd_name;
 
 	server.logString(cmd.as_string());
+	if (cmd.name() == "INCOMPLETE")
+		return ;
 	if (!cmd.isValid()) {
 		std::cout << "Command format invalid" << std::endl;
 		client->bufferize("Command format invalid");
@@ -120,12 +124,27 @@ void	command_dispatcher(Commands cmd, Socket *client, Server &server, std::vecto
 	}
 }
 
+void	socket_manager(Server *server, Socket *socket, std::vector<User> &temp_users)
+{
+	std::vector<Commands>		datas;
+
+	if (server->readable(socket)) {
+		if (server->IsMaster(socket))
+			server->add((socket)->Accept());
+		else {
+				datas = (socket)->Receive();
+				for (std::vector<Commands>::iterator cit = datas.begin(); cit != datas.end(); ++cit)
+					command_dispatcher(*cit, socket, *server, temp_users);
+		}
+	}
+	if (server->writeable(socket))
+		(socket)->flushWrite();
+}
+
 void	server_loop(int port, std::string password)
-{	
+{
 	Server					*server = NULL;
 	Server::clients_vector	client_list;
-	std::vector<Commands>		datas;
-	// std::string				datas;
 	std::vector<User> 		temp_users;
 
 	try {
@@ -138,34 +157,13 @@ void	server_loop(int port, std::string password)
 				break ;
 			client_list = server->getSocketList();
 			for (Server::client_it it = client_list.begin(); it != client_list.end(); ++ it)
-			{
-				if (server->readable(*it)) {
-					if (server->IsMaster(*it))
-						server->add((*it)->Accept());
-					else {
-						datas = (*it)->Receive();
-						do
-						{
-							if (!datas[0].length()) {
-								server->remove(*it);
-								break ;
-							}
-							else
-								command_dispatcher(datas[0], *it, *server, temp_users);
-							datas.erase(datas.begin());
-						} while (datas.size());
-					}
-				}
-				if (server->writeable(*it))
-					(*it)->flushWrite();
-			}
+				socket_manager(server, *it, temp_users);
 			server->checkChannels();
 			server->ping();
 		}
 		server->logString("Closing server");
 		delete server;
-	}
-	catch (se::ServerException &e) {
+	} catch (se::ServerException &e) {
 		if (server)
 			delete server;
 		throw e;
@@ -176,6 +174,7 @@ static void	set_signals()
 {
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
+	signal(SIGPIPE, signal_handler);
 }
 
 int main(int ac, char **av)
@@ -183,7 +182,6 @@ int main(int ac, char **av)
 	int					port;
 	std::string 		pass;
 	host_info			host;
-
 
 	try {
 		server_addr = NULL;

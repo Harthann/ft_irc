@@ -154,15 +154,12 @@ void	Server::update()
 			getpeername((*it)->getSocket(), tmp.as_sockaddr(),
 									reinterpret_cast<socklen_t*>(&tmp_addr_len));
 			this->logString("Connection timeout : " + tmp.strIP() + ":" + utils::itos(tmp.getPort()));
-			// delete ((*it)->getSocketPtr());
 			it = users.erase(it);
 			this->removeSocket((*it)->getSocketPtr());
 			--it;
 		}
 	}
 	fdSet(socket_list);
-	// fdSet(pending_clients);
-	// fdSet(this->users);
 }
 
 /****************************************************************/
