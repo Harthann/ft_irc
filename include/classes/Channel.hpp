@@ -36,6 +36,7 @@ class Channel
 		bool				CheckIfInvited(User *user);
 		User				*getUserByName(std::string name);
 		std::string 		&getKey();
+		std::string			getStrMode();
 		unsigned long		getLimit();
 		std::string			user_list();
 		void				AddToInvitedUser(User * Member, User * Guest);

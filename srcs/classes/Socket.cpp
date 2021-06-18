@@ -88,14 +88,10 @@ bool	Socket::Bind()
 bool	Socket::Connect()
 {
 	int		ret;
-	int		error;
 
-	errno = 0;
 	ret = connect(this->socketfd, this->addr.as_sockaddr(), this->addr.addrlen());
-	error = errno;
 	if (ret) {
 		std::cout << "Something went wrong at connection phase for socket : " << this->socketfd << std::endl;
-		std::cout << strerror(error) << std::endl;
 	}
 	return (static_cast<bool>(ret));
 }
@@ -215,12 +211,11 @@ std::vector<Commands>		Socket::Receive()
 	std::string				tmp;
 
 	readed = read(this->socketfd, buffer, 512);
-	std::cout << readed << std::endl;
 	if (readed > 0)
 	{
 		buffer[readed] = '\0';
 		this->recv_buffer += buffer;
-		length = this->recv_buffer.find('\n', 0);
+		// length = this->recv_buffer.find('\n', 0);
 	}
 	else if (readed == 0)
 	{

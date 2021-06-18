@@ -16,6 +16,7 @@
 # include "User.hpp"
 # include "Server.hpp"
 # include "Commands.hpp"
+# include "commands_prototypes.hpp"
 # include <vector>
 # include <iostream>
 

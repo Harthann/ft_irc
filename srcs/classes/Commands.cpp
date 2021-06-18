@@ -10,7 +10,7 @@ Commands::Commands(std::string &datas, int type)
 
 	if (datas.find("\n", 0) != std::string::npos)
 	{
-		datas.erase(datas.find("\n", 1));
+		datas.erase(datas.find("\n", 0));
 		if (datas.find("\r", 0) != std::string::npos)
 			datas.erase(datas.find("\r", 1));
 	}
@@ -96,7 +96,9 @@ void			Commands::setFrom(std::string str) {
 
 std::string		Commands::name()
 {
-	return (this->cmd[0]);
+	if (this->cmd.size())
+		return (this->cmd[0]);
+	return ("");
 }
 
 size_t			Commands::length() const

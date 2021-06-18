@@ -33,19 +33,32 @@ void	exit_server(Server &server, Socket *client)
 		server.Stop();
 }
 
-void	quit_server(Socket *client, Server &server, Commands &cmd)
+void	quit_server(Socket *&client, Server &server, Commands &cmd)
 {
 	User *temp = check_user(server.getClients(), client);
 
-	if (temp)
+	if(temp)
+	{
 		temp->partChannels();
-	if(cmd.length() > 1)
-		server.delete_user(temp, cmd[1]);
-	delete temp;
+		if(cmd.length() > 1)
+			server.delete_user(temp, cmd[1]);
+		delete temp;
+	}
 	server.remove(client);
+	client = NULL;
 }
 
-void	identification(Commands &cmd, Socket *client, Server &server, std::vector<User> &temp_users)
+bool	check_nick_available(std::string nick, std::vector<User *> users)
+{
+	for(size_t i = 0; i < users.size(); ++i)
+	{
+		if(users[i]->getNickname() == nick)
+			return true;
+	}
+	return false;
+}
+
+void	identification(Commands &cmd, Socket *&client, Server &server, std::vector<User> &temp_users)
 {
 	int ret = 0;
 
@@ -65,20 +78,26 @@ void	identification(Commands &cmd, Socket *client, Server &server, std::vector<U
 	else if(cmd.name() == "NICK")
 	{
 		User *temp = check_user(server.getClients(), client);
-		temp->setNICK(cmd[1]);
+		if(!check_nick_available(cmd[1], server.getClients()))
+			temp->setNICK(cmd[1]);
+		else
+		{
+			std::string msg = ":" + server.getServerName() + REPLY(ERR_NICKNAMEINUSE) + temp->getNickname() + " " + cmd[1] + " :Nickname already in use\r\n";
+			temp->getSocketPtr()->bufferize(msg);
+		}
 	}
 }
 
-void	command_dispatcher(Commands cmd, Socket *client, Server &server, std::vector<User> &temp_users)
+void	command_dispatcher(Commands cmd, Socket *&client, Server &server, std::vector<User> &temp_users)
 {
 	// Commands cmd(datas);
 	std::string	cmd_name;
 
 	server.logString(cmd.as_string());
-	if (cmd.name() == "INCOMPLETE")
+	if (cmd.name() == "INCOMPLETE" || cmd.name() == "")
 		return ;
 	if (!cmd.isValid()) {
-		std::cout << "Command format invalid" << std::endl;
+		server.logString("Command format invalid");
 		client->bufferize("Command format invalid");
 	}
 	if (cmd.name() == "PASS" || cmd.name() == "SERVER" || cmd.name() == "NICK" || cmd.name() == "USER")
@@ -137,7 +156,7 @@ void	socket_manager(Server *server, Socket *socket, std::vector<User> &temp_user
 					command_dispatcher(*cit, socket, *server, temp_users);
 		}
 	}
-	if (server->writeable(socket))
+	if (socket && server->writeable(socket))
 		(socket)->flushWrite();
 }
 

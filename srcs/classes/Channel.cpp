@@ -387,6 +387,21 @@ short							& Channel::getMode()
 	return this->mode;
 }
 
+std::string Channel::getStrMode()
+{
+	std::string str;
+	std::string modes("ovaimnpstkl");
+
+	str += "+";
+	for(size_t i = 0; i < 11; ++i)
+	{
+		bool b = checking_a_bit(mode, i);
+		if(b)
+			str += modes[i];
+	}
+	return str;
+}
+
 Channel::~Channel()
 {
 

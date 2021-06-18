@@ -1,7 +1,7 @@
 #include "commands_prototypes.hpp"
 #include "utils.hpp"
 
-void	kill_by_server(Commands &cmd, Server &server, std::string msg) {
+bool	kill_by_server(Commands &cmd, Server &server, std::string msg) {
 	User	*user;
 
 	for (Server::user_vector::iterator it = server.getClients().begin(); it != server.getClients().end(); ++it) {
@@ -12,6 +12,8 @@ void	kill_by_server(Commands &cmd, Server &server, std::string msg) {
 			server.delete_user(user, msg);
 			server.addUnavailableNickname(cmd[1]);
 			delete user;
+			return true;
 		}
 	}
+	return false;
 }
