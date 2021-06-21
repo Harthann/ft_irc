@@ -104,8 +104,6 @@ void	command_dispatcher(Commands cmd, Socket *&client, Server &server, std::vect
 		identification(cmd, client, server, temp_users);
 	else if (cmd.name() == "DIE")
 		exit_server(server, client);
-	else if(cmd.name() == "QUIT")
-		quit_server(client, server, cmd);
 	else if (!server.isRegister(client))
 		client->bufferize(":" + server.getServerName() + REPLY(ERR_NOTREGISTERED) + " *" + ":You have not registered");
 	else if(cmd.name() == "JOIN")
@@ -122,8 +120,6 @@ void	command_dispatcher(Commands cmd, Socket *&client, Server &server, std::vect
 		who_querry(cmd, client, server);
 	else if(cmd.name() == "PART")
 		part_from_channel(cmd, client, server);
-	else if(cmd.name() == "QUIT")
-		quit_server(client, server, cmd);
 	else if(cmd.name() == "MODE")
 		mode_parser(cmd, client, server);
 	else if (cmd.name() == "PRIVMSG")
@@ -144,7 +140,7 @@ void	command_dispatcher(Commands cmd, Socket *&client, Server &server, std::vect
 	client->setPinged();
 }
 
-void	socket_manager(Server *server, Socket *socket, std::vector<User> &temp_users)
+bool	socket_manager(Server *server, Socket *socket, std::vector<User> &temp_users)
 {
 	std::vector<Commands>		datas;
 
@@ -154,11 +150,19 @@ void	socket_manager(Server *server, Socket *socket, std::vector<User> &temp_user
 		else {
 				datas = (socket)->Receive();
 				for (std::vector<Commands>::iterator cit = datas.begin(); cit != datas.end(); ++cit)
+				{
+					if((*cit).name() == "QUIT")
+					{
+						quit_server(socket, *server, (*cit));
+						return 1;
+					}
 					command_dispatcher(*cit, socket, *server, temp_users);
+				}
 		}
 	}
 	if (socket && server->writeable(socket))
 		(socket)->flushWrite();
+	return 0;
 }
 
 void	server_loop(int port, std::string password)
@@ -177,7 +181,8 @@ void	server_loop(int port, std::string password)
 				break ;
 			client_list = server->getSocketList();
 			for (Server::client_it it = client_list.begin(); it != client_list.end(); ++ it)
-				socket_manager(server, *it, temp_users);
+				if (socket_manager(server, *it, temp_users))
+					break ;
 			server->checkChannels();
 			server->ping();
 		}

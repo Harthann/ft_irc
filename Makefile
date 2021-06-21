@@ -6,7 +6,7 @@
 #    By: nieyraud <nieyraud@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/10 16:28:15 by nieyraud          #+#    #+#              #
-#    Updated: 2021/03/19 11:33:09 by nieyraud         ###   ########.fr        #
+#    Updated: 2021/06/21 15:03:52 by nieyraud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,7 @@ OBJ		= ${addprefix ${OBJ_PATH}/, ${SRC:%.cpp=%.o}}
 #########################
 
 STD_VERSION= -std=c++98
-FLAGS = -Wall -Wextra -ferror-limit=5 $(STD_VERSION)
+FLAGS = -Wall -Wextra -Werror -ferror-limit=5 $(STD_VERSION)
 SAN = -g
 OPT_FLAGS = -flto
 INCLUDE_FLAGS = -I $(TEMPLATE_DIR) -I $(INCLUDES_DIR) -I $(CLASSES_DIR)

@@ -14,7 +14,7 @@ Socket::Socket(int port, std::string , std::string IP)
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
 	fcntl(this->socketfd, F_SETFL, O_NONBLOCK);
-  	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+  	setsockopt(this->socketfd, SOL_SOCKET, 0, &opt, sizeof(opt));
 	if (this->Bind())
 		throw se::InvalidBind();
 }
@@ -31,7 +31,7 @@ Socket::Socket(host_info &host)
 	std::cout << "Address : " << this->addr.getIP() << std::endl;
 	std::cout << "Port : " << this->addr.getPort() << std::endl;
   	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-  	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+  	setsockopt(this->socketfd, SOL_SOCKET, 0, &opt, sizeof(opt));
 	fcntl(this->socketfd, F_SETFL, O_NONBLOCK);
 	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
 	if (this->Bind())
@@ -47,7 +47,7 @@ Socket::Socket(int fd, Addr ad)
 	this->addr = ad;
 	fcntl(this->socketfd, F_SETFL, O_NONBLOCK);
 	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-  	setsockopt(this->socketfd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt));
+  	setsockopt(this->socketfd, SOL_SOCKET, 0, &opt, sizeof(opt));
 	setsockopt(this->socketfd, SOL_SOCKET, SO_TIMESTAMP, &opt, sizeof(opt));
 }
 
