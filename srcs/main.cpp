@@ -141,6 +141,7 @@ void	command_dispatcher(Commands cmd, Socket *&client, Server &server, std::vect
 		client->setPinged();
 		server.logString("Pong received");
 	}
+	client->setPinged();
 }
 
 void	socket_manager(Server *server, Socket *socket, std::vector<User> &temp_users)
