@@ -6,7 +6,11 @@ void	add_user(Socket *client, std::vector<User> &temp_user, Commands &cmd, Serve
 	int n = 0;
 
 	if(cmd.length() > 1 && (kill_by_server(cmd, server) || server.ForbiddenNick(cmd[1])))
+	{
+		if(server.ForbiddenNick(cmd[1]) && cmd.name() == "NICK")
+			client->bufferize(":" + server.getServerName() + REPLY(ERR_UNAVAILRESOURCE) + cmd[1] + " :Nickname is Forbidden Connection refused\r\n");
 		return;
+	}
 	for (i = 0; i < temp_user.size(); i++)
 	{
 		if(temp_user[i].getSocketPtr() == client)

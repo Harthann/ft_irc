@@ -153,6 +153,16 @@
     - Returned by the server to indicate that the target
     	user of the command is not on the given channel.
 */
+#define	ERR_UNAVAILRESOURCE		437
+/*
+	"<nick/channel> :Nick/channel is temporarily unavailable"
+
+	- Returned by a server to a user trying to join a channel
+      currently blocked by the channel delay mechanism.
+	- Returned by a server to a user trying to change nickname
+      when the desired nickname is blocked by the nick delay
+      mechanism.
+*/
 #define	ERR_USERNOTINCHANNEL	441
 
 /*

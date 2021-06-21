@@ -270,11 +270,12 @@ void				Server::addUser(User *x)
 					this->logString("User : " + x->getNickname() + " has been promot has server operator");
 					client->bufferize(":" + this->server_name + " MODE " + x->getNickname() + " :+o");
 				}
+				x->getSocketPtr()->bufferize(":" + this->server_name + REPLY(RPL_WELCOME) + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
 			}
 			break ;
 		}
 	}
-	x->getSocketPtr()->bufferize(":" + this->server_name + REPLY(RPL_WELCOME) + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
+//	x->getSocketPtr()->bufferize(":" + this->server_name + REPLY(RPL_WELCOME) + x->getNickname() + " Welcome to the server\r\n", MSG_TYPE);
 	this->logString("############### USER " + utils::itos(users.size()) + " ##################");
 	this->logString("#\t\t" + x->getNickname() + "\t\t\t#");
 	this->logString("#########################################");
